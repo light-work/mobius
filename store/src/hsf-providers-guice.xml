@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hsf>
+    <group id="mobius_dev">
+
+        <!-- package  sys -->
+        <service id="sysTradeStore" class="com.mobius.storeImpl.sys.SysTradeStoreImpl"/>
+        <provider id="sysTradeStoreProvider"
+                  interface="com.mobius.providers.store.sys.SysTradeStore"
+                  ref="sysTradeStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <!-- package  futures -->
+
+        <service id="futuresSymbolStore" class="com.mobius.storeImpl.futures.FuturesSymbolStoreImpl"/>
+        <provider id="futuresSymbolStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesSymbolStore"
+                  ref="futuresSymbolStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="futuresDailyUsdtStore" class="com.mobius.storeImpl.futures.FuturesDailyUsdtStoreImpl"/>
+        <provider id="futuresDailyUsdtStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDailyUsdtStore"
+                  ref="futuresDailyUsdtStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="futuresDailyBtcStore" class="com.mobius.storeImpl.futures.FuturesDailyBtcStoreImpl"/>
+        <provider id="futuresDailyBtcStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDailyBtcStore"
+                  ref="futuresDailyBtcStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="futuresDailyEthStore" class="com.mobius.storeImpl.futures.FuturesDailyEthStoreImpl"/>
+        <provider id="futuresDailyEthStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDailyEthStore"
+                  ref="futuresDailyEthStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+        <!-- package  spot -->
+        <service id="spotSymbolStore" class="com.mobius.storeImpl.spot.SpotSymbolStoreImpl"/>
+        <provider id="spotSymbolStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotSymbolStore"
+                  ref="spotSymbolStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDailyUsdtStore" class="com.mobius.storeImpl.spot.SpotDailyUsdtStoreImpl"/>
+        <provider id="spotDailyUsdtStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDailyUsdtStore"
+                  ref="spotDailyUsdtStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDailyBtcStore" class="com.mobius.storeImpl.spot.SpotDailyBtcStoreImpl"/>
+        <provider id="spotDailyBtcStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDailyBtcStore"
+                  ref="spotDailyBtcStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDailyEthStore" class="com.mobius.storeImpl.spot.SpotDailyEthStoreImpl"/>
+        <provider id="spotDailyEthStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDailyEthStore"
+                  ref="spotDailyEthStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+    </group>
+</hsf>
