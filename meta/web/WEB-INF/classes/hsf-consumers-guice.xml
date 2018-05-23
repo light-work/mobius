@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hsf>
+    <group id="mobius_dev">
+        <!--************* store begin ***********-->
+        <!-- ************* sys store *********** -->
+        <consumer id="sysTradeStoreConsumer" interface="com.mobius.providers.store.sys.SysTradeStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <!-- ************* futures store *********** -->
+        <consumer id="futuresSymbolStoreConsumer" interface="com.mobius.providers.store.futures.FuturesSymbolStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="futuresDailyUsdtStoreConsumer" interface="com.mobius.providers.store.futures.FuturesDailyUsdtStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="futuresDailyBtcStoreConsumer" interface="com.mobius.providers.store.futures.FuturesDailyBtcStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="futuresDailyEthStoreConsumer" interface="com.mobius.providers.store.futures.FuturesDailyEthStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <!-- ************* spot store *********** -->
+        <consumer id="spotSymbolStoreConsumer" interface="com.mobius.providers.store.spot.SpotSymbolStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="spotDailyUsdtStoreConsumer" interface="com.mobius.providers.store.spot.SpotDailyUsdtStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDailyBtcStoreConsumer" interface="com.mobius.providers.store.spot.SpotDailyBtcStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDailyEthStoreConsumer" interface="com.mobius.providers.store.spot.SpotDailyEthStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+    </group>
+
+</hsf>
