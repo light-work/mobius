@@ -25,9 +25,9 @@ public class SpotDailyUsdt extends IdEntity implements Tracker {
 
     private SysTrade tradeId;
 
-    private FuturesSymbol symbolId;
+    private SpotSymbol symbolId;
 
-    private Date tradingDate;
+    private Date tradingDay;
 
     private Double lastPrice;
 
@@ -50,7 +50,6 @@ public class SpotDailyUsdt extends IdEntity implements Tracker {
     private String useYn;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -73,22 +72,24 @@ public class SpotDailyUsdt extends IdEntity implements Tracker {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SYMBOL_ID")
-    public FuturesSymbol getSymbolId() {
+    public SpotSymbol getSymbolId() {
         return symbolId;
     }
 
-    public void setSymbolId(FuturesSymbol symbolId) {
+    public void setSymbolId(SpotSymbol symbolId) {
         this.symbolId = symbolId;
     }
 
-    @Column(name = "TRADING_DATE")
-    public Date getTradingDate() {
-        return tradingDate;
+
+    @Column(name = "TRADING_DAY")
+    public Date getTradingDay() {
+        return tradingDay;
     }
 
-    public void setTradingDate(Date tradingDate) {
-        this.tradingDate = tradingDate;
+    public void setTradingDay(Date tradingDay) {
+        this.tradingDay = tradingDay;
     }
+
 
     @Column(name = "LAST_PRICE")
     public Double getLastPrice() {
