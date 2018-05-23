@@ -11,6 +11,7 @@ import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
 import org.hibernate.HibernateException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,8 +34,17 @@ public class FuturesDailyBtcStoreImpl implements FuturesDailyBtcStore {
         }
     }
 
+    @Override
+    @ConnectManager
+    public Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        try {
+            return this.FuturesDailyBtcService.getCountTradeSymbolDay(tradeId, symbolId, tradingDay);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
 
-    
     @Override
     @ConnectManager
     public List<FuturesDailyBtc> getList(List<Selector> list) throws StoreException {

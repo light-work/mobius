@@ -11,6 +11,7 @@ import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
 import org.hibernate.HibernateException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,17 @@ public class FuturesDailyEthStoreImpl implements FuturesDailyEthStore {
     public FuturesDailyEth getById(Long id,Selector... selectors) throws StoreException {
         try {
             return this.FuturesDailyEthService.getById(id,selectors);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
+    public Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        try {
+            return this.FuturesDailyEthService.getCountTradeSymbolDay(tradeId, symbolId, tradingDay);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

@@ -62,9 +62,6 @@ public class TaskDemo implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-        String environment = dataMap.getString("environment");
-        int startMax = dataMap.getInt("startMax");
-        int stopMax = dataMap.getInt("stopMax");
         System.out.println(DateFormatUtil.format(DateFormatUtil.getCurrentDate(true),DateFormatUtil.YMDHMS_PATTERN));
     }
 
