@@ -10,6 +10,7 @@ import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.HQuery;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,6 +31,13 @@ public class SpotDailyBtcService extends HQuery implements SpotDailyBtcStore {
         return $(selectorList).list(SpotDailyBtc.class);
     }
 
+
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        return $($eq("tradeId.id",tradeId),$eq("symbolId.id",symbolId),
+                $eq("tradingDay",tradingDay),$count("id")).value(SpotDailyBtc.class,Integer.class);
+    }
 
     /**
      * 保存对象

@@ -4,6 +4,7 @@ package com.mobius.startup;
 import com.google.inject.Injector;
 import com.mobius.entity.utils.EnvironmentUtils;
 import com.mobius.entity.utils.EnvironmentValue;
+import com.mobius.task.DailyTaskForOkex;
 import com.mobius.task.TaskDemo;
 import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
@@ -76,25 +77,22 @@ public class PlatformLoader {
             // Grab the Scheduler instance from the Factory
             scheduler = StdSchedulerFactory.getDefaultScheduler();
             JobDataMap jobDataMap = new JobDataMap();
-            jobDataMap.put("environment", webConfig.getString("releaseEnvironment"));
-            jobDataMap.put("startMax", 0);
-            jobDataMap.put("stopMax", 0);
-
+            jobDataMap.put("injector", injector);
 
 
             JobDetail jobTaskDemo = newJob(TaskDemo.class).withIdentity("taskDemo", "groupTaskDemo")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerTaskDemo = newTrigger()
                     .withIdentity("triggerTaskDemo", "groupTaskDemo")
-                    .withSchedule(cronSchedule("*/6 * * * * ?"))
+                    .withSchedule(cronSchedule("*/6 * * * * ?"))//每6秒触发
                     .build();
 //
-//            JobDetail jobGBC = newJob(PushJobGBC.class).withIdentity("jobGBC", "groupPush")
-//                    .usingJobData(jobDataMap).build();
-//            CronTrigger triggerGBC = newTrigger()
-//                    .withIdentity("triggerGBC", "groupPush")
-//                    .withSchedule(cronSchedule("*/3 * * * * ?"))
-//                    .build();
+            JobDetail jobDailyTaskForOkex= newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDailyTaskForOkex = newTrigger()
+                    .withIdentity("triggerDailyTaskForOkex", "groupDailyTaskForOkex")
+                    .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
+                    .build();
 //
 //            JobDetail jobBTCPrice = newJob(PushJobBTCPrice.class).withIdentity("jobBTCPrice", "group1")
 //                    .usingJobData(jobDataMap).build();
@@ -107,13 +105,13 @@ public class PlatformLoader {
 //
 //
             scheduler.scheduleJob(jobTaskDemo, triggerTaskDemo);
-//            scheduler.scheduleJob(jobGBC, triggerGBC);
+            scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
 //            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
 
             //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);
             // and start it off
             scheduler.start();
-            System.out.println(localIP + "启动 PushJob");
+            System.out.println(localIP + "启动 task");
 
             //scheduler.shutdown();
 
@@ -125,5 +123,6 @@ public class PlatformLoader {
 
     public void destroyed(ServletContext servletContext) throws Exception {
         //RedisPoolProvider.destroyAll();
+        scheduler.shutdown();
     }
 }

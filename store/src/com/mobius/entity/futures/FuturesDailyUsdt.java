@@ -26,7 +26,7 @@ public class FuturesDailyUsdt extends IdEntity implements Tracker {
 
     private FuturesSymbol symbolId;
 
-    private Date tradingDate;
+    private Date tradingDay;
 
     private Double lastPrice;
 
@@ -49,7 +49,6 @@ public class FuturesDailyUsdt extends IdEntity implements Tracker {
     private String useYn;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -80,14 +79,15 @@ public class FuturesDailyUsdt extends IdEntity implements Tracker {
         this.symbolId = symbolId;
     }
 
-    @Column(name = "TRADING_DATE")
-    public Date getTradingDate() {
-        return tradingDate;
+    @Column(name = "TRADING_DAY")
+    public Date getTradingDay() {
+        return tradingDay;
     }
 
-    public void setTradingDate(Date tradingDate) {
-        this.tradingDate = tradingDate;
+    public void setTradingDay(Date tradingDay) {
+        this.tradingDay = tradingDay;
     }
+
 
     @Column(name = "LAST_PRICE")
     public Double getLastPrice() {
