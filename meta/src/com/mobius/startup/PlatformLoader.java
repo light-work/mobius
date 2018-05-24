@@ -93,6 +93,13 @@ public class PlatformLoader {
                     .withIdentity("triggerDailyTaskForOkex", "groupDailyTaskForOkex")
                     .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
+
+            JobDetail jobDailyTaskForBinance= newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDailyTaskForBinance = newTrigger()
+                    .withIdentity("triggerDailyTaskForBinance", "groupDailyTaskForBinance")
+                    .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
+                    .build();
 //
 //            JobDetail jobBTCPrice = newJob(PushJobBTCPrice.class).withIdentity("jobBTCPrice", "group1")
 //                    .usingJobData(jobDataMap).build();
@@ -106,6 +113,7 @@ public class PlatformLoader {
 //
             scheduler.scheduleJob(jobTaskDemo, triggerTaskDemo);
             scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
+            scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
 //            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
 
             //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);
