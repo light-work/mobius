@@ -29,8 +29,7 @@ import java.util.*;
 @Action(name = "okex", namespace = "/daily")
 public class DailyOkexAction extends BaseAction {
 
-    @ReqGet
-    private String tradeSign;
+    private static String tradeSign="OKEX";
 
 
     @Inject
@@ -42,7 +41,7 @@ public class DailyOkexAction extends BaseAction {
     }
 
 
-    public String buildDailyUsdt() throws Exception {
+    public String buildSpotUsdt() throws Exception {
         JSONObject result = new JSONObject();
         result.put("result","-1");
 
@@ -112,7 +111,7 @@ public class DailyOkexAction extends BaseAction {
         return null;
     }
 
-    public String buildDailyBtc() throws Exception {
+    public String buildSpotBtc() throws Exception {
         JSONObject result = new JSONObject();
         result.put("result","-1");
         try {
@@ -183,7 +182,7 @@ public class DailyOkexAction extends BaseAction {
 
 
 
-    public String buildDailyEth() throws Exception {
+    public String buildSpotEth() throws Exception {
         JSONObject result = new JSONObject();
         result.put("result","-1");
         try {
