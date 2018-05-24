@@ -45,10 +45,6 @@ public class DailyOkexAction extends BaseAction {
         return null;
     }
 
-    public String test1() throws Exception {
-        System.out.printf("aaaaaa");
-        return null;
-    }
 
     public String buildSpotUsdt() throws Exception {
         JSONObject result = new JSONObject();
@@ -78,7 +74,7 @@ public class DailyOkexAction extends BaseAction {
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyUsdt> dailyUsdtList=new ArrayList<>();
                                                 for (int x = 0; x < klineArray.size(); x++) {
-                                                    JSONArray dayAttr = (JSONArray) klineArray.get(x);
+                                                    JSONArray dayAttr =  klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
                                                         Double lastPrice = dayAttr.getDouble(4);
@@ -89,7 +85,7 @@ public class DailyOkexAction extends BaseAction {
                                                             continue;
                                                         }
                                                         if (x != 0) {
-                                                            JSONArray halfDayBeforeAttr =  (JSONArray) klineArray.get(x - 1);
+                                                            JSONArray halfDayBeforeAttr =   klineArray.getJSONArray(x - 1);
                                                             if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
                                                                 Double _volume = dayAttr.getDouble(5);
                                                                 volume = NumberUtils.add(volume, _volume, 8);
@@ -102,6 +98,7 @@ public class DailyOkexAction extends BaseAction {
                                                         spotDailyUsdt.setTradingDay(timeDate);
                                                         spotDailyUsdt.setLastPrice(lastPrice);
                                                         spotDailyUsdt.setVolume(volume);
+                                                        spotDailyUsdt.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyUsdtList.add(spotDailyUsdt);
                                                     }
                                                 }
@@ -154,7 +151,7 @@ public class DailyOkexAction extends BaseAction {
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyBtc> dailyBtcList=new ArrayList<>();
                                                 for (int x = 0; x < klineArray.size(); x++) {
-                                                    JSONArray dayAttr = (JSONArray) klineArray.get(x);
+                                                    JSONArray dayAttr =  klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
                                                         Double lastPrice = dayAttr.getDouble(4);
@@ -165,7 +162,7 @@ public class DailyOkexAction extends BaseAction {
                                                             continue;
                                                         }
                                                         if (x != 0) {
-                                                            JSONArray halfDayBeforeAttr = (JSONArray) klineArray.get(x - 1);
+                                                            JSONArray halfDayBeforeAttr =  klineArray.getJSONArray(x - 1);
                                                             if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
                                                                 Double _volume = dayAttr.getDouble(5);
                                                                 volume = NumberUtils.add(volume, _volume, 8);
@@ -178,6 +175,7 @@ public class DailyOkexAction extends BaseAction {
                                                         spotDailyBtc.setTradingDay(timeDate);
                                                         spotDailyBtc.setLastPrice(lastPrice);
                                                         spotDailyBtc.setVolume(volume);
+                                                        spotDailyBtc.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyBtcList.add(spotDailyBtc);
                                                     }
                                                 }
@@ -232,7 +230,7 @@ public class DailyOkexAction extends BaseAction {
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyEth> dailyEthList=new ArrayList<>();
                                                 for (int x = 0; x < klineArray.size(); x++) {
-                                                    JSONArray dayAttr = (JSONArray) klineArray.get(x);
+                                                    JSONArray dayAttr =  klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
                                                         Double lastPrice = dayAttr.getDouble(4);
@@ -243,7 +241,7 @@ public class DailyOkexAction extends BaseAction {
                                                             continue;
                                                         }
                                                         if (x != 0) {
-                                                            JSONArray halfDayBeforeAttr = (JSONArray) klineArray.get(x - 1);
+                                                            JSONArray halfDayBeforeAttr =  klineArray.getJSONArray(x - 1);
                                                             if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
                                                                 Double _volume = dayAttr.getDouble(5);
                                                                 volume = NumberUtils.add(volume, _volume, 8);
@@ -256,6 +254,7 @@ public class DailyOkexAction extends BaseAction {
                                                         spotDailyEth.setTradingDay(timeDate);
                                                         spotDailyEth.setLastPrice(lastPrice);
                                                         spotDailyEth.setVolume(volume);
+                                                        spotDailyEth.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyEthList.add(spotDailyEth);
                                                     }
                                                 }
@@ -299,6 +298,7 @@ public class DailyOkexAction extends BaseAction {
                             if (symbolList != null && !symbolList.isEmpty()) {
                                 Map<String, String> params = new HashMap<>();
                                 params.put("type", "12hour");
+                                params.put("contract_type", "this_week");
                                 for (FuturesSymbol symbol : symbolList) {
                                     params.put("symbol", symbol.getSymbol());
                                     try {
@@ -308,7 +308,7 @@ public class DailyOkexAction extends BaseAction {
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<FuturesDailyUsdt> dailyUsdtList=new ArrayList<>();
                                                 for (int x=0 ;x<klineArray.size();x++ ) {
-                                                    JSONArray dayAttr = (JSONArray) klineArray.get(x);
+                                                    JSONArray dayAttr =  klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
                                                         Double lastPrice=dayAttr.getDouble(4);
@@ -319,7 +319,7 @@ public class DailyOkexAction extends BaseAction {
                                                             continue;
                                                         }
                                                         if (x != 0) {
-                                                            JSONArray halfDayBeforeAttr = (JSONArray) klineArray.get(x - 1);
+                                                            JSONArray halfDayBeforeAttr =  klineArray.getJSONArray(x - 1);
                                                             if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
                                                                 Double _volume = dayAttr.getDouble(5);
                                                                 volume =NumberUtils.add(volume,_volume,8);
@@ -331,7 +331,7 @@ public class DailyOkexAction extends BaseAction {
                                                         dailyUsdt.setSymbolId(symbol);
                                                         dailyUsdt.setTradingDay(timeDate);
                                                         dailyUsdt.setLastPrice(lastPrice);
-                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyUsdt.setVolume(volume);
                                                         dailyUsdtList.add(dailyUsdt);
                                                     }
@@ -407,7 +407,7 @@ public class DailyOkexAction extends BaseAction {
                                                         dailyUsdt.setSymbolId(symbol);
                                                         dailyUsdt.setTradingDay(timeDate);
                                                         dailyUsdt.setLastPrice(lastPrice);
-                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyUsdt.setVolume(volume);
                                                         dailyUsdtList.add(dailyUsdt);
                                                     }
@@ -482,7 +482,7 @@ public class DailyOkexAction extends BaseAction {
                                                         dailyUsdt.setSymbolId(symbol);
                                                         dailyUsdt.setTradingDay(timeDate);
                                                         dailyUsdt.setLastPrice(lastPrice);
-                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setTurnover(NumberUtils.multiply(volume,lastPrice,8));
                                                         dailyUsdt.setVolume(volume);
                                                         dailyUsdtList.add(dailyUsdt);
                                                     }
