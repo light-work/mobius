@@ -1,15 +1,11 @@
 package com.mobius.action;
 
 import com.google.inject.Inject;
-import com.mobius.entity.spot.SpotDailyBtc;
-import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.spot.SpotDailyBtcStore;
-import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -23,14 +19,13 @@ import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
-import org.guiceside.web.annotation.ReqGet;
 
 import java.util.*;
 
-@Action(name = "binance", namespace = "/daily")
-public class DailyBinanceAction extends BaseAction {
+@Action(name = "bitfinex", namespace = "/daily")
+public class DailyBitfinexAction extends BaseAction {
 
-    private static String tradeSign = "BINANCE";
+    private static String tradeSign = "BITFINEX";
 
 
     @Inject
@@ -52,33 +47,38 @@ public class DailyBinanceAction extends BaseAction {
                     if (sysTrade != null) {
                         SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
                         if (spotSymbolStore != null) {
-                            String resultStr = OKHttpUtil.get("https://api.binance.com/api/v1/exchangeInfo", null);
+                            String resultStr = OKHttpUtil.get("https://api.bitfinex.com/v1/symbols", null);
                             if (StringUtils.isNotBlank(resultStr)) {
-                                JSONObject jsonObject = JSONObject.fromObject(resultStr);
-                                if (jsonObject != null) {
-                                    JSONArray symbols = jsonObject.getJSONArray("symbols");
-                                    if (symbols != null && !symbols.isEmpty()) {
-                                        int displayOrder = 1;
-                                        List<SpotSymbol> spotSymbolList = new ArrayList<>();
-                                        for (Object obj : symbols) {
-                                            JSONObject symbolObj = (JSONObject) obj;
-                                            if (symbolObj != null) {
-                                                String symbol = symbolObj.getString("symbol");
-                                                String market = symbolObj.getString("quoteAsset");
-                                                SpotSymbol spotSymbol = new SpotSymbol();
-                                                spotSymbol.setTradeId(sysTrade);
-                                                spotSymbol.setSymbol(symbol);
-                                                spotSymbol.setMarket(market.toLowerCase());
+                                JSONArray symbols = JSONArray.fromObject(resultStr);
+                                if (symbols != null && !symbols.isEmpty()) {
+                                    int displayOrder = 1;
+                                    List<SpotSymbol> spotSymbolList = new ArrayList<>();
+                                    for (Object obj : symbols) {
+                                        String symbol = (String) obj;
+                                        if (StringUtils.isNotBlank(symbol)) {
+                                            SpotSymbol spotSymbol = new SpotSymbol();
+                                            spotSymbol.setTradeId(sysTrade);
+                                            spotSymbol.setSymbol(symbol);
+                                            String market = null;
+                                            if (symbol.endsWith("usdt")) {
+                                                market = "usdt";
+                                            } else if (symbol.endsWith("btc")) {
+                                                market = "btc";
+                                            } else if (symbol.endsWith("eth")) {
+                                                market = "eth";
+                                            }
+                                            if(StringUtils.isNotBlank(market)){
+                                                spotSymbol.setMarket(market);
                                                 spotSymbol.setDisplayOrder(displayOrder);
-                                                spotSymbol.setUseYn("Y");
                                                 displayOrder++;
+                                                spotSymbol.setUseYn("Y");
                                                 spotSymbolList.add(spotSymbol);
                                             }
                                         }
-                                        if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
-                                            spotSymbolStore.save(spotSymbolList, Persistent.SAVE);
-                                            result.put("result", "0");
-                                        }
+                                    }
+                                    if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
+                                        spotSymbolStore.save(spotSymbolList, Persistent.SAVE);
+                                        result.put("result", "0");
                                     }
                                 }
                             }
@@ -99,11 +99,13 @@ public class DailyBinanceAction extends BaseAction {
         if (startTime == 0) {
             startTime = DateFormatUtil.parse("2017-01-01 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime();
         }
-        params.put("symbol", spotSymbol.getSymbol());
-        params.put("startTime", startTime + "");
+        params.put("sort", "1");
+        params.put("limit", "1000");
+        params.put("start", startTime + "");
         long endTime = 0l;
         try {
-            String resultStr = OKHttpUtil.get("https://api.binance.com/api/v1/klines", params);
+            String url="https://api.bitfinex.com/v2/candles/trade:1h:t"+spotSymbol.getSymbol().toUpperCase()+"/hist";
+            String resultStr = OKHttpUtil.get(url, params);
             if (StringUtils.isNotBlank(resultStr)) {
                 JSONArray klineArray = JSONArray.fromObject(resultStr);
                 if (klineArray != null && !klineArray.isEmpty()) {
@@ -116,12 +118,12 @@ public class DailyBinanceAction extends BaseAction {
                         if (dayAttr != null && !dayAttr.isEmpty()) {
                             Long times = dayAttr.getLong(0);
                             endTime = times;
-                            Double lastPrice = dayAttr.getDouble(4);
+                            Double lastPrice = dayAttr.getDouble(2);
                             Double volume = dayAttr.getDouble(5);
-                            Double turnover = dayAttr.getDouble(7);
+                            Double turnover = NumberUtils.multiply(lastPrice,volume,8);
                             Date timeDate = new Date(times);
                             int hours = DateFormatUtil.getDayInHour(timeDate);
-                            System.out.println(times+" hours  = " + hours);
+                            System.out.println(times + " hours  = " + hours);
 
                             if (hours != 0) {
                                 System.out.print("volumeOne  = " + volumeOne + "+" + volume);
@@ -192,7 +194,7 @@ public class DailyBinanceAction extends BaseAction {
                                     }
                                 }
 
-                                System.out.println( " over========================================== ");
+                                System.out.println(" over========================================== ");
                                 result.put("result", "0");
                                 writeJsonByAction(result.toString());
                             }
