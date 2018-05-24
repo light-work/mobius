@@ -1,6 +1,8 @@
 package com.mobius.action;
 
 import com.google.inject.Inject;
+import com.mobius.entity.futures.FuturesDailyUsdt;
+import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -8,6 +10,8 @@ import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
+import com.mobius.providers.store.futures.FuturesDailyUsdtStore;
+import com.mobius.providers.store.futures.FuturesSymbolStore;
 import com.mobius.providers.store.spot.SpotDailyBtcStore;
 import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
@@ -17,6 +21,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
+import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -40,6 +45,10 @@ public class DailyOkexAction extends BaseAction {
         return null;
     }
 
+    public String test() throws Exception {
+        System.out.printf("aaaaaa");
+        return null;
+    }
 
     public String buildSpotUsdt() throws Exception {
         JSONObject result = new JSONObject();
@@ -68,16 +77,23 @@ public class DailyOkexAction extends BaseAction {
                                             JSONArray klineArray = JSONArray.fromObject(resultStr);
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyUsdt> dailyUsdtList=new ArrayList<>();
-                                                for (Object dayObj : klineArray) {
-                                                    JSONArray dayAttr = (JSONArray) dayObj;
+                                                for (int x = 0; x < klineArray.size(); x++) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
-                                                        Double lastPrice=dayAttr.getDouble(4);
-                                                        Double volume=dayAttr.getDouble(5);
+                                                        Double lastPrice = dayAttr.getDouble(4);
+                                                        Double volume = dayAttr.getDouble(5);
                                                         Date timeDate = new Date(times);
                                                         int hours = DateFormatUtil.getDayInHour(timeDate);
                                                         if (hours == 12) {
                                                             continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume = NumberUtils.add(volume, _volume, 8);
+                                                            }
                                                         }
                                                         SpotDailyUsdt spotDailyUsdt=new SpotDailyUsdt();
                                                         spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -137,16 +153,23 @@ public class DailyOkexAction extends BaseAction {
                                             JSONArray klineArray = JSONArray.fromObject(resultStr);
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyBtc> dailyBtcList=new ArrayList<>();
-                                                for (Object dayObj : klineArray) {
-                                                    JSONArray dayAttr = (JSONArray) dayObj;
+                                                for (int x = 0; x < klineArray.size(); x++) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
-                                                        Double lastPrice=dayAttr.getDouble(4);
-                                                        Double volume=dayAttr.getDouble(5);
+                                                        Double lastPrice = dayAttr.getDouble(4);
+                                                        Double volume = dayAttr.getDouble(5);
                                                         Date timeDate = new Date(times);
                                                         int hours = DateFormatUtil.getDayInHour(timeDate);
                                                         if (hours == 12) {
                                                             continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume = NumberUtils.add(volume, _volume, 8);
+                                                            }
                                                         }
                                                         SpotDailyBtc spotDailyBtc=new SpotDailyBtc();
                                                         spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -208,16 +231,23 @@ public class DailyOkexAction extends BaseAction {
                                             JSONArray klineArray = JSONArray.fromObject(resultStr);
                                             if (klineArray != null && !klineArray.isEmpty()) {
                                                 List<SpotDailyEth> dailyEthList=new ArrayList<>();
-                                                for (Object dayObj : klineArray) {
-                                                    JSONArray dayAttr = (JSONArray) dayObj;
+                                                for (int x = 0; x < klineArray.size(); x++) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
                                                     if (dayAttr != null && !dayAttr.isEmpty()) {
                                                         Long times = dayAttr.getLong(0);
-                                                        Double lastPrice=dayAttr.getDouble(4);
-                                                        Double volume=dayAttr.getDouble(5);
+                                                        Double lastPrice = dayAttr.getDouble(4);
+                                                        Double volume = dayAttr.getDouble(5);
                                                         Date timeDate = new Date(times);
                                                         int hours = DateFormatUtil.getDayInHour(timeDate);
                                                         if (hours == 12) {
                                                             continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume = NumberUtils.add(volume, _volume, 8);
+                                                            }
                                                         }
                                                         SpotDailyEth spotDailyEth=new SpotDailyEth();
                                                         spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -252,4 +282,230 @@ public class DailyOkexAction extends BaseAction {
     }
 
 
+    public String buildFuturesUsdt() throws Exception{
+        JSONObject result = new JSONObject();
+        result.put("result","-1");
+
+        try {
+            if (StringUtils.isNotBlank(tradeSign)) {
+                SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+                if (sysTradeStore != null) {
+                    SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+                    if (sysTrade != null) {
+                        FuturesSymbolStore storeConsumer = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+                        FuturesDailyUsdtStore dailyUsdtStore = hsfServiceFactory.consumer(FuturesDailyUsdtStore.class);
+                        if (storeConsumer != null&&dailyUsdtStore!=null) {
+                            List<FuturesSymbol> symbolList = storeConsumer.getListByTradeMarket(sysTrade.getId(), "usdt");
+                            if (symbolList != null && !symbolList.isEmpty()) {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("type", "12hour");
+                                for (FuturesSymbol symbol : symbolList) {
+                                    params.put("symbol", symbol.getSymbol());
+                                    try {
+                                        String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/future_kline.do", params);
+                                        if (StringUtils.isNotBlank(resultStr)) {
+                                            JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                            if (klineArray != null && !klineArray.isEmpty()) {
+                                                List<FuturesDailyUsdt> dailyUsdtList=new ArrayList<>();
+                                                for (int x=0 ;x<klineArray.size();x++ ) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
+                                                    if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                        Long times = dayAttr.getLong(0);
+                                                        Double lastPrice=dayAttr.getDouble(4);
+                                                        Double volume=dayAttr.getDouble(5);
+                                                        Date timeDate = new Date(times);
+                                                        int hours = DateFormatUtil.getDayInHour(timeDate);
+                                                        if (hours == 12) {
+                                                            continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume =NumberUtils.add(volume,_volume,8);
+                                                            }
+                                                        }
+                                                        FuturesDailyUsdt dailyUsdt=new FuturesDailyUsdt();
+                                                        dailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        dailyUsdt.setTradeId(sysTrade);
+                                                        dailyUsdt.setSymbolId(symbol);
+                                                        dailyUsdt.setTradingDay(timeDate);
+                                                        dailyUsdt.setLastPrice(lastPrice);
+                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setVolume(volume);
+                                                        dailyUsdtList.add(dailyUsdt);
+                                                    }
+                                                }
+                                                dailyUsdtStore.save(dailyUsdtList,Persistent.SAVE);
+                                                System.out.println(symbol.getSymbol()+" save success "+ dailyUsdtList.size());
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                result.put("result","0");
+                                writeJsonByAction(result.toString());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String buildFuturesBtc()throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result","-1");
+
+        try {
+            if (StringUtils.isNotBlank(tradeSign)) {
+                SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+                if (sysTradeStore != null) {
+                    SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+                    if (sysTrade != null) {
+                        FuturesSymbolStore storeConsumer = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+                        FuturesDailyUsdtStore dailyUsdtStore = hsfServiceFactory.consumer(FuturesDailyUsdtStore.class);
+                        if (storeConsumer != null&&dailyUsdtStore!=null) {
+                            List<FuturesSymbol> symbolList = storeConsumer.getListByTradeMarket(sysTrade.getId(), "btc");
+                            if (symbolList != null && !symbolList.isEmpty()) {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("type", "12hour");
+                                for (FuturesSymbol symbol : symbolList) {
+                                    params.put("symbol", symbol.getSymbol());
+                                    try {
+                                        String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/future_kline.do", params);
+                                        if (StringUtils.isNotBlank(resultStr)) {
+                                            JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                            if (klineArray != null && !klineArray.isEmpty()) {
+                                                List<FuturesDailyUsdt> dailyUsdtList=new ArrayList<>();
+                                                for (int x=0 ;x<klineArray.size();x++ ) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
+                                                    if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                        Long times = dayAttr.getLong(0);
+                                                        Double lastPrice=dayAttr.getDouble(4);
+                                                        Double volume=dayAttr.getDouble(5);
+                                                        Date timeDate = new Date(times);
+                                                        int hours = DateFormatUtil.getDayInHour(timeDate);
+                                                        if (hours == 12) {
+                                                            continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume =NumberUtils.add(volume,_volume,8);
+                                                            }
+                                                        }
+                                                        FuturesDailyUsdt dailyUsdt=new FuturesDailyUsdt();
+                                                        dailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        dailyUsdt.setTradeId(sysTrade);
+                                                        dailyUsdt.setSymbolId(symbol);
+                                                        dailyUsdt.setTradingDay(timeDate);
+                                                        dailyUsdt.setLastPrice(lastPrice);
+                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setVolume(volume);
+                                                        dailyUsdtList.add(dailyUsdt);
+                                                    }
+                                                }
+                                                dailyUsdtStore.save(dailyUsdtList,Persistent.SAVE);
+                                                System.out.println(symbol.getSymbol()+" save success "+ dailyUsdtList.size());
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                result.put("result","0");
+                                writeJsonByAction(result.toString());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+    public String buildFuturesEth()throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result","-1");
+
+        try {
+            if (StringUtils.isNotBlank(tradeSign)) {
+                SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+                if (sysTradeStore != null) {
+                    SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+                    if (sysTrade != null) {
+                        FuturesSymbolStore storeConsumer = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+                        FuturesDailyUsdtStore dailyUsdtStore = hsfServiceFactory.consumer(FuturesDailyUsdtStore.class);
+                        if (storeConsumer != null&&dailyUsdtStore!=null) {
+                            List<FuturesSymbol> symbolList = storeConsumer.getListByTradeMarket(sysTrade.getId(), "eth");
+                            if (symbolList != null && !symbolList.isEmpty()) {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("type", "12hour");
+                                for (FuturesSymbol symbol : symbolList) {
+                                    params.put("symbol", symbol.getSymbol());
+                                    try {
+                                        String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/future_kline.do", params);
+                                        if (StringUtils.isNotBlank(resultStr)) {
+                                            JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                            if (klineArray != null && !klineArray.isEmpty()) {
+                                                List<FuturesDailyUsdt> dailyUsdtList=new ArrayList<>();
+                                                for (int x=0 ;x<klineArray.size();x++ ) {
+                                                    JSONArray dayAttr = klineArray.getJSONArray(x);
+                                                    if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                        Long times = dayAttr.getLong(0);
+                                                        Double lastPrice=dayAttr.getDouble(4);
+                                                        Double volume=dayAttr.getDouble(5);
+                                                        Date timeDate = new Date(times);
+                                                        int hours = DateFormatUtil.getDayInHour(timeDate);
+                                                        if (hours == 12) {
+                                                            continue;
+                                                        }
+                                                        if (x != 0) {
+                                                            JSONArray halfDayBeforeAttr = klineArray.getJSONArray(x - 1);
+                                                            if (halfDayBeforeAttr != null && !halfDayBeforeAttr.isArray()) {
+                                                                Double _volume = dayAttr.getDouble(5);
+                                                                volume =NumberUtils.add(volume,_volume,8);
+                                                            }
+                                                        }
+                                                        FuturesDailyUsdt dailyUsdt=new FuturesDailyUsdt();
+                                                        dailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        dailyUsdt.setTradeId(sysTrade);
+                                                        dailyUsdt.setSymbolId(symbol);
+                                                        dailyUsdt.setTradingDay(timeDate);
+                                                        dailyUsdt.setLastPrice(lastPrice);
+                                                        dailyUsdt.setMarketValue(NumberUtils.multiply(volume,lastPrice,8));
+                                                        dailyUsdt.setVolume(volume);
+                                                        dailyUsdtList.add(dailyUsdt);
+                                                    }
+                                                }
+                                                dailyUsdtStore.save(dailyUsdtList,Persistent.SAVE);
+                                                System.out.println(symbol.getSymbol()+" save success "+ dailyUsdtList.size());
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                result.put("result","0");
+                                writeJsonByAction(result.toString());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
 }
