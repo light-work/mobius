@@ -26,6 +26,8 @@ public class FuturesSymbol extends IdEntity implements Tracker {
 
     private String symbol;
 
+    private String symbolDesc;
+
     private String market;
 
     private Integer displayOrder;
@@ -68,6 +70,15 @@ public class FuturesSymbol extends IdEntity implements Tracker {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    @Column(name = "SYMBOL_DESC")
+    public String getSymbolDesc() {
+        return symbolDesc;
+    }
+
+    public void setSymbolDesc(String symbolDesc) {
+        this.symbolDesc = symbolDesc;
     }
 
     @Column(name = "MARKET")
