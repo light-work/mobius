@@ -22,8 +22,6 @@ import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Action(name = "bitmex", namespace = "/daily")
@@ -102,7 +100,7 @@ public class DailyBitmexAction extends BaseAction {
                     }
 
                     long e = System.currentTimeMillis();
-                    System.out.println(TimeUtils.getTimeDiff(s, e));
+                    System.out.println("============********============"+TimeUtils.getTimeDiff(s, e));
                 }
             }
         } catch (Exception e) {
