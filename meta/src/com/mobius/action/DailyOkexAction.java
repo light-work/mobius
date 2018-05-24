@@ -26,8 +26,8 @@ import org.guiceside.web.annotation.ReqGet;
 
 import java.util.*;
 
-@Action(name = "test", namespace = "/mobius")
-public class TestAction extends BaseAction {
+@Action(name = "okex", namespace = "/daily")
+public class DailyOkexAction extends BaseAction {
 
     @ReqGet
     private String tradeSign;
