@@ -164,6 +164,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyUsdt.setTradingDay(timeDate);
                                                             spotDailyUsdt.setLastPrice(lastPrice);
                                                             spotDailyUsdt.setVolume(volume);
+                                                            spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyUsdt.setCreatedBy("task");
                                                             spotDailyUsdt.setCreated(new Date());
                                                             dailyUsdtList.add(spotDailyUsdt);
@@ -184,6 +185,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyBtc.setTradingDay(timeDate);
                                                             spotDailyBtc.setLastPrice(lastPrice);
                                                             spotDailyBtc.setVolume(volume);
+                                                            spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyBtc.setCreatedBy("task");
                                                             spotDailyBtc.setCreated(new Date());
                                                             dailyBtcList.add(spotDailyBtc);
@@ -204,6 +206,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyEth.setTradingDay(timeDate);
                                                             spotDailyEth.setLastPrice(lastPrice);
                                                             spotDailyEth.setVolume(volume);
+                                                            spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyEth.setCreatedBy("task");
                                                             spotDailyEth.setCreated(new Date());
                                                             dailyEthList.add(spotDailyEth);
@@ -268,7 +271,7 @@ public class DailyTaskForOkex implements Job {
                                         JSONArray klineArray = JSONArray.fromObject(resultStr);
                                         if (klineArray != null && !klineArray.isEmpty()) {
                                             List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
-                                            for (int x = 0; x < klineArray.size() - 1; x++) {
+                                            for (int x = 0; x < klineArray.size() - 1; x++) {// 1 2 3
                                                 JSONArray dayAttr = klineArray.getJSONArray(x);
                                                 if (dayAttr != null && !dayAttr.isEmpty()) {
                                                     Long times = dayAttr.getLong(0);
