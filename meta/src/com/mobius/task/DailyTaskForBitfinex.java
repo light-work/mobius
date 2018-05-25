@@ -33,7 +33,6 @@ import com.mobius.providers.store.sys.SysTradeStore;
 import net.sf.json.JSONArray;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
-import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -50,10 +49,10 @@ import java.util.*;
  */
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-public class DailyTaskForBinance implements Job {
+public class DailyTaskForBitfinex implements Job {
 
 
-    private String tradeSign = "BINANCE";
+    private String tradeSign = "BITFINEX";
 
 
     /**
@@ -65,7 +64,7 @@ public class DailyTaskForBinance implements Job {
      * scheduler can instantiate the class whenever it needs.
      * </p>
      */
-    public DailyTaskForBinance() {
+    public DailyTaskForBitfinex() {
     }
 
     /**
@@ -80,7 +79,7 @@ public class DailyTaskForBinance implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
 
-        System.out.println("run DailyTaskForBinance ");
+        System.out.println("run DailyTaskForBitfinex ");
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Injector injector = (Injector) dataMap.get("injector");
         System.out.println(injector);
@@ -117,21 +116,20 @@ public class DailyTaskForBinance implements Job {
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
                             Date d = DateFormatUtil.getCurrentDate(false);
-                            d = DateFormatUtil.addDay(d, -1);
-                            params.put("startTime", d.getTime() + "");//从前一天开始返回
+                            d = DateFormatUtil.addDay(d, -1);//提前一天
+                            params.put("sort", "1");//旧的在前面
                             params.put("limit", "1");//只显示前一天数据
-                            params.put("interval", "1d");//按天返回
+                            params.put("start", d.getTime() + "");//从前一天开始返回
                             for (SpotSymbol spotSymbol : symbolList) {
-                                params.put("symbol", spotSymbol.getSymbol());
                                 try {
-                                    String resultStr = OKHttpUtil.get("https://api.binance.com/api/v1/klines", params);
+                                    String url = "https://api.bitfinex.com/v2/candles/trade:1D:t" + spotSymbol.getSymbol().toUpperCase() + "/hist";
+                                    String resultStr = OKHttpUtil.get(url, params);
                                     if (StringUtils.isNotBlank(resultStr)) {
                                         JSONArray klineArray = JSONArray.fromObject(resultStr);
                                         if (klineArray != null && !klineArray.isEmpty()) {
                                             List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
                                             List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                                             List<SpotDailyEth> dailyEthList = new ArrayList<>();
-
                                             JSONArray dayAttr = klineArray.getJSONArray(0);
                                             if (dayAttr != null && !dayAttr.isEmpty()) {
                                                 Long times = dayAttr.getLong(0);
@@ -212,19 +210,20 @@ public class DailyTaskForBinance implements Job {
                                             }
                                             if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                                 spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
-                                                System.out.println(spotSymbol.getSymbol() + " save success ===task========" + dailyUsdtList.size());
+                                                System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyUsdtList.size());
 
                                             }
                                             if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                                 spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
-                                                System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyBtcList.size());
+                                                System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyBtcList.size());
 
                                             }
                                             if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                                 spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
-                                                System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyEthList.size());
+                                                System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyEthList.size());
 
                                             }
+
                                         }
                                     }
                                 } catch (Exception e) {
