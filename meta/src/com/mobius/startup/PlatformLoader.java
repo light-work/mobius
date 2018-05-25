@@ -4,8 +4,7 @@ package com.mobius.startup;
 import com.google.inject.Injector;
 import com.mobius.entity.utils.EnvironmentUtils;
 import com.mobius.entity.utils.EnvironmentValue;
-import com.mobius.task.DailyTaskForOkex;
-import com.mobius.task.TaskDemo;
+import com.mobius.task.*;
 import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.StringUtils;
@@ -94,7 +93,7 @@ public class PlatformLoader {
                     .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
 
-            JobDetail jobDailyTaskForBinance = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
+            JobDetail jobDailyTaskForBinance = newJob(DailyTaskForBinance.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDailyTaskForBinance = newTrigger()
                     .withIdentity("triggerDailyTaskForBinance", "groupDailyTaskForBinance")
@@ -102,10 +101,17 @@ public class PlatformLoader {
                     .build();
 
 
-            JobDetail jobDailyTaskForBitmex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBitmex", "groupDailyTaskForBitmex")
+            JobDetail jobDailyTaskForBitmex = newJob(DailyTaskForBitmex.class).withIdentity("dailyTaskForBitmex", "groupDailyTaskForBitmex")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDailyTaskForBitmex = newTrigger()
                     .withIdentity("triggerDailyTaskForBitmex", "groupDailyTaskForBitmex")
+                    .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
+                    .build();
+
+            JobDetail jobDailyTaskForHuobi = newJob(DailyTaskForHuobi.class).withIdentity("dailyTaskForHuobi", "groupDailyTaskForHuobi")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDailyTaskForHuobi = newTrigger()
+                    .withIdentity("triggerDailyTaskForHuobi", "groupDailyTaskForHuobi")
                     .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
 //
@@ -123,6 +129,7 @@ public class PlatformLoader {
             scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
             scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
             scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
+            scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
 //            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
 
             //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);

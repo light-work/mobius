@@ -26,6 +26,23 @@
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
+        <consumer id="futuresDetailUsdtStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="futuresDetailBtcStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailBtcStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="futuresDetailEthStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailEthStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
         <!-- ************* spot store *********** -->
         <consumer id="spotSymbolStoreConsumer" interface="com.mobius.providers.store.spot.SpotSymbolStore"
                   version="for-dev" clientTimeout="5000">
@@ -42,6 +59,20 @@
 
 
         <consumer id="spotDailyEthStoreConsumer" interface="com.mobius.providers.store.spot.SpotDailyEthStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="spotDetailUsdtStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailBtcStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailEthStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
     </group>

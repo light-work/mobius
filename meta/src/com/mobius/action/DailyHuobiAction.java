@@ -16,6 +16,7 @@ import com.mobius.providers.store.sys.SysTradeStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
+import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -129,6 +130,7 @@ public class DailyHuobiAction extends BaseAction {
                                     params.put("symbol", spotSymbol.getSymbol());
 
                                     try {
+                                        Set<String> dateSet = new HashSet<>();
                                         String resultStr = OKHttpUtil.get("https://api.huobi.pro/market/history/kline", params);
                                         if (StringUtils.isNotBlank(resultStr) ) {
                                             JSONObject obj=JSONObject.fromObject(resultStr);
@@ -147,6 +149,12 @@ public class DailyHuobiAction extends BaseAction {
                                                             loop++;
                                                             continue;
                                                         }
+                                                        String happenDay = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
+                                                                DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                        if (dateSet.contains(happenDay)) {
+                                                            continue;
+                                                        }
+                                                        dateSet.add(happenDay);
                                                         SpotDailyUsdt spotDailyUsdt=new SpotDailyUsdt();
                                                         spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         spotDailyUsdt.setTradeId(sysTrade);
@@ -159,11 +167,13 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             spotDailyUsdt.setTurnover(jsonObj.getDouble("vol"));
                                                         }
+                                                        spotDailyUsdt.setCreated(new Date());
+                                                        spotDailyUsdt.setCreatedBy("batch");
                                                         dailyUsdtList.add(spotDailyUsdt);
                                                     }
                                                 }
                                                 spotDailyUsdtStore.save(dailyUsdtList,Persistent.SAVE);
-                                                TimeUnit.SECONDS.sleep(1);//秒
+                                                TimeUnit.SECONDS.sleep(2);//秒
                                                 System.out.println(spotSymbol.getSymbol()+" save success "+ dailyUsdtList.size());
                                             }
                                         }
@@ -171,6 +181,7 @@ public class DailyHuobiAction extends BaseAction {
                                         e.printStackTrace();
                                     }
                                 }
+                                System.out.println("-------Huobi buildSpotUsdt  running over----");
                                 result.put("result","0");
                                 writeJsonByAction(result.toString());
                             }
@@ -208,6 +219,7 @@ public class DailyHuobiAction extends BaseAction {
                                     params.put("symbol", spotSymbol.getSymbol());
 
                                     try {
+                                        Set<String> dateSet = new HashSet<>();
                                         String resultStr = OKHttpUtil.get("https://api.huobi.pro/market/history/kline", params);
                                         if (StringUtils.isNotBlank(resultStr) ) {
                                             JSONObject obj=JSONObject.fromObject(resultStr);
@@ -226,6 +238,12 @@ public class DailyHuobiAction extends BaseAction {
                                                             loop++;
                                                             continue;
                                                         }
+                                                        String happenDay = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
+                                                                DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                        if (dateSet.contains(happenDay)) {
+                                                            continue;
+                                                        }
+                                                        dateSet.add(happenDay);
                                                         SpotDailyBtc spotDailyBtc=new SpotDailyBtc();
                                                         spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         spotDailyBtc.setTradeId(sysTrade);
@@ -238,11 +256,13 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             spotDailyBtc.setTurnover(jsonObj.getDouble("vol"));
                                                         }
+                                                        spotDailyBtc.setCreated(new Date());
+                                                        spotDailyBtc.setCreatedBy("batch");
                                                         saveList.add(spotDailyBtc);
                                                     }
                                                 }
                                                 dailyBtcStore.save(saveList,Persistent.SAVE);
-                                                TimeUnit.SECONDS.sleep(1);//秒
+                                                TimeUnit.SECONDS.sleep(2);//秒
                                                 System.out.println(spotSymbol.getSymbol()+" save success "+ saveList.size());
                                             }
                                         }
@@ -250,6 +270,7 @@ public class DailyHuobiAction extends BaseAction {
                                         e.printStackTrace();
                                     }
                                 }
+                                System.out.println("-------Huobi buildSpotBtc  running over----");
                                 result.put("result","0");
                                 writeJsonByAction(result.toString());
                             }
@@ -288,6 +309,7 @@ public class DailyHuobiAction extends BaseAction {
                                     params.put("symbol", spotSymbol.getSymbol());
 
                                     try {
+                                        Set<String> dateSet = new HashSet<>();
                                         String resultStr = OKHttpUtil.get("https://api.huobi.pro/market/history/kline", params);
                                         if (StringUtils.isNotBlank(resultStr) ) {
                                             JSONObject obj=JSONObject.fromObject(resultStr);
@@ -306,6 +328,12 @@ public class DailyHuobiAction extends BaseAction {
                                                             loop++;
                                                             continue;
                                                         }
+                                                        String happenDay = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
+                                                                DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                        if (dateSet.contains(happenDay)) {
+                                                            continue;
+                                                        }
+                                                        dateSet.add(happenDay);
                                                         SpotDailyEth spotDailyEth=new SpotDailyEth();
                                                         spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         spotDailyEth.setTradeId(sysTrade);
@@ -318,11 +346,13 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             spotDailyEth.setTurnover(jsonObj.getDouble("vol"));
                                                         }
+                                                        spotDailyEth.setCreated(new Date());
+                                                        spotDailyEth.setCreatedBy("batch");
                                                         dailyUsdtList.add(spotDailyEth);
                                                     }
                                                 }
                                                 spotDailyUsdtStore.save(dailyUsdtList,Persistent.SAVE);
-                                                TimeUnit.SECONDS.sleep(1);//秒
+                                                TimeUnit.SECONDS.sleep(2);//秒
                                                 System.out.println(spotSymbol.getSymbol()+" save success "+ dailyUsdtList.size());
                                             }
                                         }
@@ -330,6 +360,7 @@ public class DailyHuobiAction extends BaseAction {
                                         e.printStackTrace();
                                     }
                                 }
+                                System.out.println("-------Huobi buildSpotEth  running over----");
                                 result.put("result","0");
                                 writeJsonByAction(result.toString());
                             }
