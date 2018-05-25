@@ -7,6 +7,10 @@
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
+        <consumer id="sysIpServerStoreConsumer" interface="com.mobius.providers.store.sys.SysIpServerStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
         <!-- ************* futures store *********** -->
         <consumer id="futuresSymbolStoreConsumer" interface="com.mobius.providers.store.futures.FuturesSymbolStore"
                   version="for-dev" clientTimeout="5000">

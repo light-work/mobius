@@ -47,6 +47,17 @@ public class SpotSymbolStoreImpl implements SpotSymbolStore {
 
     @Override
     @ConnectManager
+    public List<SpotSymbol> getListByTradeMarketServer(Long tradeId, String market, Integer server) throws StoreException {
+        try {
+            return this.SpotSymbolService.getListByTradeMarketServer(tradeId, market,server);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
     public List<SpotSymbol> getList(List<Selector> list) throws StoreException {
         try {
             return this.SpotSymbolService.getList(list);

@@ -15,6 +15,8 @@ public interface FuturesSymbolStore {
 
     List<FuturesSymbol> getListByTradeMarket(Long tradeId,String market) throws StoreException;
 
+    List<FuturesSymbol> getListByTradeMarketServer(Long tradeId, String market,Integer server) throws StoreException;
+
     List<FuturesSymbol> getList(List<Selector> selectorList) throws StoreException;
 
     void save(FuturesSymbol futuresSymbol, Persistent persistent) throws StoreException;

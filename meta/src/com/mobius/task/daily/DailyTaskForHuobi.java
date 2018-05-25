@@ -15,11 +15,9 @@
  *
  */
 
-package com.mobius.task;
+package com.mobius.task.daily;
 
 import com.google.inject.Injector;
-import com.mobius.entity.futures.FuturesDailyUsdt;
-import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -27,8 +25,6 @@ import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.futures.FuturesDailyUsdtStore;
-import com.mobius.providers.store.futures.FuturesSymbolStore;
 import com.mobius.providers.store.spot.SpotDailyBtcStore;
 import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
@@ -38,14 +34,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
-import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
 import java.util.*;
-import java.util.Calendar;
 
 /**
  * <p>

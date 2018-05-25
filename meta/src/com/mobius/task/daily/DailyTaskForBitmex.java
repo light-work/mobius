@@ -15,7 +15,7 @@
  *
  */
 
-package com.mobius.task;
+package com.mobius.task.daily;
 
 import com.google.inject.Injector;
 import com.mobius.Utils;
@@ -33,7 +33,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
-import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;

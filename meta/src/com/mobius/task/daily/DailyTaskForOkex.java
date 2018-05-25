@@ -15,7 +15,7 @@
  *
  */
 
-package com.mobius.task;
+package com.mobius.task.daily;
 
 import com.google.inject.Injector;
 import com.mobius.entity.futures.FuturesDailyUsdt;

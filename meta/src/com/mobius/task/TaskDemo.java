@@ -62,7 +62,7 @@ public class TaskDemo implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-        System.out.println(DateFormatUtil.format(DateFormatUtil.getCurrentDate(true),DateFormatUtil.YMDHMS_PATTERN));
+        System.out.println("TaskDemo="+DateFormatUtil.format(DateFormatUtil.getCurrentDate(true),DateFormatUtil.YMDHMS_PATTERN));
     }
 
 }
