@@ -94,7 +94,7 @@ public class PlatformLoader {
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerTaskDemo = newTrigger()
                     .withIdentity("triggerTaskDemo", "groupTaskDemo")
-                    .withSchedule(cronSchedule("*/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                     .build();
 
 
@@ -102,7 +102,7 @@ public class PlatformLoader {
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
                     .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
-                    .withSchedule(cronSchedule("*/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                     .build();
 
 
