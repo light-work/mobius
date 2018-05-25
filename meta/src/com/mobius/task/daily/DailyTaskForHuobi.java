@@ -134,7 +134,7 @@ public class DailyTaskForHuobi implements Job {
                                             List<SpotDailyUsdt> usdtList = new ArrayList<>();
                                             List<SpotDailyBtc> btcList = new ArrayList<>();
                                             List<SpotDailyEth> ethList = new ArrayList<>();
-                                            for (int x = 1; x < klineArray.size(); x++) {
+                                            for (int x = 1; x < klineArray.size(); x++) {// 3 2 1
                                                 JSONObject jsonObj = klineArray.getJSONObject(x);
                                                 String dateStr = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
                                                         DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
