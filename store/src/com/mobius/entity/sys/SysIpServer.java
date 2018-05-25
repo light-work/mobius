@@ -1,6 +1,5 @@
-package com.mobius.entity.futures;
+package com.mobius.entity.sys;
 
-import com.mobius.entity.sys.SysTrade;
 import org.guiceside.persistence.entity.IdEntity;
 import org.guiceside.persistence.entity.Tracker;
 
@@ -15,24 +14,20 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "FUTURES_SYMBOL")
-public class FuturesSymbol extends IdEntity implements Tracker {
+@Table(name = "SYS_IP_SERVER")
+public class SysIpServer extends IdEntity implements Tracker {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
-    private SysTrade tradeId;
-
-    private String symbol;
-
-    private String symbolDesc;
+    private String ipAddress;
 
     private String market;
 
-    private Integer displayOrder;
+    private String serverNo;
 
-    private Integer server;
+    private Integer interval;
 
     private Date created;
 
@@ -54,33 +49,13 @@ public class FuturesSymbol extends IdEntity implements Tracker {
         this.id = id;
     }
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRADE_ID")
-    public SysTrade getTradeId() {
-        return tradeId;
+    @Column(name = "IP_ADDRESS")
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public void setTradeId(SysTrade tradeId) {
-        this.tradeId = tradeId;
-    }
-
-    @Column(name = "SYMBOL")
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    @Column(name = "SYMBOL_DESC")
-    public String getSymbolDesc() {
-        return symbolDesc;
-    }
-
-    public void setSymbolDesc(String symbolDesc) {
-        this.symbolDesc = symbolDesc;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     @Column(name = "MARKET")
@@ -92,22 +67,22 @@ public class FuturesSymbol extends IdEntity implements Tracker {
         this.market = market;
     }
 
-    @Column(name = "DISPLAY_ORDER")
-    public Integer getDisplayOrder() {
-        return displayOrder;
+    @Column(name = "SERVER_NO")
+    public String getServerNo() {
+        return serverNo;
     }
 
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
+    public void setServerNo(String serverNo) {
+        this.serverNo = serverNo;
     }
 
-    @Column(name = "SERVER")
-    public Integer getServer() {
-        return server;
+    @Column(name = "INTERVAL")
+    public Integer getInterval() {
+        return interval;
     }
 
-    public void setServer(Integer server) {
-        this.server = server;
+    public void setInterval(Integer interval) {
+        this.interval = interval;
     }
 
     @Column(name = "CREATED", updatable = false)

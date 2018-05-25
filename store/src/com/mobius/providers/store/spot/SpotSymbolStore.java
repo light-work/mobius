@@ -15,6 +15,9 @@ public interface SpotSymbolStore {
 
     List<SpotSymbol> getListByTradeMarket(Long tradeId, String market) throws StoreException;
 
+    List<SpotSymbol> getListByTradeMarketServer(Long tradeId, String market,Integer server) throws StoreException;
+
+
     List<SpotSymbol> getList(List<Selector> selectorList) throws StoreException;
 
     void save(SpotSymbol spotSymbol, Persistent persistent) throws StoreException;

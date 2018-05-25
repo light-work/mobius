@@ -34,7 +34,15 @@ public class FuturesSymbolService extends HQuery implements FuturesSymbolStore {
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
     public List<FuturesSymbol> getListByTradeMarket(Long tradeId, String market) throws StoreException {
-        return $($eq("tradeId.id",tradeId),$eq("market",market),$order("displayOrder")).list(FuturesSymbol.class);
+        return $($eq("tradeId.id",tradeId),$eq("market",market),$eq("useYn","Y"),
+                $order("displayOrder")).list(FuturesSymbol.class);
+    }
+
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public List<FuturesSymbol> getListByTradeMarketServer(Long tradeId, String market, Integer server) throws StoreException {
+        return $($eq("tradeId.id",tradeId),$eq("market",market),$eq("server",server),$eq("useYn","Y"),
+                $order("displayOrder")).list(FuturesSymbol.class);
     }
 
     /**

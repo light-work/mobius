@@ -10,6 +10,13 @@
                   enableTXC="true">
         </provider>
 
+        <service id="sysIpServerStore" class="com.mobius.storeImpl.sys.SysIpServerStoreImpl"/>
+        <provider id="sysIpServerStoreProvider"
+                  interface="com.mobius.providers.store.sys.SysIpServerStore"
+                  ref="sysIpServerStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
         <!-- package  futures -->
 
         <service id="futuresSymbolStore" class="com.mobius.storeImpl.futures.FuturesSymbolStoreImpl"/>

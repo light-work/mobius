@@ -34,7 +34,14 @@ public class SpotSymbolService extends HQuery implements SpotSymbolStore {
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
     public List<SpotSymbol> getListByTradeMarket(Long tradeId, String market) throws StoreException {
-        return $($eq("tradeId.id",tradeId),$eq("market",market),$order("displayOrder")).list(SpotSymbol.class);
+        return $($eq("tradeId.id",tradeId),$eq("market",market),$eq("useYn","Y"),$order("displayOrder")).list(SpotSymbol.class);
+    }
+
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public List<SpotSymbol> getListByTradeMarketServer(Long tradeId, String market, Integer server) throws StoreException {
+        return $($eq("tradeId.id",tradeId),$eq("market",market),$eq("server",server),$eq("useYn","Y"),
+                $order("displayOrder")).list(SpotSymbol.class);
     }
 
     /**
