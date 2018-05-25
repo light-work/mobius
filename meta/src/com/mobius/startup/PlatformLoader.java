@@ -87,17 +87,25 @@ public class PlatformLoader {
                     .withSchedule(cronSchedule("*/6 * * * * ?"))//每6秒触发
                     .build();
 //
-            JobDetail jobDailyTaskForOkex= newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
+            JobDetail jobDailyTaskForOkex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDailyTaskForOkex = newTrigger()
                     .withIdentity("triggerDailyTaskForOkex", "groupDailyTaskForOkex")
                     .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
 
-            JobDetail jobDailyTaskForBinance= newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
+            JobDetail jobDailyTaskForBinance = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDailyTaskForBinance = newTrigger()
                     .withIdentity("triggerDailyTaskForBinance", "groupDailyTaskForBinance")
+                    .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
+                    .build();
+
+
+            JobDetail jobDailyTaskForBitmex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForBitmex", "groupDailyTaskForBitmex")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDailyTaskForBitmex = newTrigger()
+                    .withIdentity("triggerDailyTaskForBitmex", "groupDailyTaskForBitmex")
                     .withSchedule(cronSchedule("0 0-10 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
 //
@@ -114,6 +122,7 @@ public class PlatformLoader {
             scheduler.scheduleJob(jobTaskDemo, triggerTaskDemo);
             scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
             scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
+            scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
 //            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
 
             //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);
