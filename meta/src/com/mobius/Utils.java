@@ -14,7 +14,7 @@ public class Utils {
         Date d = null;
         try {
             d = format.parse(timeStr);
-            System.out.println(DateFormatUtil.format(d, DateFormatUtil.YMDHMS_PATTERN));
+            d=DateFormatUtil.addDay(d,-1);
         } catch (ParseException e) {
 // TODO Auto-generated catch block
             e.printStackTrace();

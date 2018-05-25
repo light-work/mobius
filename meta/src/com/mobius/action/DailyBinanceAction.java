@@ -27,12 +27,15 @@ import org.guiceside.web.annotation.Action;
 import org.guiceside.web.annotation.ReqGet;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Action(name = "binance", namespace = "/daily")
 public class DailyBinanceAction extends BaseAction {
 
     private static String tradeSign = "BINANCE";
 
+    @ReqGet
+    private Long marketId;
 
     @Inject
     private HSFServiceFactory hsfServiceFactory;
@@ -132,8 +135,11 @@ public class DailyBinanceAction extends BaseAction {
                     List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                     List<SpotDailyEth> dailyEthList = new ArrayList<>();
 
-                    Double volumeOne = 0.00d;
-                    Double turnoverOne = 0.00d;
+                    Date curDate = DateFormatUtil.getCurrentDate(false);
+                    int curYear = DateFormatUtil.getDayInYear(curDate);
+                    int curMonth = DateFormatUtil.getDayInMonth(curDate) + 1;
+                    int curDay = DateFormatUtil.getDayInDay(curDate);
+                    Set<String> dateSet=new HashSet<>();
                     for (Object dayObj : klineArray) {
                         JSONArray dayAttr = (JSONArray) dayObj;
                         if (dayAttr != null && !dayAttr.isEmpty()) {
@@ -143,13 +149,17 @@ public class DailyBinanceAction extends BaseAction {
                             Double volume = dayAttr.getDouble(5);
                             Double turnover = dayAttr.getDouble(7);
                             Date timeDate = new Date(times);
-                            int hours = DateFormatUtil.getDayInHour(timeDate);
-                            System.out.println(times + " hours  = " + hours);
+                            String ymdStr=DateFormatUtil.format(timeDate,DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                            if(dateSet.contains(ymdStr)){
+                                continue;
+                            }
+                            dateSet.add(ymdStr);
 
-                            if (hours != 0) {
-                                volumeOne = NumberUtils.add(volumeOne, volume, 8);
+                            int timeYear = DateFormatUtil.getDayInYear(timeDate);
+                            int timeMonth = DateFormatUtil.getDayInMonth(timeDate) + 1;
+                            int timeDay = DateFormatUtil.getDayInDay(timeDate);
 
-                                turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
+                            if (timeYear == curYear && timeMonth == curMonth && timeDay == curDay) {
                                 continue;
                             }
                             if (spotSymbol.getMarket().equals("usdt")) {
@@ -159,14 +169,10 @@ public class DailyBinanceAction extends BaseAction {
                                 spotDailyUsdt.setSymbolId(spotSymbol);
                                 spotDailyUsdt.setTradingDay(timeDate);
                                 spotDailyUsdt.setLastPrice(lastPrice);
-                                volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                                turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                                spotDailyUsdt.setVolume(volumeOne);
-                                spotDailyUsdt.setTurnover(turnoverOne);
+                                spotDailyUsdt.setVolume(volume);
+                                spotDailyUsdt.setTurnover(turnover);
 
                                 dailyUsdtList.add(spotDailyUsdt);
-                                volumeOne = 0.00d;
-                                turnoverOne = 0.00d;
                             } else if (spotSymbol.getMarket().equals("btc")) {
                                 SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
                                 spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -174,14 +180,10 @@ public class DailyBinanceAction extends BaseAction {
                                 spotDailyBtc.setSymbolId(spotSymbol);
                                 spotDailyBtc.setTradingDay(timeDate);
                                 spotDailyBtc.setLastPrice(lastPrice);
-                                volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                                turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                                spotDailyBtc.setVolume(volumeOne);
-                                spotDailyBtc.setTurnover(turnoverOne);
+                                spotDailyBtc.setVolume(volume);
+                                spotDailyBtc.setTurnover(turnover);
 
                                 dailyBtcList.add(spotDailyBtc);
-                                volumeOne = 0.00d;
-                                turnoverOne = 0.00d;
                             } else if (spotSymbol.getMarket().equals("eth")) {
                                 SpotDailyEth spotDailyEth = new SpotDailyEth();
                                 spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -189,14 +191,10 @@ public class DailyBinanceAction extends BaseAction {
                                 spotDailyEth.setSymbolId(spotSymbol);
                                 spotDailyEth.setTradingDay(timeDate);
                                 spotDailyEth.setLastPrice(lastPrice);
-                                volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                                turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                                spotDailyEth.setVolume(volumeOne);
-                                spotDailyEth.setTurnover(turnoverOne);
+                                spotDailyEth.setVolume(volume);
+                                spotDailyEth.setTurnover(turnover);
 
                                 dailyEthList.add(spotDailyEth);
-                                volumeOne = 0.00d;
-                                turnoverOne = 0.00d;
                             }
                         }
                     }
@@ -219,7 +217,14 @@ public class DailyBinanceAction extends BaseAction {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            endTime=0;
+        }finally {
+            System.out.println("============********============sleep start");
+            TimeUnit.MILLISECONDS.sleep(500);//秒
+            System.out.println("============********============sleep end");
+
         }
+
 
         return endTime;
     }
@@ -272,6 +277,37 @@ public class DailyBinanceAction extends BaseAction {
         return null;
     }
 
+    public String buildSymbolId() throws Exception {
+        if (marketId != null) {
+            SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+            if (sysTradeStore != null) {
+                SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+                if (sysTrade != null) {
+                    SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                    SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
+                    if (spotSymbolStore != null && spotDailyUsdtStore != null) {
+                        SpotSymbol spotSymbol = spotSymbolStore.getById(marketId);
+                        if (spotSymbol != null) {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("interval", "1d");
+                            long currentDayTime = DateFormatUtil.getCurrentDate(false).getTime();
+                            long endTime = callApi(spotSymbol, 0l, params, sysTrade);
+                            while (endTime>0&&endTime < currentDayTime) {
+                                System.out.println(spotSymbol.getSymbol() + " while ");
+                                endTime = callApi(spotSymbol, endTime, params, sysTrade);
+                            }
+
+                            System.out.println(" over========================================== ");
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return null;
+    }
+
 
     private void buildSpot(String market, JSONObject result) throws Exception {
         SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
@@ -284,7 +320,7 @@ public class DailyBinanceAction extends BaseAction {
                     List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarket(sysTrade.getId(), market);
                     if (symbolList != null && !symbolList.isEmpty()) {
                         Map<String, String> params = new HashMap<>();
-                        params.put("interval", "8h");
+                        params.put("interval", "1d");
                         long currentDayTime = DateFormatUtil.getCurrentDate(false).getTime();
                         for (SpotSymbol spotSymbol : symbolList) {
                             long endTime = callApi(spotSymbol, 0l, params, sysTrade);

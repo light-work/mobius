@@ -115,11 +115,11 @@ public class DailyTaskForBitmex implements Job {
                             Map<String, String> params = new HashMap<>();
                             Date d = DateFormatUtil.getCurrentDate(false);
                             d = DateFormatUtil.addDay(d, -1);//减去一天
-                            d = DateFormatUtil.addHours(d, -9);//减去9h 重新获取前一天每小时数据
+                            params.put("binSize", "1d");//按天
                             params.put("partial", "false");
                             params.put("symbol", market);
-                            params.put("count", "100");
-                            params.put("reverse", "false");
+                            params.put("count", "1");//只返回前一天
+                            params.put("reverse", "false");//旧的在前面
                             params.put("startTime", DateFormatUtil.format(d, DateFormatUtil.YMDHM_PATTERN));
                             for (FuturesSymbol futuresSymbol : symbolList) {
                                 params.put("symbol", futuresSymbol.getSymbol());
@@ -129,53 +129,39 @@ public class DailyTaskForBitmex implements Job {
                                         JSONArray klineArray = JSONArray.fromObject(resultStr);
                                         if (klineArray != null && !klineArray.isEmpty()) {
                                             List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
-                                            Double volumeOne = 0.00d;
-                                            Double turnoverOne = 0.00d;
-                                            for (Object dayObj : klineArray) {
-                                                JSONObject dayAttr = (JSONObject) dayObj;
-                                                String timesStr = dayAttr.getString("timestamp");
-                                                Date timeDate = Utils.parseDateForZ(timesStr);
-                                                Double lastPrice = dayAttr.getDouble("close");
-                                                Double volume = dayAttr.getDouble("volume");
-                                                Double turnover = dayAttr.getDouble("turnover");
-                                                int hours = DateFormatUtil.getDayInHour(timeDate);
-                                                if (hours != 0) {
-                                                    volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                                                    turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                                                    continue;
+                                            JSONObject dayAttr = klineArray.getJSONObject(0);
+                                            String timesStr = dayAttr.getString("timestamp");
+                                            Date timeDate = Utils.parseDateForZ(timesStr);
+                                            Double lastPrice = dayAttr.getDouble("close");
+                                            Double volume = dayAttr.getDouble("volume");
+                                            Double turnover = dayAttr.getDouble("turnover");
+                                            String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                            Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+
+                                            if (market.equals("usdt")) {
+                                                Integer count = futuresDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                        futuresSymbol.getId(), tradingDate);
+                                                if (count == null) {
+                                                    count = 0;
+                                                } else {
+                                                    System.out.println(dateStr + " " + futuresSymbol.getSymbol() + " count >1");
                                                 }
-                                                String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
-                                                Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                if (count.intValue() == 0) {
+                                                    FuturesDailyUsdt futuresDailyUsdt = new FuturesDailyUsdt();
+                                                    futuresDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                    futuresDailyUsdt.setTradeId(sysTrade);
+                                                    futuresDailyUsdt.setSymbolId(futuresSymbol);
+                                                    futuresDailyUsdt.setTradingDay(timeDate);
+                                                    futuresDailyUsdt.setLastPrice(lastPrice);
+                                                    futuresDailyUsdt.setVolume(volume);
+                                                    futuresDailyUsdt.setTurnover(turnover);
 
-                                                if (market.equals("usdt")) {
-                                                    Integer count = futuresDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
-                                                            futuresSymbol.getId(), tradingDate);
-                                                    if (count == null) {
-                                                        count = 0;
-                                                    } else {
-                                                        System.out.println(dateStr + " " + futuresSymbol.getSymbol() + " count >1");
-                                                    }
-                                                    if (count.intValue() == 0) {
-                                                        FuturesDailyUsdt futuresDailyUsdt = new FuturesDailyUsdt();
-                                                        futuresDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                                        futuresDailyUsdt.setTradeId(sysTrade);
-                                                        futuresDailyUsdt.setSymbolId(futuresSymbol);
-                                                        futuresDailyUsdt.setTradingDay(timeDate);
-                                                        futuresDailyUsdt.setLastPrice(lastPrice);
-                                                        volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                                                        turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                                                        futuresDailyUsdt.setVolume(volumeOne);
-                                                        futuresDailyUsdt.setTurnover(turnoverOne);
-
-                                                        dailyUsdtList.add(futuresDailyUsdt);
-                                                        volumeOne = 0.00d;
-                                                        turnoverOne = 0.00d;
-                                                    }
+                                                    dailyUsdtList.add(futuresDailyUsdt);
                                                 }
                                             }
                                             if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                                 futuresDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
-                                                System.out.println(futuresSymbol.getSymbol() + " save success ===========" + dailyUsdtList.size());
+                                                System.out.println(futuresSymbol.getSymbol() + " save success =====task======" + dailyUsdtList.size());
 
                                             }
                                         }

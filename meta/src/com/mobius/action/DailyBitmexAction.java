@@ -23,6 +23,7 @@ import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Action(name = "bitmex", namespace = "/daily")
 public class DailyBitmexAction extends BaseAction {
@@ -61,8 +62,12 @@ public class DailyBitmexAction extends BaseAction {
                 JSONArray klineArray = JSONArray.fromObject(resultStr);
                 if (klineArray != null && !klineArray.isEmpty()) {
                     List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
-                    Double volumeOne = 0.00d;
-                    Double turnoverOne = 0.00d;
+                    Date curDate = DateFormatUtil.getCurrentDate(false);
+                    int curYear = DateFormatUtil.getDayInYear(curDate);
+                    int curMonth = DateFormatUtil.getDayInMonth(curDate) + 1;
+                    int curDay = DateFormatUtil.getDayInDay(curDate);
+                    Set<String> dateSet=new HashSet<>();
+
                     for (Object dayObj : klineArray) {
                         JSONObject dayAttr = (JSONObject) dayObj;
                         String timesStr = dayAttr.getString("timestamp");
@@ -71,28 +76,31 @@ public class DailyBitmexAction extends BaseAction {
                         Double lastPrice = dayAttr.getDouble("close");
                         Double volume = dayAttr.getDouble("volume");
                         Double turnover = dayAttr.getDouble("turnover");
-                        int hours = DateFormatUtil.getDayInHour(timeDate);
-                        System.out.println(endTime + " hours  = " + hours);
-                        if (hours != 0) {
-                            volumeOne = NumberUtils.add(volumeOne, volume, 8);
 
-                            turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
+                        String ymdStr=DateFormatUtil.format(timeDate,DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                        if(dateSet.contains(ymdStr)){
                             continue;
                         }
+                        dateSet.add(ymdStr);
+                        int timeYear = DateFormatUtil.getDayInYear(timeDate);
+                        int timeMonth = DateFormatUtil.getDayInMonth(timeDate) + 1;
+                        int timeDay = DateFormatUtil.getDayInDay(timeDate);
+
+                        if (timeYear == curYear && timeMonth == curMonth && timeDay == curDay) {
+                            continue;
+                        }
+
+
                         FuturesDailyUsdt futuresDailyUsdt = new FuturesDailyUsdt();
                         futuresDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                         futuresDailyUsdt.setTradeId(sysTrade);
                         futuresDailyUsdt.setSymbolId(futuresSymbol);
                         futuresDailyUsdt.setTradingDay(timeDate);
                         futuresDailyUsdt.setLastPrice(lastPrice);
-                        volumeOne = NumberUtils.add(volumeOne, volume, 8);
-                        turnoverOne = NumberUtils.add(turnoverOne, turnover, 8);
-                        futuresDailyUsdt.setVolume(volumeOne);
-                        futuresDailyUsdt.setTurnover(turnoverOne);
+                        futuresDailyUsdt.setVolume(volume);
+                        futuresDailyUsdt.setTurnover(turnover);
 
                         dailyUsdtList.add(futuresDailyUsdt);
-                        volumeOne = 0.00d;
-                        turnoverOne = 0.00d;
                     }
                     if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                         futuresDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
@@ -101,10 +109,16 @@ public class DailyBitmexAction extends BaseAction {
 
                     long e = System.currentTimeMillis();
                     System.out.println("============********============"+TimeUtils.getTimeDiff(s, e));
+
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            endTime=0;
+        }finally {
+            System.out.println("============********============sleep start" );
+            TimeUnit.SECONDS.sleep(2);//秒
+            System.out.println("============********============sleep end" );
         }
 
         return endTime;
@@ -128,13 +142,15 @@ public class DailyBitmexAction extends BaseAction {
                                 Map<String, String> params = new HashMap<>();
                                 //https://www.bitmex.com/api/v1/trade/bucketed?binSize=1d&partial=false&symbol=XBTUSD&count=500&reverse=false&startTime=2016-12-31%2023%3A59
 
-                                params.put("binSize", "1h");
-                                long currentDayTime = DateFormatUtil.getCurrentDate(false).getTime();
+                                params.put("binSize", "1d");
+                                Date d=DateFormatUtil.getCurrentDate(false);
+                                d=DateFormatUtil.addDay(d,-1);
+                                long currentDayTime = d.getTime();
                                 for (FuturesSymbol spotSymbol : symbolList) {
                                     long endTime = usdt(spotSymbol, 0l, params, sysTrade, futuresDailyUsdtStore);
                                     //2017-01-22
                                     //2018-05-24
-                                    while (endTime < currentDayTime) {
+                                    while (endTime>0&&endTime < currentDayTime) {
                                         System.out.println(spotSymbol.getSymbol() + " while ");
                                         endTime = usdt(spotSymbol, endTime, params, sysTrade, futuresDailyUsdtStore);
                                     }
