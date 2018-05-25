@@ -5,6 +5,11 @@ import com.google.inject.Injector;
 import com.mobius.entity.utils.EnvironmentUtils;
 import com.mobius.entity.utils.EnvironmentValue;
 import com.mobius.task.*;
+import com.mobius.task.daily.DailyTaskForBinance;
+import com.mobius.task.daily.DailyTaskForBitmex;
+import com.mobius.task.daily.DailyTaskForHuobi;
+import com.mobius.task.daily.DailyTaskForOkex;
+import com.mobius.task.detail.DetailTaskForBinanceUsdt;
 import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.StringUtils;
@@ -70,21 +75,39 @@ public class PlatformLoader {
 
         }
         EnvironmentValue.getInstance().setWebConfig(webConfig);
+        String testIP = EnvironmentValue.getInstance().getValue("TEST_IP");
 
-
+        int detailInteval = 59;
+        if (!testIP.equals(localIP)) {
+            detailInteval = 6;//正是服务器 6s
+        }
         try {
             // Grab the Scheduler instance from the Factory
             scheduler = StdSchedulerFactory.getDefaultScheduler();
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put("injector", injector);
+            jobDataMap.put("localIP", localIP);
+            System.out.println("detailInteval="+detailInteval);
 
 
             JobDetail jobTaskDemo = newJob(TaskDemo.class).withIdentity("taskDemo", "groupTaskDemo")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerTaskDemo = newTrigger()
                     .withIdentity("triggerTaskDemo", "groupTaskDemo")
-                    .withSchedule(cronSchedule("*/6 * * * * ?"))//每6秒触发
+                    .withSchedule(cronSchedule("*/" + detailInteval + " * * * * ?"))//每6秒触发
                     .build();
+
+
+            JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
+                    .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    .withSchedule(cronSchedule("*/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+
+            /*****************Daily*******************/
+
 //
             JobDetail jobDailyTaskForOkex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
                     .usingJobData(jobDataMap).build();
@@ -126,6 +149,14 @@ public class PlatformLoader {
 //
 //
             scheduler.scheduleJob(jobTaskDemo, triggerTaskDemo);
+            scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
+
+
+
+
+
+
+
             scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
             scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
             scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);

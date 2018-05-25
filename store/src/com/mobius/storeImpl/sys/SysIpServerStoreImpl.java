@@ -1,57 +1,32 @@
-package com.mobius.storeImpl.spot;
+package com.mobius.storeImpl.sys;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
-import com.mobius.entity.spot.SpotDetailBtc;
-import com.mobius.providers.store.spot.SpotDetailBtcStore;
-import com.mobius.service.spot.SpotDetailBtcService;
+import com.mobius.entity.sys.SysIpServer;
+import com.mobius.providers.store.sys.SysIpServerStore;
+import com.mobius.service.sys.SysIpServerService;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
 import org.hibernate.HibernateException;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Lara Croft on 2016/12/21.
  */
 @Singleton
-public class SpotDetailBtcStoreImpl implements SpotDetailBtcStore {
+public class SysIpServerStoreImpl implements SysIpServerStore {
 
     @Inject
-    private SpotDetailBtcService SpotDetailBtcService;
+    private SysIpServerService sysIpServerService;
 
     @Override
     @ConnectManager
-    public SpotDetailBtc getById(Long id, Selector... selectors) throws StoreException {
+    public SysIpServer getById(Long id,Selector... selectors) throws StoreException {
         try {
-            return this.SpotDetailBtcService.getById(id, selectors);
-        } catch (HibernateException e) {
-            Throwable throwable = e.getCause() != null ? e.getCause() : e;
-            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
-        }
-    }
-
-
-    @Override
-    @ConnectManager
-    public Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
-        try {
-            return this.SpotDetailBtcService.getCountTradeSymbolDay(tradeId, symbolId, tradingDay);
-        } catch (HibernateException e) {
-            Throwable throwable = e.getCause() != null ? e.getCause() : e;
-            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
-        }
-    }
-
-
-    @Override
-    @ConnectManager
-    public List<SpotDetailBtc> getList(List<Selector> list) throws StoreException {
-        try {
-            return this.SpotDetailBtcService.getList(list);
+            return this.sysIpServerService.getById(id,selectors);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -60,9 +35,9 @@ public class SpotDetailBtcStoreImpl implements SpotDetailBtcStore {
 
     @Override
     @ConnectManager
-    public void save(SpotDetailBtc SpotDetailBtc, Persistent persistent) throws StoreException {
+    public SysIpServer getByIpServerMarket(String ipServer,String market) throws StoreException {
         try {
-            this.SpotDetailBtcService.save(SpotDetailBtc, persistent);
+            return this.sysIpServerService.getByIpServerMarket(ipServer,market);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -71,9 +46,9 @@ public class SpotDetailBtcStoreImpl implements SpotDetailBtcStore {
 
     @Override
     @ConnectManager
-    public void save(List<SpotDetailBtc> list, Persistent persistent) throws StoreException {
+    public void save(SysIpServer sysIpServer,Persistent persistent) throws StoreException {
         try {
-            this.SpotDetailBtcService.save(list, persistent);
+            this.sysIpServerService.save(sysIpServer,persistent);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -82,9 +57,20 @@ public class SpotDetailBtcStoreImpl implements SpotDetailBtcStore {
 
     @Override
     @ConnectManager
-    public void delete(SpotDetailBtc SpotDetailBtc) throws StoreException {
+    public void save(List<SysIpServer> list,Persistent persistent) throws StoreException {
         try {
-            this.SpotDetailBtcService.delete(SpotDetailBtc);
+            this.sysIpServerService.save(list,persistent);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
+    public void delete(SysIpServer sysIpServer) throws StoreException {
+        try {
+            this.sysIpServerService.delete(sysIpServer);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -95,7 +81,7 @@ public class SpotDetailBtcStoreImpl implements SpotDetailBtcStore {
     @ConnectManager
     public void deleteById(Long aLong) throws StoreException {
         try {
-            this.SpotDetailBtcService.deleteById(aLong);
+            this.sysIpServerService.deleteById(aLong);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

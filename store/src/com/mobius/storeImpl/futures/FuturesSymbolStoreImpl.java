@@ -47,6 +47,17 @@ public class FuturesSymbolStoreImpl implements FuturesSymbolStore {
 
     @Override
     @ConnectManager
+    public List<FuturesSymbol> getListByTradeMarketServer(Long tradeId, String market, Integer server) throws StoreException {
+        try {
+            return this.FuturesSymbolService.getListByTradeMarketServer(tradeId, market, server);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
     public List<FuturesSymbol> getList(List<Selector> list) throws StoreException {
         try {
             return this.FuturesSymbolService.getList(list);

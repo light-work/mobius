@@ -30,6 +30,8 @@ public class SpotSymbol extends IdEntity implements Tracker {
 
     private Integer displayOrder;
 
+    private Integer server;
+
     private Date created;
 
     private String createdBy;
@@ -86,6 +88,15 @@ public class SpotSymbol extends IdEntity implements Tracker {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    @Column(name = "SERVER")
+    public Integer getServer() {
+        return server;
+    }
+
+    public void setServer(Integer server) {
+        this.server = server;
     }
 
     @Column(name = "CREATED", updatable = false)
