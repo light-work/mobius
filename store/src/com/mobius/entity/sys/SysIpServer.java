@@ -25,7 +25,7 @@ public class SysIpServer extends IdEntity implements Tracker {
 
     private String market;
 
-    private String serverNo;
+    private Integer serverNo;
 
     private Integer interval;
 
@@ -68,11 +68,11 @@ public class SysIpServer extends IdEntity implements Tracker {
     }
 
     @Column(name = "SERVER_NO")
-    public String getServerNo() {
+    public Integer getServerNo() {
         return serverNo;
     }
 
-    public void setServerNo(String serverNo) {
+    public void setServerNo(Integer serverNo) {
         this.serverNo = serverNo;
     }
 

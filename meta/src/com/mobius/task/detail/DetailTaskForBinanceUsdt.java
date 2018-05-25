@@ -96,6 +96,20 @@ public class DetailTaskForBinanceUsdt implements Job {
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                         if (sysIpServer != null) {
                             System.out.println("当前ip" + localIP + "获取market " + market + " serverNo" + sysIpServer.getServerNo() + "的币");
+                            SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+                            SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                            if (spotSymbolStore != null && sysTradeStore != null) {
+                                SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+                                if (sysTrade != null) {
+                                    List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
+                                    if (symbolList != null && !symbolList.isEmpty()) {
+                                        for (SpotSymbol spotSymbol : symbolList) {
+                                            FastCallForBinance.call(spotSymbol, hsfServiceFactory);
+                                        }
+                                    }
+                                }
+
+                            }
                         }
                     }
                 } catch (Exception e) {
