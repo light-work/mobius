@@ -21,9 +21,7 @@ public class SysCoin extends IdEntity implements Tracker {
 
     private Long id;
 
-    private Long coinId;
-
-    private String coinName;
+    private String name;
 
     private String symbol;
 
@@ -49,22 +47,13 @@ public class SysCoin extends IdEntity implements Tracker {
         this.id = id;
     }
 
-    @Column(name = "COIN_ID")
-    public Long getCoinId() {
-        return coinId;
+    @Column(name = "NAME")
+    public String getName() {
+        return name;
     }
 
-    public void setCoinId(Long coinId) {
-        this.coinId = coinId;
-    }
-
-    @Column(name = "COIN_NAME")
-    public String getCoinName() {
-        return coinName;
-    }
-
-    public void setCoinName(String coinName) {
-        this.coinName = coinName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Column(name = "SYMBOL")
