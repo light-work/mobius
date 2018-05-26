@@ -142,7 +142,7 @@ public class DailyTaskForBitmex implements Job {
                                                         futuresSymbol.getId(), tradingDate);
                                                 if (count == null) {
                                                     count = 0;
-                                                } else {
+                                                } if(count.intValue()>0){
                                                     System.out.println(dateStr + " " + futuresSymbol.getSymbol() + " count >1");
                                                 }
                                                 if (count.intValue() == 0) {

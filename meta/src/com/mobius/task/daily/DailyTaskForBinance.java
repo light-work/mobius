@@ -148,7 +148,8 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    }
+                                                    if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -172,7 +173,7 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -196,7 +197,7 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
