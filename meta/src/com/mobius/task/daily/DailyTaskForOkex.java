@@ -45,6 +45,7 @@ import org.quartz.*;
 
 import java.util.*;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -122,8 +123,8 @@ public class DailyTaskForOkex implements Job {
                         List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarket(sysTrade.getId(), market);
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
-                            params.put("type", "12hour");
-                            params.put("since", DateFormatUtil.getCurrentDate(false).getTime() + "");
+                            params.put("type", "1day");
+                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
                             for (SpotSymbol spotSymbol : symbolList) {
                                 params.put("symbol", spotSymbol.getSymbol());
                                 try {
@@ -134,29 +135,24 @@ public class DailyTaskForOkex implements Job {
                                             List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
                                             List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                                             List<SpotDailyEth> dailyEthList = new ArrayList<>();
-                                            for (Object dayObj : klineArray) {
-                                                JSONArray dayAttr = (JSONArray) dayObj;
+                                            for (int x = 0; x < klineArray.size() - 1; x++) {
+                                                JSONArray dayAttr = klineArray.getJSONArray(x);
                                                 if (dayAttr != null && !dayAttr.isEmpty()) {
                                                     Long times = dayAttr.getLong(0);
                                                     Double lastPrice = dayAttr.getDouble(4);
                                                     Double volume = dayAttr.getDouble(5);
                                                     Date timeDate = new Date(times);
-                                                    int hours = DateFormatUtil.getDayInHour(timeDate);
-                                                    if (hours == 12) {
-                                                        continue;
-                                                    }
+
                                                     String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                                                     Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
 
                                                     if (market.equals("usdt")) {
                                                         Integer count = spotDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                                 spotSymbol.getId(), tradingDate);
-                                                        if (count == null) {
-                                                            count = 0;
-                                                        } else {
+                                                        if (count == 1) {
                                                             System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                        }
-                                                        if (count.intValue() == 0) {
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
                                                             SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
                                                             spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                             spotDailyUsdt.setTradeId(sysTrade);
@@ -164,6 +160,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyUsdt.setTradingDay(timeDate);
                                                             spotDailyUsdt.setLastPrice(lastPrice);
                                                             spotDailyUsdt.setVolume(volume);
+                                                            spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyUsdt.setCreatedBy("task");
                                                             spotDailyUsdt.setCreated(new Date());
                                                             dailyUsdtList.add(spotDailyUsdt);
@@ -171,12 +168,10 @@ public class DailyTaskForOkex implements Job {
                                                     } else if (market.equals("btc")) {
                                                         Integer count = spotDailyBtcStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                                 spotSymbol.getId(), tradingDate);
-                                                        if (count == null) {
-                                                            count = 0;
-                                                        } else {
+                                                        if (count == 1) {
                                                             System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                        }
-                                                        if (count.intValue() == 0) {
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
                                                             SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
                                                             spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                             spotDailyBtc.setTradeId(sysTrade);
@@ -184,6 +179,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyBtc.setTradingDay(timeDate);
                                                             spotDailyBtc.setLastPrice(lastPrice);
                                                             spotDailyBtc.setVolume(volume);
+                                                            spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyBtc.setCreatedBy("task");
                                                             spotDailyBtc.setCreated(new Date());
                                                             dailyBtcList.add(spotDailyBtc);
@@ -191,12 +187,10 @@ public class DailyTaskForOkex implements Job {
                                                     } else if (market.equals("eth")) {
                                                         Integer count = spotDailyEthStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                                 spotSymbol.getId(), tradingDate);
-                                                        if (count == null) {
-                                                            count = 0;
-                                                        } else {
+                                                        if (count == 1) {
                                                             System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                        }
-                                                        if (count.intValue() == 0) {
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
                                                             SpotDailyEth spotDailyEth = new SpotDailyEth();
                                                             spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                             spotDailyEth.setTradeId(sysTrade);
@@ -204,6 +198,7 @@ public class DailyTaskForOkex implements Job {
                                                             spotDailyEth.setTradingDay(timeDate);
                                                             spotDailyEth.setLastPrice(lastPrice);
                                                             spotDailyEth.setVolume(volume);
+                                                            spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                             spotDailyEth.setCreatedBy("task");
                                                             spotDailyEth.setCreated(new Date());
                                                             dailyEthList.add(spotDailyEth);
@@ -211,16 +206,19 @@ public class DailyTaskForOkex implements Job {
                                                     }
                                                 }
                                             }
-                                            if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
+                                            if (!dailyUsdtList.isEmpty()) {
                                                 spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyUsdtList.size());
                                             }
-                                            if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
+                                            if (!dailyBtcList.isEmpty()) {
                                                 spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyBtcList.size());
                                             }
-                                            if (dailyEthList != null && !dailyEthList.isEmpty()) {
+                                            if (!dailyEthList.isEmpty()) {
                                                 spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyEthList.size());
                                             }
-                                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyUsdtList.size());
+                                            TimeUnit.SECONDS.sleep(2);//秒
                                         }
                                     }
                                 } catch (Exception e) {
@@ -234,13 +232,6 @@ public class DailyTaskForOkex implements Job {
         }
     }
 
-    private long getLastNightTimeInMillis() {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        return (c.getTimeInMillis() - 24 * 60 * 60 * 1000) / 1000 * 1000;
-    }
 
     private void futuresDailyTask(HSFServiceFactory hsfServiceFactory) throws Exception {
         SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
@@ -258,7 +249,7 @@ public class DailyTaskForOkex implements Job {
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
                             params.put("type", "1day");
-                            params.put("since", getLastNightTimeInMillis() + "");
+                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
                             for (FuturesSymbol symbol : symbolList) {
                                 params.put("symbol", symbol.getSymbol());
                                 params.put("contract_type", symbol.getSymbolDesc());
@@ -268,7 +259,7 @@ public class DailyTaskForOkex implements Job {
                                         JSONArray klineArray = JSONArray.fromObject(resultStr);
                                         if (klineArray != null && !klineArray.isEmpty()) {
                                             List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
-                                            for (int x = 0; x < klineArray.size() - 1; x++) {
+                                            for (int x = 0; x < klineArray.size() - 1; x++) {// 1 2 3
                                                 JSONArray dayAttr = klineArray.getJSONArray(x);
                                                 if (dayAttr != null && !dayAttr.isEmpty()) {
                                                     Long times = dayAttr.getLong(0);
@@ -303,6 +294,7 @@ public class DailyTaskForOkex implements Job {
                                             if (!dailyUsdtList.isEmpty()) {
                                                 dailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
                                             }
+                                            TimeUnit.SECONDS.sleep(2);//秒
                                             System.out.println(symbol.getSymbol() + "okex daily task save success " + dailyUsdtList.size());
                                         }
                                     }
