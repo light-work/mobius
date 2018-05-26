@@ -1,7 +1,5 @@
-package com.mobius.entity.spot;
+package com.mobius.entity.sys;
 
-import com.mobius.entity.sys.SysCoin;
-import com.mobius.entity.sys.SysTrade;
 import org.guiceside.persistence.entity.IdEntity;
 import org.guiceside.persistence.entity.Tracker;
 
@@ -16,24 +14,22 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "SPOT_SYMBOL")
-public class SpotSymbol extends IdEntity implements Tracker {
+@Table(name = "SYS_CAPITALIZATION")
+public class SysCapitalization extends IdEntity implements Tracker {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
-    private SysTrade tradeId;
-
     private SysCoin coinId;
 
-    private String symbol;
+    private Double volume;
 
-    private String market;
+    private Double circulating;
 
-    private Integer displayOrder;
+    private Date recordDate;
 
-    private Integer server;
+    private Date recordTime;
 
     private Date created;
 
@@ -46,7 +42,6 @@ public class SpotSymbol extends IdEntity implements Tracker {
     private String useYn;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -54,7 +49,6 @@ public class SpotSymbol extends IdEntity implements Tracker {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COIN_ID")
@@ -66,50 +60,40 @@ public class SpotSymbol extends IdEntity implements Tracker {
         this.coinId = coinId;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRADE_ID")
-    public SysTrade getTradeId() {
-        return tradeId;
+    @Column(name = "VOLUME")
+    public Double getVolume() {
+        return volume;
     }
 
-    public void setTradeId(SysTrade tradeId) {
-        this.tradeId = tradeId;
+    public void setVolume(Double volume) {
+        this.volume = volume;
     }
 
-    @Column(name = "SYMBOL")
-    public String getSymbol() {
-        return symbol;
+    @Column(name = "CIRCULATING")
+    public Double getCirculating() {
+        return circulating;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setCirculating(Double circulating) {
+        this.circulating = circulating;
     }
 
-    @Column(name = "MARKET")
-    public String getMarket() {
-        return market;
+    @Column(name = "RECORD_DATE")
+    public Date getRecordDate() {
+        return recordDate;
     }
 
-    public void setMarket(String market) {
-        this.market = market;
+    public void setRecordDate(Date recordDate) {
+        this.recordDate = recordDate;
     }
 
-    @Column(name = "DISPLAY_ORDER")
-    public Integer getDisplayOrder() {
-        return displayOrder;
+    @Column(name = "RECORD_TIME")
+    public Date getRecordTime() {
+        return recordTime;
     }
 
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
-    }
-
-    @Column(name = "SERVER")
-    public Integer getServer() {
-        return server;
-    }
-
-    public void setServer(Integer server) {
-        this.server = server;
+    public void setRecordTime(Date recordTime) {
+        this.recordTime = recordTime;
     }
 
     @Column(name = "CREATED", updatable = false)
