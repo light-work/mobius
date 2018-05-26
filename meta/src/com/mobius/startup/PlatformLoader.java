@@ -202,6 +202,13 @@ public class PlatformLoader {
                     .withSchedule(cronSchedule("0 0 0 * * ?"))//每天的 0点到0点10分每分触发
                     .build();
 
+            JobDetail jobCapitalizationTask = newJob(CapitalizationTask.class).withIdentity("dailyCapitalizationTask", "groupCapitalizationTask")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerCapitalizationTask = newTrigger()
+                    .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
+                    .withSchedule(cronSchedule("0 */5 * * * ?"))//每天的 0点到0点10分每分触发
+                    .build();
+
 
 //            JobDetail jobBTCPrice = newJob(PushJobBTCPrice.class).withIdentity("jobBTCPrice", "group1")
 //                    .usingJobData(jobDataMap).build();
@@ -239,6 +246,8 @@ public class PlatformLoader {
             scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
             scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
             scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
+            scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
+
 
 //            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
 
