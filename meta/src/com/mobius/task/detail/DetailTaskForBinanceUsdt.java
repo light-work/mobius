@@ -101,10 +101,16 @@ public class DetailTaskForBinanceUsdt implements Job {
                             if (spotSymbolStore != null && sysTradeStore != null) {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
+                                    Date d = DateFormatUtil.getCurrentDate(true);
                                     List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
                                     if (symbolList != null && !symbolList.isEmpty()) {
                                         for (SpotSymbol spotSymbol : symbolList) {
-                                            FastCallForBinance.call(spotSymbol, hsfServiceFactory);
+                                            try {
+                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+                                            } catch (Exception e) {
+
+                                            }
+
                                         }
                                     }
                                 }
