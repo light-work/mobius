@@ -82,7 +82,7 @@ public class FastCallForHuobi {
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
                             spotDetailUsdtStore.save(detail, Persistent.SAVE);
-                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
+//                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
                         }
 
                     }
@@ -143,7 +143,7 @@ public class FastCallForHuobi {
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
                             detailBtcStore.save(detail, Persistent.SAVE);
-                            System.out.println("DetailTaskForHuobiBtc --- " + symbol.getSymbol() + " save success 1.");
+//                            System.out.println("DetailTaskForHuobiBtc --- " + symbol.getSymbol() + " save success 1.");
                         }
 
                     }
@@ -204,7 +204,7 @@ public class FastCallForHuobi {
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
                             spotDetailEthStore.save(detail, Persistent.SAVE);
-                            System.out.println("DetailTaskForHuobiEth --- " + symbol.getSymbol() + " save success 1.");
+//                            System.out.println("DetailTaskForHuobiEth --- " + symbol.getSymbol() + " save success 1.");
                         }
 
                     }
