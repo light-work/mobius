@@ -35,7 +35,7 @@ public class DetailTaskForHuobiUsdt implements Job {
     private String tradeSign = "HUOBIPRO";
 
 
-    private String market = "USDT";
+    private String market = "usdt";
 
 
     /**

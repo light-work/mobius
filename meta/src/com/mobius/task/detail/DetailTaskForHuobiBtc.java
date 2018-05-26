@@ -29,7 +29,7 @@ public class DetailTaskForHuobiBtc implements Job {
     private String tradeSign = "HUOBIPRO";
 
 
-    private String market = "BTC";
+    private String market = "btc";
 
 
     /**
