@@ -18,6 +18,7 @@
 package com.mobius.task.daily;
 
 import com.google.inject.Injector;
+import com.mobius.Utils;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -33,12 +34,14 @@ import com.mobius.providers.store.sys.SysTradeStore;
 import net.sf.json.JSONArray;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
+import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -133,9 +136,9 @@ public class DailyTaskForBitfinex implements Job {
                                             JSONArray dayAttr = klineArray.getJSONArray(0);
                                             if (dayAttr != null && !dayAttr.isEmpty()) {
                                                 Long times = dayAttr.getLong(0);
-                                                Double lastPrice = dayAttr.getDouble(4);
+                                                Double lastPrice = dayAttr.getDouble(2);
                                                 Double volume = dayAttr.getDouble(5);
-                                                Double turnover = dayAttr.getDouble(7);
+                                                Double turnover = NumberUtils.multiply(lastPrice,volume,8);
                                                 Date timeDate = new Date(times);
                                                 String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                                                 Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
@@ -145,7 +148,7 @@ public class DailyTaskForBitfinex implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -159,6 +162,8 @@ public class DailyTaskForBitfinex implements Job {
 
                                                         spotDailyUsdt.setVolume(volume);
                                                         spotDailyUsdt.setTurnover(turnover);
+                                                        Utils.bind(spotDailyUsdt,"task");
+
                                                         dailyUsdtList.add(spotDailyUsdt);
 
                                                     }
@@ -167,7 +172,7 @@ public class DailyTaskForBitfinex implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -181,6 +186,8 @@ public class DailyTaskForBitfinex implements Job {
 
                                                         spotDailyBtc.setVolume(volume);
                                                         spotDailyBtc.setTurnover(turnover);
+                                                        Utils.bind(spotDailyBtc,"task");
+
                                                         dailyBtcList.add(spotDailyBtc);
 
                                                     }
@@ -189,7 +196,7 @@ public class DailyTaskForBitfinex implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -203,6 +210,8 @@ public class DailyTaskForBitfinex implements Job {
 
                                                         spotDailyEth.setVolume(volume);
                                                         spotDailyEth.setTurnover(turnover);
+                                                        Utils.bind(spotDailyEth,"task");
+
                                                         dailyEthList.add(spotDailyEth);
 
                                                     }
@@ -228,6 +237,11 @@ public class DailyTaskForBitfinex implements Job {
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                }finally {
+                                    System.out.println("============********============sleep start" );
+                                    TimeUnit.SECONDS.sleep(20);//秒
+                                    System.out.println("============********============sleep end" );
+
                                 }
                             }
                         }

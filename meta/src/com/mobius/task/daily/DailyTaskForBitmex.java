@@ -118,7 +118,7 @@ public class DailyTaskForBitmex implements Job {
                             params.put("partial", "false");
                             params.put("symbol", market);
                             params.put("count", "1");//只返回前一天
-                            params.put("reverse", "false");//旧的在前面
+                            params.put("reverse", "true");//新的在前面  这个api 不会返回当前日期的
                             params.put("startTime", DateFormatUtil.format(d, DateFormatUtil.YMDHM_PATTERN));
                             for (FuturesSymbol futuresSymbol : symbolList) {
                                 params.put("symbol", futuresSymbol.getSymbol());
@@ -142,7 +142,7 @@ public class DailyTaskForBitmex implements Job {
                                                         futuresSymbol.getId(), tradingDate);
                                                 if (count == null) {
                                                     count = 0;
-                                                } else {
+                                                } if(count.intValue()>0){
                                                     System.out.println(dateStr + " " + futuresSymbol.getSymbol() + " count >1");
                                                 }
                                                 if (count.intValue() == 0) {

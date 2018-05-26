@@ -18,6 +18,7 @@
 package com.mobius.task.daily;
 
 import com.google.inject.Injector;
+import com.mobius.Utils;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -39,6 +40,7 @@ import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -146,7 +148,8 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    }
+                                                    if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -160,6 +163,8 @@ public class DailyTaskForBinance implements Job {
 
                                                         spotDailyUsdt.setVolume(volume);
                                                         spotDailyUsdt.setTurnover(turnover);
+
+                                                        Utils.bind(spotDailyUsdt, "task");
                                                         dailyUsdtList.add(spotDailyUsdt);
 
                                                     }
@@ -168,7 +173,7 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -182,6 +187,8 @@ public class DailyTaskForBinance implements Job {
 
                                                         spotDailyBtc.setVolume(volume);
                                                         spotDailyBtc.setTurnover(turnover);
+
+                                                        Utils.bind(spotDailyBtc, "task");
                                                         dailyBtcList.add(spotDailyBtc);
 
                                                     }
@@ -190,7 +197,7 @@ public class DailyTaskForBinance implements Job {
                                                             spotSymbol.getId(), tradingDate);
                                                     if (count == null) {
                                                         count = 0;
-                                                    } else {
+                                                    } if(count.intValue()>0){
                                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
                                                     }
                                                     if (count.intValue() == 0) {
@@ -204,6 +211,8 @@ public class DailyTaskForBinance implements Job {
 
                                                         spotDailyEth.setVolume(volume);
                                                         spotDailyEth.setTurnover(turnover);
+
+                                                        Utils.bind(spotDailyEth, "task");
                                                         dailyEthList.add(spotDailyEth);
 
                                                     }
@@ -228,6 +237,11 @@ public class DailyTaskForBinance implements Job {
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                } finally {
+                                    System.out.println("============********======task======sleep start");
+                                    TimeUnit.MILLISECONDS.sleep(500);//秒
+                                    System.out.println("============********======task======sleep end");
+
                                 }
                             }
                         }
