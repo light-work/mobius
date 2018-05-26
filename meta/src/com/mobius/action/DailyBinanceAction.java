@@ -139,7 +139,7 @@ public class DailyBinanceAction extends BaseAction {
                     int curYear = DateFormatUtil.getDayInYear(curDate);
                     int curMonth = DateFormatUtil.getDayInMonth(curDate) + 1;
                     int curDay = DateFormatUtil.getDayInDay(curDate);
-                    Set<String> dateSet=new HashSet<>();
+                    Set<String> dateSet = new HashSet<>();
                     for (Object dayObj : klineArray) {
                         JSONArray dayAttr = (JSONArray) dayObj;
                         if (dayAttr != null && !dayAttr.isEmpty()) {
@@ -149,8 +149,8 @@ public class DailyBinanceAction extends BaseAction {
                             Double volume = dayAttr.getDouble(5);
                             Double turnover = dayAttr.getDouble(7);
                             Date timeDate = new Date(times);
-                            String ymdStr=DateFormatUtil.format(timeDate,DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
-                            if(dateSet.contains(ymdStr)){
+                            String ymdStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                            if (dateSet.contains(ymdStr)) {
                                 continue;
                             }
                             dateSet.add(ymdStr);
@@ -217,8 +217,8 @@ public class DailyBinanceAction extends BaseAction {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            endTime=0;
-        }finally {
+            endTime = 0;
+        } finally {
             System.out.println("============********============sleep start");
             TimeUnit.MILLISECONDS.sleep(500);//秒
             System.out.println("============********============sleep end");
@@ -292,7 +292,7 @@ public class DailyBinanceAction extends BaseAction {
                             params.put("interval", "1d");
                             long currentDayTime = DateFormatUtil.getCurrentDate(false).getTime();
                             long endTime = callApi(spotSymbol, 0l, params, sysTrade);
-                            while (endTime>0&&endTime < currentDayTime) {
+                            while (endTime > 0 && endTime < currentDayTime) {
                                 System.out.println(spotSymbol.getSymbol() + " while ");
                                 endTime = callApi(spotSymbol, endTime, params, sysTrade);
                             }
@@ -337,5 +337,7 @@ public class DailyBinanceAction extends BaseAction {
             }
         }
     }
+
+
 
 }
