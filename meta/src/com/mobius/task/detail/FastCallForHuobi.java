@@ -1,16 +1,16 @@
 package com.mobius.task.detail;
 
 
-import com.mobius.entity.spot.SpotDetailBtc;
-import com.mobius.entity.spot.SpotDetailEth;
-import com.mobius.entity.spot.SpotDetailUsdt;
+import com.mobius.entity.spot.SpotDetailBtcHuobi;
+import com.mobius.entity.spot.SpotDetailEthHuobi;
+import com.mobius.entity.spot.SpotDetailUsdtHuobi;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.spot.SpotDetailBtcStore;
-import com.mobius.providers.store.spot.SpotDetailEthStore;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
+import com.mobius.providers.store.spot.SpotDetailBtcHuobiStore;
+import com.mobius.providers.store.spot.SpotDetailEthHuobiStore;
+import com.mobius.providers.store.spot.SpotDetailUsdtHuobiStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
@@ -36,7 +36,7 @@ public class FastCallForHuobi {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailUsdtStore spotDetailUsdtStore = hsfServiceFactory.consumer(SpotDetailUsdtStore.class);
+                    SpotDetailUsdtHuobiStore spotDetailUsdtHuobiStore = hsfServiceFactory.consumer(SpotDetailUsdtHuobiStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://api.huobi.pro/market/detail/merged";
@@ -46,7 +46,7 @@ public class FastCallForHuobi {
                         if (root.containsKey("tick") && root.getString("status").equals("ok")) {
                             JSONObject tick = root.getJSONObject("tick");
                             Date date = new Date(root.getLong("ts"));
-                            SpotDetailUsdt detail = new SpotDetailUsdt();
+                            SpotDetailUsdtHuobi detail = new SpotDetailUsdtHuobi();
                             detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                             detail.setTradeId(sysTrade);
                             detail.setSymbolId(symbol);
@@ -81,7 +81,7 @@ public class FastCallForHuobi {
                             }
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
-                            spotDetailUsdtStore.save(detail, Persistent.SAVE);
+                            spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE);
 //                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
                         }
 
@@ -97,7 +97,7 @@ public class FastCallForHuobi {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailBtcStore detailBtcStore = hsfServiceFactory.consumer(SpotDetailBtcStore.class);
+                    SpotDetailBtcHuobiStore spotDetailBtcHuobiStore = hsfServiceFactory.consumer(SpotDetailBtcHuobiStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://api.huobi.pro/market/detail/merged";
@@ -107,7 +107,7 @@ public class FastCallForHuobi {
                         if (root.containsKey("tick") && root.getString("status").equals("ok")) {
                             JSONObject tick = root.getJSONObject("tick");
                             Date date = new Date(root.getLong("ts"));
-                            SpotDetailBtc detail = new SpotDetailBtc();
+                            SpotDetailBtcHuobi detail = new SpotDetailBtcHuobi();
                             detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                             detail.setTradeId(sysTrade);
                             detail.setSymbolId(symbol);
@@ -142,7 +142,7 @@ public class FastCallForHuobi {
                             }
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
-                            detailBtcStore.save(detail, Persistent.SAVE);
+                            spotDetailBtcHuobiStore.save(detail, Persistent.SAVE);
 //                            System.out.println("DetailTaskForHuobiBtc --- " + symbol.getSymbol() + " save success 1.");
                         }
 
@@ -158,7 +158,7 @@ public class FastCallForHuobi {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailEthStore spotDetailEthStore = hsfServiceFactory.consumer(SpotDetailEthStore.class);
+                    SpotDetailEthHuobiStore spotDetailEthHuobiStore = hsfServiceFactory.consumer(SpotDetailEthHuobiStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://api.huobi.pro/market/detail/merged";
@@ -168,7 +168,7 @@ public class FastCallForHuobi {
                         if (root.containsKey("tick") && root.getString("status").equals("ok")) {
                             JSONObject tick = root.getJSONObject("tick");
                             Date date = new Date(root.getLong("ts"));
-                            SpotDetailEth detail = new SpotDetailEth();
+                            SpotDetailEthHuobi detail = new SpotDetailEthHuobi();
                             detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                             detail.setTradeId(sysTrade);
                             detail.setSymbolId(symbol);
@@ -203,7 +203,7 @@ public class FastCallForHuobi {
                             }
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
-                            spotDetailEthStore.save(detail, Persistent.SAVE);
+                            spotDetailEthHuobiStore.save(detail, Persistent.SAVE);
 //                            System.out.println("DetailTaskForHuobiEth --- " + symbol.getSymbol() + " save success 1.");
                         }
 

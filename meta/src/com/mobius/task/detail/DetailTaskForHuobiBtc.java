@@ -4,7 +4,6 @@ import com.google.inject.Injector;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;

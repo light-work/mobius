@@ -1,19 +1,19 @@
 package com.mobius.task.detail;
 
 
-import com.mobius.entity.futures.FuturesDetailUsdt;
+import com.mobius.entity.futures.FuturesDetailUsdtOkex;
 import com.mobius.entity.futures.FuturesSymbol;
-import com.mobius.entity.spot.SpotDetailBtc;
-import com.mobius.entity.spot.SpotDetailEth;
-import com.mobius.entity.spot.SpotDetailUsdt;
+import com.mobius.entity.spot.SpotDetailBtcOkex;
+import com.mobius.entity.spot.SpotDetailEthOkex;
+import com.mobius.entity.spot.SpotDetailUsdtOkex;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.futures.FuturesDetailUsdtStore;
-import com.mobius.providers.store.spot.SpotDetailBtcStore;
-import com.mobius.providers.store.spot.SpotDetailEthStore;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
+import com.mobius.providers.store.futures.FuturesDetailUsdtOkexStore;
+import com.mobius.providers.store.spot.SpotDetailBtcOkexStore;
+import com.mobius.providers.store.spot.SpotDetailEthOkexStore;
+import com.mobius.providers.store.spot.SpotDetailUsdtOkexStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
@@ -104,7 +104,7 @@ public class FastCallForOkex {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailUsdtStore spotDetailUsdtStore = hsfServiceFactory.consumer(SpotDetailUsdtStore.class);
+                    SpotDetailUsdtOkexStore spotDetailUsdtOkexStore = hsfServiceFactory.consumer(SpotDetailUsdtOkexStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://www.okex.com/api/v1/ticker.do";
@@ -113,9 +113,9 @@ public class FastCallForOkex {
                         JSONObject root = JSONObject.fromObject(resultData);
                         if (root.containsKey("ticker")) {
                             JSONObject tick = root.getJSONObject("ticker");
-                            SpotDetailUsdt detail = new SpotDetailUsdt();
+                            SpotDetailUsdtOkex detail = new SpotDetailUsdtOkex();
                             setValue(detail, tick, sysTrade, tradingTime, symbol);
-                            spotDetailUsdtStore.save(detail, Persistent.SAVE);
+                            spotDetailUsdtOkexStore.save(detail, Persistent.SAVE);
                             System.out.println("DetailTaskForOkexUsdt --- " + symbol.getSymbol() + " save success.");
                         }
                     }
@@ -130,7 +130,7 @@ public class FastCallForOkex {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailBtcStore spotDetailBtcStore = hsfServiceFactory.consumer(SpotDetailBtcStore.class);
+                    SpotDetailBtcOkexStore spotDetailBtcOkexStore = hsfServiceFactory.consumer(SpotDetailBtcOkexStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://www.okex.com/api/v1/ticker.do";
@@ -139,9 +139,9 @@ public class FastCallForOkex {
                         JSONObject root = JSONObject.fromObject(resultData);
                         if (root.containsKey("ticker")) {
                             JSONObject tick = root.getJSONObject("ticker");
-                            SpotDetailBtc detail = new SpotDetailBtc();
+                            SpotDetailBtcOkex detail = new SpotDetailBtcOkex();
                             setValue(detail, tick, sysTrade, tradingTime, symbol);
-                            spotDetailBtcStore.save(detail, Persistent.SAVE);
+                            spotDetailBtcOkexStore.save(detail, Persistent.SAVE);
                             System.out.println("DetailTaskForOkexBtc --- " + symbol.getSymbol() + " save success.");
                         }
                     }
@@ -156,7 +156,7 @@ public class FastCallForOkex {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    SpotDetailEthStore spotDetailEthStore = hsfServiceFactory.consumer(SpotDetailEthStore.class);
+                    SpotDetailEthOkexStore spotDetailEthOkexStore = hsfServiceFactory.consumer(SpotDetailEthOkexStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     String action = "https://www.okex.com/api/v1/ticker.do";
@@ -165,9 +165,9 @@ public class FastCallForOkex {
                         JSONObject root = JSONObject.fromObject(resultData);
                         if (root.containsKey("ticker")) {
                             JSONObject tick = root.getJSONObject("ticker");
-                            SpotDetailEth detail = new SpotDetailEth();
+                            SpotDetailEthOkex detail = new SpotDetailEthOkex();
                             setValue(detail, tick, sysTrade, tradingTime, symbol);
-                            spotDetailEthStore.save(detail, Persistent.SAVE);
+                            spotDetailEthOkexStore.save(detail, Persistent.SAVE);
                             System.out.println("DetailTaskForOkexEth --- " + symbol.getSymbol() + " save success.");
                         }
                     }
@@ -183,7 +183,7 @@ public class FastCallForOkex {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
-                    FuturesDetailUsdtStore futuresDetailUsdtStore = hsfServiceFactory.consumer(FuturesDetailUsdtStore.class);
+                    FuturesDetailUsdtOkexStore futuresDetailUsdtOkexStore = hsfServiceFactory.consumer(FuturesDetailUsdtOkexStore.class);
                     Map<String, String> params = new HashMap<>();
                     params.put("symbol", symbol.getSymbol());
                     params.put("contract_type", symbol.getSymbolDesc());
@@ -193,10 +193,10 @@ public class FastCallForOkex {
                         JSONObject root = JSONObject.fromObject(resultData);
                         if (root.containsKey("ticker")) {
                             JSONObject tick = root.getJSONObject("ticker");
-                            FuturesDetailUsdt detail = new FuturesDetailUsdt();
+                            FuturesDetailUsdtOkex detail = new FuturesDetailUsdtOkex();
                             setValue(detail, tick, sysTrade, tradingTime, null);
                             detail.setSymbolId(symbol);
-                            futuresDetailUsdtStore.save(detail, Persistent.SAVE);
+                            futuresDetailUsdtOkexStore.save(detail, Persistent.SAVE);
                             System.out.println("DetailTaskForOkexFuturesUsdt --- " + symbol.getSymbol() + " save success.");
                         }
                     }
