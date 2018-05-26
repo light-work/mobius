@@ -135,6 +135,41 @@ public class PlatformLoader {
                     .withIdentity("triggerDetailTaskForHuobiEth", "groupDetailTaskForHuobiEth")
                     .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                     .build();
+
+
+            //okex
+            JobDetail jobDetailTaskForOKexSpotUsdt = newJob(DetailTaskForOkexSpotUsdt.class).withIdentity("detailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForOKexSpotUsdt = newTrigger()
+                    .withIdentity("triggerDetailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+
+            JobDetail jobDetailTaskForOKexSpotBtc = newJob(DetailTaskForOkexSpotBtc.class).withIdentity("detailTaskForOKexSpotBtc", "groupDetailTaskForOKexSpotBtc")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForOKexSpotBtc = newTrigger()
+                    .withIdentity("triggerDetailTaskForOKexSpotBtc", "groupDetailTaskForOKexSpotBtc")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+            JobDetail jobDetailTaskForOKexSpotEth = newJob(DetailTaskForOkexSpotEth.class).withIdentity("detailTaskForOKexEth", "groupDetailTaskForOKexSpotEth")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForOKexSpotEth = newTrigger()
+                    .withIdentity("triggerDetailTaskForOKexSpotEth", "groupDetailTaskForOKexSpotEth")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+            JobDetail jobDetailTaskForOKexFuturesUsdt = newJob(DetailTaskForOkexFuturesUsdt.class).withIdentity("detailTaskForOKexFuturesUsdt", "groupDetailTaskForOKexFuturesUsdt")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForOKexFuturesUsdt = newTrigger()
+                    .withIdentity("triggerDetailTaskForOKexFuturesUsdt", "groupDetailTaskForOKexFuturesUsdt")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+
+
+
             /*****************Daily*******************/
 
 //
@@ -190,7 +225,11 @@ public class PlatformLoader {
 //            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
 //            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
 
-
+//
+//            scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
+//            scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
+//            scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
+//            scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
 
 
 
