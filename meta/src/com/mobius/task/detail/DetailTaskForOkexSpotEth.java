@@ -4,7 +4,6 @@ import com.google.inject.Injector;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -23,10 +22,10 @@ import java.util.List;
 
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-public class DetailTaskForHuobiEth implements Job {
+public class DetailTaskForOkexSpotEth implements Job {
 
 
-    private String tradeSign = "HUOBIPRO";
+    private String tradeSign = "OKEX";
 
 
     private String market = "eth";
@@ -41,7 +40,7 @@ public class DetailTaskForHuobiEth implements Job {
      * scheduler can instantiate the class whenever it needs.
      * </p>
      */
-    public DetailTaskForHuobiEth() {
+    public DetailTaskForOkexSpotEth() {
     }
 
     /**
@@ -67,7 +66,7 @@ public class DetailTaskForHuobiEth implements Job {
                     if (sysIpServerStore != null) {
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                         if (sysIpServer != null) {
-                            System.out.println("DailyTaskForHuobiEth " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
+                            System.out.println("DailyTaskForOKexSpotEth " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
                                     + " 当前ip" + localIP + "获取market " + market +
                                     " serverNo" + sysIpServer.getServerNo() + "的币");
 
@@ -82,7 +81,7 @@ public class DetailTaskForHuobiEth implements Job {
                                         List<SpotSymbol> spotSymbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
                                         if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
                                             for (SpotSymbol symbol : spotSymbolList) {
-                                                FastCallForHuobi.callEth(symbol, hsfServiceFactory, sysTrade, current);
+                                                FastCallForOkex.callSpotEth(symbol, hsfServiceFactory, sysTrade, current);
                                             }
                                         }
                                     }

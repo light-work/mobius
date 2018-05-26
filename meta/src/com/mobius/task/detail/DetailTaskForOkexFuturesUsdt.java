@@ -1,10 +1,11 @@
 package com.mobius.task.detail;
 
 import com.google.inject.Injector;
+import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
+import com.mobius.providers.store.futures.FuturesSymbolStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -23,13 +24,13 @@ import java.util.List;
 
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-public class DetailTaskForHuobiEth implements Job {
+public class DetailTaskForOkexFuturesUsdt implements Job {
 
 
-    private String tradeSign = "HUOBIPRO";
+    private String tradeSign = "OKEX";
 
 
-    private String market = "eth";
+    private String market = "usdt";
 
 
     /**
@@ -41,7 +42,7 @@ public class DetailTaskForHuobiEth implements Job {
      * scheduler can instantiate the class whenever it needs.
      * </p>
      */
-    public DetailTaskForHuobiEth() {
+    public DetailTaskForOkexFuturesUsdt() {
     }
 
     /**
@@ -67,7 +68,7 @@ public class DetailTaskForHuobiEth implements Job {
                     if (sysIpServerStore != null) {
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                         if (sysIpServer != null) {
-                            System.out.println("DailyTaskForHuobiEth " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
+                            System.out.println("DailyTaskForOKexFuturesUsdt " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
                                     + " 当前ip" + localIP + "获取market " + market +
                                     " serverNo" + sysIpServer.getServerNo() + "的币");
 
@@ -77,12 +78,12 @@ public class DetailTaskForHuobiEth implements Job {
                             if (sysTradeStore != null) {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
-                                    SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                                    FuturesSymbolStore spotSymbolStore = hsfServiceFactory.consumer(FuturesSymbolStore.class);
                                     if (spotSymbolStore != null) {
-                                        List<SpotSymbol> spotSymbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
+                                        List<FuturesSymbol> spotSymbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
                                         if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
-                                            for (SpotSymbol symbol : spotSymbolList) {
-                                                FastCallForHuobi.callEth(symbol, hsfServiceFactory, sysTrade, current);
+                                            for (FuturesSymbol symbol : spotSymbolList) {
+                                                FastCallForOkex.callFuturesUsdt(symbol, hsfServiceFactory, sysTrade, current);
                                             }
                                         }
                                     }
