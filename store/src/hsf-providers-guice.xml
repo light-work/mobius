@@ -17,6 +17,13 @@
                   enableTXC="true">
         </provider>
 
+
+        <service id="sysCoinStore" class="com.mobius.storeImpl.sys.SysCoinStoreImpl"/>
+        <provider id="sysCoinStoreProvider"
+                  interface="com.mobius.providers.store.sys.SysCoinStore"
+                  ref="sysCoinStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
         <!-- package  futures -->
 
         <service id="futuresSymbolStore" class="com.mobius.storeImpl.futures.FuturesSymbolStoreImpl"/>
