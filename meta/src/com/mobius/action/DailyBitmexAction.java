@@ -7,6 +7,8 @@ import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
+import com.mobius.providers.store.futures.FuturesDailyBtcStore;
+import com.mobius.providers.store.futures.FuturesDailyEthStore;
 import com.mobius.providers.store.futures.FuturesDailyUsdtStore;
 import com.mobius.providers.store.futures.FuturesSymbolStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -169,5 +171,94 @@ public class DailyBitmexAction extends BaseAction {
         }
 
         return null;
+    }
+
+
+
+    public void buildDaily() throws Exception {
+        SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+        if (sysTradeStore != null) {
+            SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+            if (sysTrade != null) {
+                List<String> marketList = new ArrayList<>();
+                marketList.add("usdt");
+                FuturesSymbolStore futuresSymbolStore = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+                FuturesDailyUsdtStore futuresDailyUsdtStore = hsfServiceFactory.consumer(FuturesDailyUsdtStore.class);
+                FuturesDailyBtcStore futuresDailyBtcStore = hsfServiceFactory.consumer(FuturesDailyBtcStore.class);
+                FuturesDailyEthStore futuresDailyEthStore = hsfServiceFactory.consumer(FuturesDailyEthStore.class);
+                if (futuresSymbolStore != null && futuresDailyUsdtStore != null && futuresDailyBtcStore != null && futuresDailyEthStore != null) {
+                    for (String market : marketList) {
+                        List<FuturesSymbol> symbolList = futuresSymbolStore.getListByTradeMarket(sysTrade.getId(), market);
+                        if (symbolList != null && !symbolList.isEmpty()) {
+                            Map<String, String> params = new HashMap<>();
+                            Date d = DateFormatUtil.getCurrentDate(false);
+                            d = DateFormatUtil.addDay(d, -1);//减去一天
+                            params.put("binSize", "1d");//按天
+                            params.put("partial", "false");
+                            params.put("symbol", market);
+                            params.put("count", "1");//只返回前一天
+                            params.put("reverse", "false");//旧的在前面
+                            params.put("startTime", DateFormatUtil.format(d, DateFormatUtil.YMDHM_PATTERN));
+                            for (FuturesSymbol futuresSymbol : symbolList) {
+                                params.put("symbol", futuresSymbol.getSymbol());
+                                try {
+                                    String resultStr = OKHttpUtil.get("https://www.bitmex.com/api/v1/trade/bucketed", params);
+                                    if (StringUtils.isNotBlank(resultStr)) {
+                                        JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                        if (klineArray != null && !klineArray.isEmpty()) {
+                                            List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
+                                            JSONObject dayAttr = klineArray.getJSONObject(0);
+                                            String timesStr = dayAttr.getString("timestamp");
+                                            Date timeDate = Utils.parseDateForZ(timesStr);
+                                            Double lastPrice = dayAttr.getDouble("close");
+                                            Double volume = dayAttr.getDouble("volume");
+                                            Double turnover = dayAttr.getDouble("turnover");
+                                            String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                            Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+
+                                            if (market.equals("usdt")) {
+                                                Integer count = futuresDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                        futuresSymbol.getId(), tradingDate);
+                                                if (count == null) {
+                                                    count = 0;
+                                                } else {
+                                                    System.out.println(dateStr + " " + futuresSymbol.getSymbol() + " count >1");
+                                                }
+                                                if (count.intValue() == 0) {
+                                                    FuturesDailyUsdt futuresDailyUsdt = new FuturesDailyUsdt();
+                                                    futuresDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                    futuresDailyUsdt.setTradeId(sysTrade);
+                                                    futuresDailyUsdt.setSymbolId(futuresSymbol);
+                                                    futuresDailyUsdt.setTradingDay(timeDate);
+                                                    futuresDailyUsdt.setLastPrice(lastPrice);
+                                                    futuresDailyUsdt.setVolume(volume);
+                                                    futuresDailyUsdt.setTurnover(turnover);
+
+                                                    Utils.bind(futuresDailyUsdt,"task");
+
+                                                    dailyUsdtList.add(futuresDailyUsdt);
+                                                }
+                                            }
+                                            if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
+                                                futuresDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
+                                                System.out.println(futuresSymbol.getSymbol() + " save success =====task======" + dailyUsdtList.size());
+
+                                            }
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }finally {
+                                    System.out.println("============********============sleep start" );
+                                    TimeUnit.SECONDS.sleep(2);//秒
+                                    System.out.println("============********============sleep end" );
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
