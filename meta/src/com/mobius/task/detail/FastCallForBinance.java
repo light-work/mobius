@@ -93,7 +93,7 @@ public class FastCallForBinance {
                                             Utils.bind(spotDetailBtc,"task");
                                             spotDetailBtcStore.save(spotDetailBtc,Persistent.SAVE);
                                             //save
-                                        } else if (market.equals("etc")) {
+                                        } else if (market.equals("eth")) {
                                             //save
                                             SpotDetailEth spotDetailEth = new SpotDetailEth();
                                             spotDetailEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));

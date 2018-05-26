@@ -9,10 +9,7 @@ import com.mobius.task.daily.DailyTaskForBinance;
 import com.mobius.task.daily.DailyTaskForBitmex;
 import com.mobius.task.daily.DailyTaskForHuobi;
 import com.mobius.task.daily.DailyTaskForOkex;
-import com.mobius.task.detail.DetailTaskForBinanceUsdt;
-import com.mobius.task.detail.DetailTaskForHuobiBtc;
-import com.mobius.task.detail.DetailTaskForHuobiEth;
-import com.mobius.task.detail.DetailTaskForHuobiUsdt;
+import com.mobius.task.detail.*;
 import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.StringUtils;
@@ -93,18 +90,26 @@ public class PlatformLoader {
             System.out.println("detailInteval="+detailInteval);
 
 
-            JobDetail jobTaskDemo = newJob(TaskDemo.class).withIdentity("taskDemo", "groupTaskDemo")
-                    .usingJobData(jobDataMap).build();
-            CronTrigger triggerTaskDemo = newTrigger()
-                    .withIdentity("triggerTaskDemo", "groupTaskDemo")
-                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                    .build();
 
 
             JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
                     .usingJobData(jobDataMap).build();
             CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
                     .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+            JobDetail jobDetailTaskForBinanceBtc = newJob(DetailTaskForBinanceBtc.class).withIdentity("detailTaskForBinanceBtc", "groupDetailTaskForBinanceBtc")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForBinanceBtc = newTrigger()
+                    .withIdentity("triggerDetailTaskForBinanceBtc", "groupDetailTaskForBinanceBtc")
+                    .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                    .build();
+
+            JobDetail jobDetailTaskForBinanceEth = newJob(DetailTaskForBinanceEth.class).withIdentity("detailTaskForBinanceEth", "groupDetailTaskForBinanceEth")
+                    .usingJobData(jobDataMap).build();
+            CronTrigger triggerDetailTaskForBinanceEth = newTrigger()
+                    .withIdentity("triggerDetailTaskForBinanceEth", "groupDetailTaskForBinanceEth")
                     .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                     .build();
 
@@ -173,11 +178,17 @@ public class PlatformLoader {
 //
 //
 //
-            scheduler.scheduleJob(jobTaskDemo, triggerTaskDemo);
             scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
-            scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
-            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
+            scheduler.scheduleJob(jobDetailTaskForBinanceBtc, triggerDetailTaskForBinanceBtc);
+            scheduler.scheduleJob(jobDetailTaskForBinanceEth, triggerDetailTaskForBinanceEth);
+
+
+
+
+//
+//            scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
+//            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
+//            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
 
 
 
