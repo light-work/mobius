@@ -2,17 +2,16 @@ package com.mobius.task.detail;
 
 
 import com.mobius.Utils;
-import com.mobius.entity.spot.SpotDetailBtc;
-import com.mobius.entity.spot.SpotDetailEth;
-import com.mobius.entity.spot.SpotDetailUsdt;
+import com.mobius.entity.spot.SpotDetailBtcBinance;
+import com.mobius.entity.spot.SpotDetailEthBinance;
+import com.mobius.entity.spot.SpotDetailUsdtBinance;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.spot.SpotDetailBtcStore;
-import com.mobius.providers.store.spot.SpotDetailEthStore;
-import com.mobius.providers.store.spot.SpotDetailUsdtStore;
-import com.mobius.providers.store.spot.SpotSymbolStore;
+import com.mobius.providers.store.spot.SpotDetailBtcBinanceStore;
+import com.mobius.providers.store.spot.SpotDetailEthBinanceStore;
+import com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.StringUtils;
@@ -40,10 +39,10 @@ public class FastCallForBinance {
                 try {
                     String market = spotSymbol.getMarket();
                     if (StringUtils.isNotBlank(market)) {
-                        SpotDetailUsdtStore spotDetailUsdtStore = hsfServiceFactory.consumer(SpotDetailUsdtStore.class);
-                        SpotDetailEthStore spotDetailEthStore = hsfServiceFactory.consumer(SpotDetailEthStore.class);
-                        SpotDetailBtcStore spotDetailBtcStore = hsfServiceFactory.consumer(SpotDetailBtcStore.class);
-                        if (spotDetailBtcStore != null && spotDetailUsdtStore != null && spotDetailEthStore != null) {
+                        SpotDetailUsdtBinanceStore spotDetailUsdtBinanceStore = hsfServiceFactory.consumer(SpotDetailUsdtBinanceStore.class);
+                        SpotDetailEthBinanceStore spotDetailEthBinanceStore = hsfServiceFactory.consumer(SpotDetailEthBinanceStore.class);
+                        SpotDetailBtcBinanceStore spotDetailBtcBinanceStore = hsfServiceFactory.consumer(SpotDetailBtcBinanceStore.class);
+                        if (spotDetailBtcBinanceStore != null && spotDetailUsdtBinanceStore != null && spotDetailEthBinanceStore != null) {
                             //todo 调用api 保存 都在这里写
                             Map<String, String> params = new HashMap<>();
                             params.put("symbol",spotSymbol.getSymbol());
@@ -60,56 +59,56 @@ public class FastCallForBinance {
                                         Double volume=jsonObject.getDouble("volume");
                                         Double quoteVolume=jsonObject.getDouble("quoteVolume");
                                         if (market.equals("usdt")) {
-                                            SpotDetailUsdt spotDetailUsdt = new SpotDetailUsdt();
-                                            spotDetailUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                            spotDetailUsdt.setTradeId(sysTrade);
-                                            spotDetailUsdt.setSymbolId(spotSymbol);
-                                            spotDetailUsdt.setTradingDay(tradingDate);
-                                            spotDetailUsdt.setTradingTime(tradingDate);
-                                            spotDetailUsdt.setPrice(lastPrice);
-                                            spotDetailUsdt.setVolume(volume);
-                                            spotDetailUsdt.setTurnover(quoteVolume);
-                                            spotDetailUsdt.setBidPrice(bidPrice);
-                                            spotDetailUsdt.setBidVolume(bidQty);
-                                            spotDetailUsdt.setAskPrice(askPrice);
-                                            spotDetailUsdt.setAskVolume(askQty);
-                                            Utils.bind(spotDetailUsdt,"task");
-                                            spotDetailUsdtStore.save(spotDetailUsdt,Persistent.SAVE);
+                                            SpotDetailUsdtBinance spotDetailUsdtBinance = new SpotDetailUsdtBinance();
+                                            spotDetailUsdtBinance.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                            spotDetailUsdtBinance.setTradeId(sysTrade);
+                                            spotDetailUsdtBinance.setSymbolId(spotSymbol);
+                                            spotDetailUsdtBinance.setTradingDay(tradingDate);
+                                            spotDetailUsdtBinance.setTradingTime(tradingDate);
+                                            spotDetailUsdtBinance.setPrice(lastPrice);
+                                            spotDetailUsdtBinance.setVolume(volume);
+                                            spotDetailUsdtBinance.setTurnover(quoteVolume);
+                                            spotDetailUsdtBinance.setBidPrice(bidPrice);
+                                            spotDetailUsdtBinance.setBidVolume(bidQty);
+                                            spotDetailUsdtBinance.setAskPrice(askPrice);
+                                            spotDetailUsdtBinance.setAskVolume(askQty);
+                                            Utils.bind(spotDetailUsdtBinance,"task");
+                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE);
                                             //save
                                         } else if (market.equals("btc")) {
-                                            SpotDetailBtc spotDetailBtc = new SpotDetailBtc();
-                                            spotDetailBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                            spotDetailBtc.setTradeId(sysTrade);
-                                            spotDetailBtc.setSymbolId(spotSymbol);
-                                            spotDetailBtc.setTradingDay(tradingDate);
-                                            spotDetailBtc.setTradingTime(tradingDate);
-                                            spotDetailBtc.setPrice(lastPrice);
-                                            spotDetailBtc.setVolume(volume);
-                                            spotDetailBtc.setTurnover(quoteVolume);
-                                            spotDetailBtc.setBidPrice(bidPrice);
-                                            spotDetailBtc.setBidVolume(bidQty);
-                                            spotDetailBtc.setAskPrice(askPrice);
-                                            spotDetailBtc.setAskVolume(askQty);
-                                            Utils.bind(spotDetailBtc,"task");
-                                            spotDetailBtcStore.save(spotDetailBtc,Persistent.SAVE);
+                                            SpotDetailBtcBinance spotDetailBtcBinance = new SpotDetailBtcBinance();
+                                            spotDetailBtcBinance.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                            spotDetailBtcBinance.setTradeId(sysTrade);
+                                            spotDetailBtcBinance.setSymbolId(spotSymbol);
+                                            spotDetailBtcBinance.setTradingDay(tradingDate);
+                                            spotDetailBtcBinance.setTradingTime(tradingDate);
+                                            spotDetailBtcBinance.setPrice(lastPrice);
+                                            spotDetailBtcBinance.setVolume(volume);
+                                            spotDetailBtcBinance.setTurnover(quoteVolume);
+                                            spotDetailBtcBinance.setBidPrice(bidPrice);
+                                            spotDetailBtcBinance.setBidVolume(bidQty);
+                                            spotDetailBtcBinance.setAskPrice(askPrice);
+                                            spotDetailBtcBinance.setAskVolume(askQty);
+                                            Utils.bind(spotDetailBtcBinance,"task");
+                                            spotDetailBtcBinanceStore.save(spotDetailBtcBinance,Persistent.SAVE);
                                             //save
                                         } else if (market.equals("eth")) {
                                             //save
-                                            SpotDetailEth spotDetailEth = new SpotDetailEth();
-                                            spotDetailEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                            spotDetailEth.setTradeId(sysTrade);
-                                            spotDetailEth.setSymbolId(spotSymbol);
-                                            spotDetailEth.setTradingDay(tradingDate);
-                                            spotDetailEth.setTradingTime(tradingDate);
-                                            spotDetailEth.setPrice(lastPrice);
-                                            spotDetailEth.setVolume(volume);
-                                            spotDetailEth.setTurnover(quoteVolume);
-                                            spotDetailEth.setBidPrice(bidPrice);
-                                            spotDetailEth.setBidVolume(bidQty);
-                                            spotDetailEth.setAskPrice(askPrice);
-                                            spotDetailEth.setAskVolume(askQty);
-                                            Utils.bind(spotDetailEth,"task");
-                                            spotDetailEthStore.save(spotDetailEth,Persistent.SAVE);
+                                            SpotDetailEthBinance spotDetailBinanceEth = new SpotDetailEthBinance();
+                                            spotDetailBinanceEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                            spotDetailBinanceEth.setTradeId(sysTrade);
+                                            spotDetailBinanceEth.setSymbolId(spotSymbol);
+                                            spotDetailBinanceEth.setTradingDay(tradingDate);
+                                            spotDetailBinanceEth.setTradingTime(tradingDate);
+                                            spotDetailBinanceEth.setPrice(lastPrice);
+                                            spotDetailBinanceEth.setVolume(volume);
+                                            spotDetailBinanceEth.setTurnover(quoteVolume);
+                                            spotDetailBinanceEth.setBidPrice(bidPrice);
+                                            spotDetailBinanceEth.setBidVolume(bidQty);
+                                            spotDetailBinanceEth.setAskPrice(askPrice);
+                                            spotDetailBinanceEth.setAskVolume(askQty);
+                                            Utils.bind(spotDetailBinanceEth,"task");
+                                            spotDetailEthBinanceStore.save(spotDetailBinanceEth,Persistent.SAVE);
                                         }
                                     }
                                 }
