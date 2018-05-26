@@ -30,22 +30,31 @@
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
-        <consumer id="futuresDetailUsdtStoreConsumer"
-                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtStore"
+        
+        
+        <consumer id="futuresDetailUsdtOkexStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtOkexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
 
-        <consumer id="futuresDetailBtcStoreConsumer"
-                  interface="com.mobius.providers.store.futures.FuturesDetailBtcStore"
+        <consumer id="futuresDetailBtcOkexStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailBtcOkexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
 
-        <consumer id="futuresDetailEthStoreConsumer"
-                  interface="com.mobius.providers.store.futures.FuturesDetailEthStore"
+        <consumer id="futuresDetailEthOkexStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailEthOkexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+
+        <consumer id="futuresDetailUsdtBitmexStoreConsumer"
+                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtBitmexStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+        
 
         <!-- ************* spot store *********** -->
         <consumer id="spotSymbolStoreConsumer" interface="com.mobius.providers.store.spot.SpotSymbolStore"
@@ -66,17 +75,68 @@
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
-        <consumer id="spotDetailUsdtStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtStore"
+        
+        
+        <consumer id="spotDetailUsdtOkexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtOkexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
 
-        <consumer id="spotDetailBtcStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcStore"
+        <consumer id="spotDetailBtcOkexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcOkexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
 
 
-        <consumer id="spotDetailEthStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthStore"
+        <consumer id="spotDetailEthOkexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthOkexStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+        
+        
+
+        <consumer id="spotDetailUsdtHuobiStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtHuobiStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailBtcHuobiStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcHuobiStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailEthHuobiStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthHuobiStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        
+        
+
+        <consumer id="spotDetailUsdtBinanceStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailBtcBinanceStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcBinanceStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailEthBinanceStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthBinanceStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        
+
+        <consumer id="spotDetailUsdtBitfinexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailUsdtBitfinexStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailBtcBitfinexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailBtcBitfinexStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+
+        <consumer id="spotDetailEthBitfinexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthBitfinexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
     </group>

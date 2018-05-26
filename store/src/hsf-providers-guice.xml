@@ -47,27 +47,37 @@
                   enableTXC="true">
         </provider>
 
-        <service id="futuresDetailUsdtStore" class="com.mobius.storeImpl.futures.FuturesDetailUsdtStoreImpl"/>
-        <provider id="futuresDetailUsdtStoreProvider"
-                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtStore"
-                  ref="futuresDetailUsdtStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        
+        <service id="futuresDetailUsdtOkexStore" class="com.mobius.storeImpl.futures.FuturesDetailUsdtOkexStoreImpl"/>
+        <provider id="futuresDetailUsdtOkexStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtOkexStore"
+                  ref="futuresDetailUsdtOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 
-        <service id="futuresDetailBtcStore" class="com.mobius.storeImpl.futures.FuturesDetailBtcStoreImpl"/>
-        <provider id="futuresDetailBtcStoreProvider"
-                  interface="com.mobius.providers.store.futures.FuturesDetailBtcStore"
-                  ref="futuresDetailBtcStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="futuresDetailBtcOkexStore" class="com.mobius.storeImpl.futures.FuturesDetailBtcOkexStoreImpl"/>
+        <provider id="futuresDetailBtcOkexStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDetailBtcOkexStore"
+                  ref="futuresDetailBtcOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 
-        <service id="futuresDetailEthStore" class="com.mobius.storeImpl.futures.FuturesDetailEthStoreImpl"/>
-        <provider id="futuresDetailEthStoreProvider"
-                  interface="com.mobius.providers.store.futures.FuturesDetailEthStore"
-                  ref="futuresDetailEthStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="futuresDetailEthOkexStore" class="com.mobius.storeImpl.futures.FuturesDetailEthOkexStoreImpl"/>
+        <provider id="futuresDetailEthOkexStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDetailEthOkexStore"
+                  ref="futuresDetailEthOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 
+
+        <service id="futuresDetailUsdtBitmexStore" class="com.mobius.storeImpl.futures.FuturesDetailUsdtBitmexStoreImpl"/>
+        <provider id="futuresDetailUsdtBitmexStoreProvider"
+                  interface="com.mobius.providers.store.futures.FuturesDetailUsdtBitmexStore"
+                  ref="futuresDetailUsdtBitmexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+        
+        
 
         <!-- package  spot -->
         <service id="spotSymbolStore" class="com.mobius.storeImpl.spot.SpotSymbolStoreImpl"/>
@@ -99,24 +109,92 @@
         </provider>
 
 
-        <service id="spotDetailUsdtStore" class="com.mobius.storeImpl.spot.SpotDetailUsdtStoreImpl"/>
-        <provider id="spotDetailUsdtStoreProvider"
-                  interface="com.mobius.providers.store.spot.SpotDetailUsdtStore"
-                  ref="spotDetailUsdtStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="spotDetailUsdtOkexStore" class="com.mobius.storeImpl.spot.SpotDetailUsdtOkexStoreImpl"/>
+        <provider id="spotDetailUsdtOkexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailUsdtOkexStore"
+                  ref="spotDetailUsdtOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 
-        <service id="spotDetailBtcStore" class="com.mobius.storeImpl.spot.SpotDetailBtcStoreImpl"/>
-        <provider id="spotDetailBtcStoreProvider"
-                  interface="com.mobius.providers.store.spot.SpotDetailBtcStore"
-                  ref="spotDetailBtcStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="spotDetailBtcOkexStore" class="com.mobius.storeImpl.spot.SpotDetailBtcOkexStoreImpl"/>
+        <provider id="spotDetailBtcOkexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailBtcOkexStore"
+                  ref="spotDetailBtcOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 
-        <service id="spotDetailEthStore" class="com.mobius.storeImpl.spot.SpotDetailEthStoreImpl"/>
-        <provider id="spotDetailEthStoreProvider"
-                  interface="com.mobius.providers.store.spot.SpotDetailEthStore"
-                  ref="spotDetailEthStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="spotDetailEthOkexStore" class="com.mobius.storeImpl.spot.SpotDetailEthOkexStoreImpl"/>
+        <provider id="spotDetailEthOkexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailEthOkexStore"
+                  ref="spotDetailEthOkexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+
+        <service id="spotDetailUsdtHuobiStore" class="com.mobius.storeImpl.spot.SpotDetailUsdtHuobiStoreImpl"/>
+        <provider id="spotDetailUsdtHuobiStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailUsdtHuobiStore"
+                  ref="spotDetailUsdtHuobiStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailBtcHuobiStore" class="com.mobius.storeImpl.spot.SpotDetailBtcHuobiStoreImpl"/>
+        <provider id="spotDetailBtcHuobiStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailBtcHuobiStore"
+                  ref="spotDetailBtcHuobiStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailEthHuobiStore" class="com.mobius.storeImpl.spot.SpotDetailEthHuobiStoreImpl"/>
+        <provider id="spotDetailEthHuobiStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailEthHuobiStore"
+                  ref="spotDetailEthHuobiStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+        <service id="spotDetailUsdtBinanceStore" class="com.mobius.storeImpl.spot.SpotDetailUsdtBinanceStoreImpl"/>
+        <provider id="spotDetailUsdtBinanceStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore"
+                  ref="spotDetailUsdtBinanceStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailBtcBinanceStore" class="com.mobius.storeImpl.spot.SpotDetailBtcBinanceStoreImpl"/>
+        <provider id="spotDetailBtcBinanceStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailBtcBinanceStore"
+                  ref="spotDetailBtcBinanceStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailEthBinanceStore" class="com.mobius.storeImpl.spot.SpotDetailEthBinanceStoreImpl"/>
+        <provider id="spotDetailEthBinanceStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailEthBinanceStore"
+                  ref="spotDetailEthBinanceStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+
+        <service id="spotDetailUsdtBitfinexStore" class="com.mobius.storeImpl.spot.SpotDetailUsdtBitfinexStoreImpl"/>
+        <provider id="spotDetailUsdtBitfinexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailUsdtBitfinexStore"
+                  ref="spotDetailUsdtBitfinexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailBtcBitfinexStore" class="com.mobius.storeImpl.spot.SpotDetailBtcBitfinexStoreImpl"/>
+        <provider id="spotDetailBtcBitfinexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailBtcBitfinexStore"
+                  ref="spotDetailBtcBitfinexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="spotDetailEthBitfinexStore" class="com.mobius.storeImpl.spot.SpotDetailEthBitfinexStoreImpl"/>
+        <provider id="spotDetailEthBitfinexStoreProvider"
+                  interface="com.mobius.providers.store.spot.SpotDetailEthBitfinexStore"
+                  ref="spotDetailEthBitfinexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
     </group>
