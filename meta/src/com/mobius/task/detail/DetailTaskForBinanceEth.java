@@ -18,29 +18,19 @@
 package com.mobius.task.detail;
 
 import com.google.inject.Injector;
-import com.mobius.entity.spot.SpotDailyBtc;
-import com.mobius.entity.spot.SpotDailyEth;
-import com.mobius.entity.spot.SpotDailyUsdt;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
-import com.mobius.entity.utils.DrdsIDUtils;
-import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.store.spot.SpotDailyBtcStore;
-import com.mobius.providers.store.spot.SpotDailyEthStore;
-import com.mobius.providers.store.spot.SpotDailyUsdtStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;
-import net.sf.json.JSONArray;
-import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
-import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -51,12 +41,12 @@ import java.util.*;
  */
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-public class DetailTaskForBinanceUsdt implements Job {
+public class DetailTaskForBinanceEth implements Job {
 
 
     private String tradeSign = "BINANCE";
 
-    private String market = "usdt";
+    private String market = "eth";
 
 
     /**
@@ -68,7 +58,7 @@ public class DetailTaskForBinanceUsdt implements Job {
      * scheduler can instantiate the class whenever it needs.
      * </p>
      */
-    public DetailTaskForBinanceUsdt() {
+    public DetailTaskForBinanceEth() {
     }
 
     /**

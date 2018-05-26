@@ -197,7 +197,7 @@ public class DailyBitmexAction extends BaseAction {
                             params.put("partial", "false");
                             params.put("symbol", market);
                             params.put("count", "1");//只返回前一天
-                            params.put("reverse", "false");//旧的在前面
+                            params.put("reverse", "true");//旧的在前面
                             params.put("startTime", DateFormatUtil.format(d, DateFormatUtil.YMDHM_PATTERN));
                             for (FuturesSymbol futuresSymbol : symbolList) {
                                 params.put("symbol", futuresSymbol.getSymbol());
