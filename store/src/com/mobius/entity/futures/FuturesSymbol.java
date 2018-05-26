@@ -1,5 +1,6 @@
 package com.mobius.entity.futures;
 
+import com.mobius.entity.sys.SysCoin;
 import com.mobius.entity.sys.SysTrade;
 import org.guiceside.persistence.entity.IdEntity;
 import org.guiceside.persistence.entity.Tracker;
@@ -28,6 +29,8 @@ public class FuturesSymbol extends IdEntity implements Tracker {
 
     private String symbolDesc;
 
+    private SysCoin coinId;
+
     private String market;
 
     private Integer displayOrder;
@@ -54,6 +57,16 @@ public class FuturesSymbol extends IdEntity implements Tracker {
         this.id = id;
     }
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "COIN_ID")
+    public SysCoin getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(SysCoin coinId) {
+        this.coinId = coinId;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRADE_ID")
