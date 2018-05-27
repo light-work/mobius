@@ -28,7 +28,7 @@
         <service id="sysCapitalizationStore" class="com.mobius.storeImpl.sys.SysCapitalizationStoreImpl"/>
         <provider id="sysCapitalizationStoreProvider"
                   interface="com.mobius.providers.store.sys.SysCapitalizationStore"
-                  ref="sysCapitalizationStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  ref="sysCapitalizationStore" version="for-dev" clientTimeout="10000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 

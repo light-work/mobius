@@ -33,6 +33,16 @@ public class SysCoinStoreImpl implements SysCoinStore {
         }
     }
 
+    @Override
+    @ConnectManager
+    public SysCoin getBySymbol(String symbol) throws StoreException {
+        try {
+            return this.sysCoinService.getBySymbol(symbol);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
 
     @Override
     @ConnectManager
