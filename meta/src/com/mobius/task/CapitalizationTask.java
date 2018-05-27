@@ -81,10 +81,10 @@ public class CapitalizationTask implements Job {
             selectorList.add(SelectorUtils.$eq("useYn", "Y"));
             List<SysCoin> sysCoinList = sysCoinStore.getList(selectorList);
 
-            Map<String, SysCoin> coinMap = new HashMap<>();
+            Map<Long, SysCoin> coinMap = new HashMap<>();
             if (!sysCoinList.isEmpty()) {
                 for (SysCoin coin : sysCoinList) {
-                    coinMap.put(coin.getSymbol(), coin);
+                    coinMap.put(coin.getId(), coin);
                 }
                 //
                 List<SysCapitalization> sysCapitalizationList = new ArrayList<>();
@@ -108,10 +108,12 @@ public class CapitalizationTask implements Job {
                                     JSONObject data = JSONObject.fromObject(obj);
                                     SysCapitalization sysCapitalization = new SysCapitalization();
                                     sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                    sysCapitalization.setCoinId(coinMap.get(data.getString("symbol")));
+                                    sysCapitalization.setCoinId(coinMap.get(data.getLong("id")));
+                                    sysCapitalization.setCirculating(0d);
                                     if (data.containsKey("circulating_supply") && !"null".equals(data.getString("circulating_supply") + "")) {
                                         sysCapitalization.setCirculating(data.getDouble("circulating_supply"));
                                     }
+                                    sysCapitalization.setVolume(0d);
                                     if (data.containsKey("quotes")) {
                                         JSONObject quotes = data.getJSONObject("quotes");
                                         if (quotes.containsKey("USD")) {
