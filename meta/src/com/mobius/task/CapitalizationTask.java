@@ -93,8 +93,8 @@ public class CapitalizationTask implements Job {
                 params.put("sort", "id");
                 params.put("structure", "array");
                 params.put("limit", "100");
+                Date date = Calendar.getInstance().getTime();
                 for (int x = 0; x < sysCoinList.size(); x += 100) {
-                    System.out.println("loop start at " + (x + 1));
                     params.put("start", (x + 1) + "");
                     String result = OKHttpUtil.get("https://api.coinmarketcap.com/v2/ticker/?structure=array", params);
                     if (StringUtils.isNotBlank(result)) {
@@ -103,18 +103,20 @@ public class CapitalizationTask implements Job {
                             JSONArray array = root.getJSONArray("data");
                             if (array != null && !array.isEmpty()) {
 
-                                Date date = Calendar.getInstance().getTime();
+
                                 for (Object obj : array) {
                                     JSONObject data = JSONObject.fromObject(obj);
                                     SysCapitalization sysCapitalization = new SysCapitalization();
                                     sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                     sysCapitalization.setCoinId(coinMap.get(data.getString("symbol")));
-                                    sysCapitalization.setCirculating(data.getDouble("circulating_supply"));
+                                    if (data.containsKey("circulating_supply") && !"null".equals(data.getString("circulating_supply") + "")) {
+                                        sysCapitalization.setCirculating(data.getDouble("circulating_supply"));
+                                    }
                                     if (data.containsKey("quotes")) {
                                         JSONObject quotes = data.getJSONObject("quotes");
                                         if (quotes.containsKey("USD")) {
-                                            JSONObject usd = data.getJSONObject("USD");
-                                            if (usd.containsKey("market_cap")) {
+                                            JSONObject usd = quotes.getJSONObject("USD");
+                                            if (usd.containsKey("market_cap") && !"null".equals(usd.getString("market_cap") + "")) {
                                                 sysCapitalization.setVolume(usd.getDouble("market_cap"));
                                             }
                                         }
@@ -130,8 +132,9 @@ public class CapitalizationTask implements Job {
                     }
                 }
                 if (!sysCapitalizationList.isEmpty()) {
+                    System.out.println("CoinMarketCapAction task save star.......");
                     sysCapitalizationStore.save(sysCapitalizationList, Persistent.SAVE);
-                    System.out.println("CoinMarketCapAction task running over");
+                    System.out.println("CoinMarketCapAction task save over");
                 }
             }
 

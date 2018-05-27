@@ -16,7 +16,7 @@
         </consumer>
 
         <consumer id="sysCapitalizationStore" interface="com.mobius.providers.store.sys.SysCapitalizationStore"
-                  version="for-dev" clientTimeout="5000">
+                  version="for-dev" clientTimeout="10000">
         </consumer>
 
         <consumer id="sysCapitalizationLastStore" interface="com.mobius.providers.store.sys.SysCapitalizationLastStore"
