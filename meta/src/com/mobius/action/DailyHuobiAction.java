@@ -374,5 +374,150 @@ public class DailyHuobiAction extends BaseAction {
         return  null;
     }
 
+    public String dailyTask() throws Exception {
+        JSONObject root = new JSONObject();
+        root.put("result", "-1");
+        SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+        if (sysTradeStore != null) {
+            SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+            if (sysTrade != null) {
+                List<String> marketList = new ArrayList<>();
+                marketList.add("usdt");
+                marketList.add("btc");
+                marketList.add("eth");
 
+                SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
+                SpotDailyBtcStore spotDailyBtcStore = hsfServiceFactory.consumer(SpotDailyBtcStore.class);
+                SpotDailyEthStore spotDailyEthStore = hsfServiceFactory.consumer(SpotDailyEthStore.class);
+                if (spotSymbolStore != null && spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
+                    for (String market : marketList) {
+                        List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarket(sysTrade.getId(), market);
+                        if (symbolList != null && !symbolList.isEmpty()) {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("period", "1day");
+                            params.put("size", "2");
+                            for (SpotSymbol spotSymbol : symbolList) {
+                                params.put("symbol", spotSymbol.getSymbol());
+                                try {
+                                    Set<String> dateSet = new HashSet<>();
+                                    String result = OKHttpUtil.get("https://api.huobi.pro/market/history/kline", params);
+                                    if (StringUtils.isNotBlank(result)) {
+                                        JSONObject obj = JSONObject.fromObject(result);
+                                        if (!obj.containsKey("data")) {
+                                            System.out.print("huobi  kline data was null!");
+                                            return null;
+                                        }
+                                        JSONArray klineArray = obj.getJSONArray("data");
+                                        if (klineArray != null && !klineArray.isEmpty()) {
+                                            List<SpotDailyUsdt> usdtList = new ArrayList<>();
+                                            List<SpotDailyBtc> btcList = new ArrayList<>();
+                                            List<SpotDailyEth> ethList = new ArrayList<>();
+                                            for (int x = 1; x < klineArray.size(); x++) {// 3 2 1
+                                                JSONObject jsonObj = klineArray.getJSONObject(x);
+                                                String dateStr = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
+                                                        DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                if (dateSet.contains(dateStr)) {
+                                                    continue;
+                                                }
+                                                dateSet.add(dateStr);
+                                                if (market.equals("usdt")) {
+                                                    Integer count = spotDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                    } else if (count == 0) {
+                                                        SpotDailyUsdt usdt = new SpotDailyUsdt();
+                                                        usdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        usdt.setTradeId(sysTrade);
+                                                        usdt.setSymbolId(spotSymbol);
+                                                        usdt.setTradingDay(tradingDate);
+                                                        usdt.setLastPrice(jsonObj.getDouble("close"));
+                                                        if (jsonObj.containsKey("amount")) {
+                                                            usdt.setVolume(jsonObj.getDouble("amount"));
+                                                        }
+                                                        if (jsonObj.containsKey("vol")) {
+                                                            usdt.setTurnover(jsonObj.getDouble("vol"));
+                                                        }
+                                                        usdt.setCreatedBy("task");
+                                                        usdt.setCreated(new Date());
+                                                        usdtList.add(usdt);
+                                                    }
+                                                } else if (market.equals("btc")) {
+                                                    Integer count = spotDailyBtcStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                    } else if (count == 0) {
+                                                        SpotDailyBtc btc = new SpotDailyBtc();
+                                                        btc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        btc.setTradeId(sysTrade);
+                                                        btc.setSymbolId(spotSymbol);
+                                                        btc.setTradingDay(tradingDate);
+                                                        btc.setLastPrice(jsonObj.getDouble("close"));
+                                                        if (jsonObj.containsKey("amount")) {
+                                                            btc.setVolume(jsonObj.getDouble("amount"));
+                                                        }
+                                                        if (jsonObj.containsKey("vol")) {
+                                                            btc.setTurnover(jsonObj.getDouble("vol"));
+                                                        }
+                                                        btc.setCreatedBy("task");
+                                                        btc.setCreated(new Date());
+                                                        btcList.add(btc);
+                                                    }
+                                                } else if (market.equals("eth")) {
+                                                    Integer count = spotDailyEthStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                    } else if (count == 0) {
+                                                        SpotDailyEth eth = new SpotDailyEth();
+                                                        eth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        eth.setTradeId(sysTrade);
+                                                        eth.setSymbolId(spotSymbol);
+                                                        eth.setTradingDay(tradingDate);
+                                                        eth.setLastPrice(jsonObj.getDouble("close"));
+                                                        if (jsonObj.containsKey("amount")) {
+                                                            eth.setVolume(jsonObj.getDouble("amount"));
+                                                        }
+                                                        if (jsonObj.containsKey("vol")) {
+                                                            eth.setTurnover(jsonObj.getDouble("vol"));
+                                                        }
+                                                        eth.setCreatedBy("task");
+                                                        eth.setCreated(new Date());
+                                                        ethList.add(eth);
+                                                    }
+                                                }
+                                            }
+                                            if (!usdtList.isEmpty()) {
+                                                spotDailyUsdtStore.save(usdtList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + usdtList.size());
+                                            }
+                                            if (!btcList.isEmpty()) {
+                                                spotDailyBtcStore.save(btcList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + btcList.size());
+                                            }
+                                            if (!ethList.isEmpty()) {
+                                                spotDailyEthStore.save(ethList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + ethList.size());
+                                            }
+                                            TimeUnit.SECONDS.sleep(2);//秒
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                    System.out.println("huobi daily task over---------");
+                    root.put("result", "0");
+                    writeJsonByAction(root.toString());
+                }
+            }
+        }
+        return null;
+    }
 }
