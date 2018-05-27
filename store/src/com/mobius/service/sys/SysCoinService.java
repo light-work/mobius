@@ -30,6 +30,12 @@ public class SysCoinService extends HQuery implements SysCoinStore {
         return $(selectorList).list(SysCoin.class);
     }
 
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public SysCoin getBySymbol(String symbol) throws StoreException {
+        return $($eq("symbol",symbol)).get(SysCoin.class);
+    }
+
     /**
      * 保存对象
      */
