@@ -1,13 +1,19 @@
 package com.mobius.action;
 
 import com.google.inject.Inject;
+import com.mobius.entity.futures.FuturesSymbol;
+import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysCoin;
+import com.mobius.providers.store.futures.FuturesSymbolStore;
+import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysCoinStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.StringUtils;
+import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
+import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
@@ -60,6 +66,86 @@ public class CoinMarketCapAction extends BaseAction {
                             result.put("result", "0");
                         }
                     }
+                }
+                writeJsonByAction(result.toString());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public String spotSymbolCoin() throws Exception {
+
+        JSONObject result = new JSONObject();
+        result.put("result", "-1");
+        try {
+            SysCoinStore sysCoinStore = hsfServiceFactory.consumer(SysCoinStore.class);
+            SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+            if (sysCoinStore != null && spotSymbolStore != null) {
+                List<Selector> selectorList = new ArrayList<>();
+                selectorList.add(SelectorUtils.$alias("tradeId","tradeId"));
+                selectorList.add(SelectorUtils.$eq("tradeId.id", 5l));
+                List<SpotSymbol> spotSymbolList = spotSymbolStore.getList(selectorList);
+                if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
+                    for (SpotSymbol spotSymbol : spotSymbolList) {
+                        String symbol = spotSymbol.getSymbol();
+                        String market = spotSymbol.getMarket();
+                        if(spotSymbol.getTradeId().getId().longValue()==3){
+                            market=market.toUpperCase();
+                        }
+                        if(spotSymbol.getTradeId().getId().longValue()==5){
+                            if(market.equals("usdt")){
+                                market="usd";
+                            }
+                        }
+                        System.out.println(symbol);
+                        String sym = symbol.replaceAll(market, "");
+                        System.out.println(sym);
+                        if (StringUtils.isNotBlank(sym)) {
+                            SysCoin sysCoin = sysCoinStore.getBySymbol(sym.toUpperCase());
+                            if (sysCoin != null) {
+                                spotSymbol.setCoinId(sysCoin);
+                            }
+                        }
+                    }
+                    spotSymbolStore.save(spotSymbolList, Persistent.UPDATE);
+                }
+                writeJsonByAction(result.toString());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public String futuresSymbolCoin() throws Exception {
+
+        JSONObject result = new JSONObject();
+        result.put("result", "-1");
+        try {
+            SysCoinStore sysCoinStore = hsfServiceFactory.consumer(SysCoinStore.class);
+            FuturesSymbolStore futuresSymbolStore = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+            if (sysCoinStore != null && futuresSymbolStore != null) {
+                List<Selector> selectorList = new ArrayList<>();
+                selectorList.add(SelectorUtils.$eq("tradeId.id", 1l));
+                List<FuturesSymbol> futuresSymbolList = futuresSymbolStore.getList(selectorList);
+                if (futuresSymbolList != null && !futuresSymbolList.isEmpty()) {
+                    for (FuturesSymbol spotSymbol : futuresSymbolList) {
+                        String symbol = spotSymbol.getSymbol();
+                        System.out.println(symbol);
+                        String s[] = symbol.split("_");
+                        System.out.println(s[0]);
+                        if (StringUtils.isNotBlank(s[0])) {
+                            SysCoin sysCoin = sysCoinStore.getBySymbol(s[0].toUpperCase());
+                            if (sysCoin != null) {
+                                spotSymbol.setCoinId(sysCoin);
+                            }
+                        }
+                    }
+                    futuresSymbolStore.save(futuresSymbolList, Persistent.UPDATE);
                 }
                 writeJsonByAction(result.toString());
             }

@@ -13,6 +13,8 @@ public interface SysCoinStore {
 
     SysCoin getById(Long id, Selector... selectors) throws StoreException;
 
+    SysCoin getBySymbol(String symbol) throws StoreException;
+
     List<SysCoin> getList(List<Selector> selectorList) throws StoreException;
 
     void save(SysCoin sysCoin, Persistent persistent) throws StoreException;
