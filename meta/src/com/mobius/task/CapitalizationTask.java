@@ -108,6 +108,10 @@ public class CapitalizationTask implements Job {
                                     JSONObject data = JSONObject.fromObject(obj);
                                     SysCapitalization sysCapitalization = new SysCapitalization();
                                     sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                    if (coinMap.get(data.getLong("id")) == null) {
+                                        System.out.print("-------coin cant find and coin id is " + data.getLong("id")
+                                                + " name=" + data.getString("name") + " symbol=" + data.getString("symbol") + "  start=" + (x + 1));
+                                    }
                                     sysCapitalization.setCoinId(coinMap.get(data.getLong("id")));
                                     sysCapitalization.setCirculating(0d);
                                     if (data.containsKey("circulating_supply") && !"null".equals(data.getString("circulating_supply") + "")) {
