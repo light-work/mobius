@@ -40,6 +40,7 @@ import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -146,12 +147,9 @@ public class DailyTaskForHuobi implements Job {
                                                 if (market.equals("usdt")) {
                                                     Integer count = spotDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                             spotSymbol.getId(), tradingDate);
-                                                    if (count == null) {
-                                                        count = 0;
-                                                    } else {
+                                                    if (count == 1) {
                                                         System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                    }
-                                                    if (count == 0) {
+                                                    } else if (count == 0) {
                                                         SpotDailyUsdt usdt = new SpotDailyUsdt();
                                                         usdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         usdt.setTradeId(sysTrade);
@@ -171,12 +169,9 @@ public class DailyTaskForHuobi implements Job {
                                                 } else if (market.equals("btc")) {
                                                     Integer count = spotDailyBtcStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                             spotSymbol.getId(), tradingDate);
-                                                    if (count == null) {
-                                                        count = 0;
-                                                    } else {
+                                                    if (count == 1) {
                                                         System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                    }
-                                                    if (count == 0) {
+                                                    } else if (count == 0) {
                                                         SpotDailyBtc btc = new SpotDailyBtc();
                                                         btc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         btc.setTradeId(sysTrade);
@@ -196,12 +191,9 @@ public class DailyTaskForHuobi implements Job {
                                                 } else if (market.equals("eth")) {
                                                     Integer count = spotDailyEthStore.getCountTradeSymbolDay(sysTrade.getId(),
                                                             spotSymbol.getId(), tradingDate);
-                                                    if (count == null) {
-                                                        count = 0;
-                                                    } else {
+                                                    if (count == 1) {
                                                         System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                                    }
-                                                    if (count == 0) {
+                                                    } else if (count == 0) {
                                                         SpotDailyEth eth = new SpotDailyEth();
                                                         eth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                         eth.setTradeId(sysTrade);
@@ -222,14 +214,17 @@ public class DailyTaskForHuobi implements Job {
                                             }
                                             if (!usdtList.isEmpty()) {
                                                 spotDailyUsdtStore.save(usdtList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + usdtList.size());
                                             }
                                             if (!btcList.isEmpty()) {
                                                 spotDailyBtcStore.save(btcList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + btcList.size());
                                             }
                                             if (!ethList.isEmpty()) {
                                                 spotDailyEthStore.save(ethList, Persistent.SAVE);
+                                                System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + ethList.size());
                                             }
-                                            System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + usdtList.size());
+                                            TimeUnit.SECONDS.sleep(2);//秒
                                         }
                                     }
                                 } catch (Exception e) {

@@ -358,7 +358,7 @@ public class DailyOkexAction extends BaseAction {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+
         return null;
     }
 
@@ -507,6 +507,224 @@ public class DailyOkexAction extends BaseAction {
             ex.printStackTrace();
         }
 
+        return null;
+    }
+
+    public String spotDailyTask() throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result", "-1");
+        SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+        if (sysTradeStore != null) {
+            SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+            if (sysTrade != null) {
+                List<String> marketList = new ArrayList<>();
+                marketList.add("usdt");
+                marketList.add("btc");
+                marketList.add("eth");
+
+                SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
+                SpotDailyBtcStore spotDailyBtcStore = hsfServiceFactory.consumer(SpotDailyBtcStore.class);
+                SpotDailyEthStore spotDailyEthStore = hsfServiceFactory.consumer(SpotDailyEthStore.class);
+                if (spotSymbolStore != null && spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
+                    for (String market : marketList) {
+                        List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarket(sysTrade.getId(), market);
+                        if (symbolList != null && !symbolList.isEmpty()) {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("type", "1day");
+                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            for (SpotSymbol spotSymbol : symbolList) {
+                                params.put("symbol", spotSymbol.getSymbol());
+                                try {
+                                    String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/kline.do", params);
+                                    if (StringUtils.isNotBlank(resultStr)) {
+                                        JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                        if (klineArray != null && !klineArray.isEmpty()) {
+                                            List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
+                                            List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
+                                            List<SpotDailyEth> dailyEthList = new ArrayList<>();
+                                            for (int x = 0; x < klineArray.size() - 1; x++) {
+                                                JSONArray dayAttr = klineArray.getJSONArray(x);
+                                                if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                    Long times = dayAttr.getLong(0);
+                                                    Double lastPrice = dayAttr.getDouble(4);
+                                                    Double volume = dayAttr.getDouble(5);
+                                                    Date timeDate = new Date(times);
+
+                                                    String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                    Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+
+                                                    if (market.equals("usdt")) {
+                                                        Integer count = spotDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                                spotSymbol.getId(), tradingDate);
+                                                        if (count == 1) {
+                                                            System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
+                                                            SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
+                                                            spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                            spotDailyUsdt.setTradeId(sysTrade);
+                                                            spotDailyUsdt.setSymbolId(spotSymbol);
+                                                            spotDailyUsdt.setTradingDay(timeDate);
+                                                            spotDailyUsdt.setLastPrice(lastPrice);
+                                                            spotDailyUsdt.setVolume(volume);
+                                                            spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                            spotDailyUsdt.setCreatedBy("task");
+                                                            spotDailyUsdt.setCreated(new Date());
+                                                            dailyUsdtList.add(spotDailyUsdt);
+                                                        }
+                                                    } else if (market.equals("btc")) {
+                                                        Integer count = spotDailyBtcStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                                spotSymbol.getId(), tradingDate);
+                                                        if (count == 1) {
+                                                            System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
+                                                            SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
+                                                            spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                            spotDailyBtc.setTradeId(sysTrade);
+                                                            spotDailyBtc.setSymbolId(spotSymbol);
+                                                            spotDailyBtc.setTradingDay(timeDate);
+                                                            spotDailyBtc.setLastPrice(lastPrice);
+                                                            spotDailyBtc.setVolume(volume);
+                                                            spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                            spotDailyBtc.setCreatedBy("task");
+                                                            spotDailyBtc.setCreated(new Date());
+                                                            dailyBtcList.add(spotDailyBtc);
+                                                        }
+                                                    } else if (market.equals("eth")) {
+                                                        Integer count = spotDailyEthStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                                spotSymbol.getId(), tradingDate);
+                                                        if (count == 1) {
+                                                            System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                            System.out.println(resultStr);
+                                                        } else if (count == 0) {
+                                                            SpotDailyEth spotDailyEth = new SpotDailyEth();
+                                                            spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                            spotDailyEth.setTradeId(sysTrade);
+                                                            spotDailyEth.setSymbolId(spotSymbol);
+                                                            spotDailyEth.setTradingDay(timeDate);
+                                                            spotDailyEth.setLastPrice(lastPrice);
+                                                            spotDailyEth.setVolume(volume);
+                                                            spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                            spotDailyEth.setCreatedBy("task");
+                                                            spotDailyEth.setCreated(new Date());
+                                                            dailyEthList.add(spotDailyEth);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (!dailyUsdtList.isEmpty()) {
+                                                spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyUsdtList.size());
+                                            }
+                                            if (!dailyBtcList.isEmpty()) {
+                                                spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyBtcList.size());
+                                            }
+                                            if (!dailyEthList.isEmpty()) {
+                                                spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
+                                                System.out.println(spotSymbol.getSymbol() + " save success " + dailyEthList.size());
+                                            }
+                                            TimeUnit.SECONDS.sleep(2);//秒
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                    System.out.println("okex spot daily task over---------");
+                    result.put("result", "0");
+                    writeJsonByAction(result.toString());
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public String futuresDailyTask() throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result", "-1");
+        SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+        if (sysTradeStore != null) {
+            SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+            if (sysTrade != null) {
+                List<String> marketList = new ArrayList<>();
+                marketList.add("usdt");
+
+                FuturesSymbolStore symbolStoreConsumer = hsfServiceFactory.consumer(FuturesSymbolStore.class);
+                FuturesDailyUsdtStore dailyUsdtStore = hsfServiceFactory.consumer(FuturesDailyUsdtStore.class);
+                if (symbolStoreConsumer != null && dailyUsdtStore != null) {
+                    for (String market : marketList) {
+                        List<FuturesSymbol> symbolList = symbolStoreConsumer.getListByTradeMarket(sysTrade.getId(), market);
+                        if (symbolList != null && !symbolList.isEmpty()) {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("type", "1day");
+                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            for (FuturesSymbol symbol : symbolList) {
+                                params.put("symbol", symbol.getSymbol());
+                                params.put("contract_type", symbol.getSymbolDesc());
+                                try {
+                                    String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/future_kline.do", params);
+                                    if (StringUtils.isNotBlank(resultStr)) {
+                                        JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                        if (klineArray != null && !klineArray.isEmpty()) {
+                                            List<FuturesDailyUsdt> dailyUsdtList = new ArrayList<>();
+                                            for (int x = 0; x < klineArray.size() - 1; x++) {// 1 2 3
+                                                JSONArray dayAttr = klineArray.getJSONArray(x);
+                                                if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                    Long times = dayAttr.getLong(0);
+                                                    Double lastPrice = dayAttr.getDouble(4);
+                                                    Double volume = dayAttr.getDouble(5);
+                                                    Date timeDate = new Date(times);
+
+                                                    String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                    Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+
+                                                    Integer count = dailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(), symbol.getId(), tradingDate);
+                                                    if (count == null) {
+                                                        count = 0;
+                                                    } else {
+                                                        System.out.println("okex daily task print--- " + dateStr + " " + symbol.getSymbol() + " count >1");
+                                                    }
+                                                    if (count == 0) {
+                                                        FuturesDailyUsdt dailyUsdt = new FuturesDailyUsdt();
+                                                        dailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        dailyUsdt.setTradeId(sysTrade);
+                                                        dailyUsdt.setSymbolId(symbol);
+                                                        dailyUsdt.setTradingDay(timeDate);
+                                                        dailyUsdt.setLastPrice(lastPrice);
+                                                        dailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                        dailyUsdt.setVolume(volume);
+                                                        dailyUsdt.setCreatedBy("task");
+                                                        dailyUsdt.setCreated(new Date());
+                                                        dailyUsdtList.add(dailyUsdt);
+                                                    }
+                                                }
+                                            }
+                                            if (!dailyUsdtList.isEmpty()) {
+                                                dailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
+                                            }
+                                            TimeUnit.SECONDS.sleep(2);//秒
+                                            System.out.println(symbol.getSymbol() + "okex daily task save success " + dailyUsdtList.size());
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }
+                    System.out.println("okex futures daily task over---------");
+                    result.put("result", "0");
+                    writeJsonByAction(result.toString());
+                }
+            }
+        }
         return null;
     }
 }
