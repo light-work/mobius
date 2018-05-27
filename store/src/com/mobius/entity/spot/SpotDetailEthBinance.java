@@ -15,7 +15,7 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "SPOT_DETAIL_ETH_OKEX_BINANCE")
+@Table(name = "SPOT_DETAIL_ETH_BINANCE")
 public class SpotDetailEthBinance extends IdEntity implements Tracker {
 
     private static final long serialVersionUID = 1L;
