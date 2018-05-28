@@ -1,6 +1,7 @@
 package com.mobius.task.detail;
 
 
+import com.mobius.OKHttpUtils;
 import com.mobius.Utils;
 import com.mobius.entity.spot.SpotDetailBtcBinance;
 import com.mobius.entity.spot.SpotDetailEthBinance;
@@ -13,7 +14,6 @@ import com.mobius.providers.store.spot.SpotDetailBtcBinanceStore;
 import com.mobius.providers.store.spot.SpotDetailEthBinanceStore;
 import com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore;
 import net.sf.json.JSONObject;
-import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -47,7 +47,7 @@ public class FastCallForBinance {
                             Map<String, String> params = new HashMap<>();
                             params.put("symbol",spotSymbol.getSymbol());
                             try {
-                                String resultStr =OKHttpUtil.get("https://api.binance.com/api/v1/ticker/24hr", params);
+                                String resultStr =OKHttpUtils.get("https://api.binance.com/api/v1/ticker/24hr", params);
                                 if (StringUtils.isNotBlank(resultStr)) {
                                     JSONObject jsonObject=JSONObject.fromObject(resultStr);
                                     if(jsonObject!=null){
@@ -113,12 +113,12 @@ public class FastCallForBinance {
                                     }
                                 }
                             } catch (Exception e) {
-
+                                e.printStackTrace();
                             }
                         }
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         });
