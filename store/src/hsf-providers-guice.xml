@@ -221,10 +221,17 @@
 
 
 
-        <service id="calSampleCoinStore" class="com.mobius.storeImpl.cal.CalSampleCoinStoreImpl"/>
-        <provider id="calSampleCoinStoreProvider"
-                  interface="com.mobius.providers.store.cal.CalSampleCoinStore"
-                  ref="calSampleCoinStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="calSampleSpotSymbolStore" class="com.mobius.storeImpl.cal.CalSampleSpotSymbolStoreImpl"/>
+        <provider id="calSampleSpotSymbolStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotSymbolStore"
+                  ref="calSampleSpotSymbolStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="calSampleSpotCoinStore" class="com.mobius.storeImpl.cal.CalSampleSpotCoinStoreImpl"/>
+        <provider id="calSampleSpotCoinStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotCoinStore"
+                  ref="calSampleSpotCoinStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
     </group>

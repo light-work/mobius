@@ -1,5 +1,6 @@
 package com.mobius.entity.cal;
 
+import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysCoin;
 import com.mobius.entity.sys.SysTrade;
 import org.guiceside.persistence.entity.IdEntity;
@@ -16,14 +17,14 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "CAL_SAMPLE_COIN")
-public class CalSampleCoin extends IdEntity implements Tracker {
+@Table(name = "CAL_SAMPLE_SPOT_SYMBOL")
+public class CalSampleSpotSymbol extends IdEntity implements Tracker {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
-    private SysCoin coinId;
+    private SpotSymbol symbolId;
 
     private Integer year;
 
@@ -53,14 +54,16 @@ public class CalSampleCoin extends IdEntity implements Tracker {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COIN_ID")
-    public SysCoin getCoinId() {
-        return coinId;
+    @JoinColumn(name = "SYMBOL_ID")
+    public SpotSymbol getSymbolId() {
+        return symbolId;
     }
 
-    public void setCoinId(SysCoin coinId) {
-        this.coinId = coinId;
+    public void setSymbolId(SpotSymbol symbolId) {
+        this.symbolId = symbolId;
     }
+
+
 
 
     @Column(name = "YEAR")

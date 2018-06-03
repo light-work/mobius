@@ -154,7 +154,11 @@
         </consumer>
 
 
-        <consumer id="calSampleCoinStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleCoinStore"
+        <consumer id="calSampleSpotCoinStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotCoinStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="calSampleSpotSymbolStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotSymbolStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
     </group>
