@@ -73,7 +73,6 @@ public class DetailTaskForBinanceEth implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
 
-        System.out.println("run DetailTaskForBinanceUsdt ");
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Injector injector = (Injector) dataMap.get("injector");
         String localIP = dataMap.getString("localIP");
@@ -83,9 +82,10 @@ public class DetailTaskForBinanceEth implements Job {
                 try {
                     SysIpServerStore sysIpServerStore = hsfServiceFactory.consumer(SysIpServerStore.class);
                     if (sysIpServerStore != null) {
+                        System.out.print(System.currentTimeMillis() + " localIP=" + localIP + " market=" + market);
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
+                        System.out.println(" sysIpServer=" + sysIpServer.getServerNo());
                         if (sysIpServer != null) {
-                            System.out.println("当前ip" + localIP + "获取market " + market + " serverNo" + sysIpServer.getServerNo() + "的币");
                             SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
                             SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
                             if (spotSymbolStore != null && sysTradeStore != null) {

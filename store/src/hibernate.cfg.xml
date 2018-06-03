@@ -29,14 +29,14 @@
         <property name="password">Mobius2018</property>
 
         <!--<property name="url">-->
-            <!--jdbc:mysql://rm-uf6gbc83t0nu3dw06.mysql.rds.aliyuncs.com:3306/gbcp_trading?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false-->
+            <!--jdbc:mysql://rm-j6cm604168ii34b45.mysql.rds.aliyuncs.com:3306/mobius?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false-->
         <!--</property>-->
 
         <!--&lt;!&ndash;连接的登录名&ndash;&gt;-->
-        <!--<property name="username">gbcp_trading</property>-->
+        <!--<property name="username">mobius</property>-->
 
         <!--&lt;!&ndash;登录密码&ndash;&gt;-->
-        <!--<property name="password">o2work_2017</property>-->
+        <!--<property name="password">Mobius2018</property>-->
 
         <property name="hibernate.connection.provider_class">
             org.guiceside.persistence.hibernate.support.DruidConnectionProvider
