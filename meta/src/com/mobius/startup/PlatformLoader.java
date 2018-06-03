@@ -87,12 +87,6 @@ public class PlatformLoader {
             System.out.println("detailInteval=" + detailInteval);
 
 
-
-
-
-
-
-
             String DAILY_TASK_IP = EnvironmentValue.getInstance().getValue("DAILY_TASK");
             System.out.println(DAILY_TASK_IP);
             if (StringUtils.isNotBlank(DAILY_TASK_IP)) {
@@ -155,7 +149,7 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
 
-                }else {
+                } else {
                     //daily
                     JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
                             .usingJobData(jobDataMap).build();
@@ -177,9 +171,6 @@ public class PlatformLoader {
                             .withIdentity("triggerDetailTaskForBinanceEth", "groupDetailTaskForBinanceEth")
                             .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                             .build();
-
-
-
 
 
                     //okex
@@ -213,7 +204,6 @@ public class PlatformLoader {
                             .build();
 
 
-
                     //huobi
                     JobDetail jobDetailTaskForHuobiUsdt = newJob(DetailTaskForHuobiUsdt.class).withIdentity("detailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
                             .usingJobData(jobDataMap).build();
@@ -238,17 +228,15 @@ public class PlatformLoader {
                             .build();
 
 
-            scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
-            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
+                    scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
+                    scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
 
 
-
-
-                                scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
-            scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
-            scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
-            scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
+                    scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
+                    scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
 
 
                     scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
