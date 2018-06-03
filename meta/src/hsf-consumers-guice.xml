@@ -152,6 +152,11 @@
         <consumer id="spotDetailEthBitfinexStoreConsumer" interface="com.mobius.providers.store.spot.SpotDetailEthBitfinexStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+
+        <consumer id="calSampleCoinStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleCoinStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
     </group>
 
 </hsf>

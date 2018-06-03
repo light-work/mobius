@@ -8,7 +8,9 @@ import org.guiceside.persistence.entity.Tracker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class Utils {
 
@@ -25,6 +27,22 @@ public class Utils {
         }
         return d;
     }
+
+    public static double max(double a ,double b ,double c ){
+        return Math.max(Math.max(a, b), c);
+    }
+
+
+    public static double median(List<Double> data){
+        double mid = 0;
+        Collections.sort(data);
+        int len = data.size();
+        System.out.println(data.toString());
+        if(len%2==0) mid = (data.get(len/2)+data.get(len/2+1))/2; else mid = data.get(len/2);
+        System.out.println("数组data的中位数为："+mid);
+        return mid;
+    }
+
 
     public static void bind(Object entity,String by) throws Exception {
         if (entity instanceof Tracker) {

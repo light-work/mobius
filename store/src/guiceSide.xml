@@ -7,6 +7,7 @@
                 <value>com.mobius.entity.sys</value>
                 <value>com.mobius.entity.futures</value>
                 <value>com.mobius.entity.spot</value>
+                <value>com.mobius.entity.cal</value>
             </packages>
         </hibernate>
     </persistence>

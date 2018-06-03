@@ -218,5 +218,14 @@
                   ref="spotDetailEthBitfinexStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
+
+
+
+        <service id="calSampleCoinStore" class="com.mobius.storeImpl.cal.CalSampleCoinStoreImpl"/>
+        <provider id="calSampleCoinStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleCoinStore"
+                  ref="calSampleCoinStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
     </group>
 </hsf>
