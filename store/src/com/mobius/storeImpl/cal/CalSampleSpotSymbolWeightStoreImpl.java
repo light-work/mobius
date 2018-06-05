@@ -3,9 +3,9 @@ package com.mobius.storeImpl.cal;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
-import com.mobius.entity.cal.CalSampleSpotCoin;
-import com.mobius.providers.store.cal.CalSampleSpotCoinStore;
-import com.mobius.service.cal.CalSampleSpotCoinService;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
+import com.mobius.service.cal.CalSampleSpotSymbolWeightService;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
@@ -17,14 +17,14 @@ import java.util.List;
  * Created by Lara Croft on 2016/12/21.
  */
 @Singleton
-public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
+public class CalSampleSpotSymbolWeightStoreImpl implements CalSampleSpotSymbolWeightStore {
 
     @Inject
-    private CalSampleSpotCoinService calSampleCoinService;
+    private CalSampleSpotSymbolWeightService calSampleCoinService;
 
     @Override
     @ConnectManager
-    public CalSampleSpotCoin getById(Long id, Selector... selectors) throws StoreException {
+    public CalSampleSpotSymbolWeight getById(Long id, Selector... selectors) throws StoreException {
         try {
             return this.calSampleCoinService.getById(id, selectors);
         } catch (HibernateException e) {
@@ -36,9 +36,9 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public CalSampleSpotCoin getByCoinIdYearMonth(Long coinId, Integer year, Integer month) throws StoreException {
+    public CalSampleSpotSymbolWeight getBySymbolIdYearMonth(Long symbolId, Integer year, Integer month) throws StoreException {
         try {
-            return this.calSampleCoinService.getByCoinIdYearMonth(coinId, year, month);
+            return this.calSampleCoinService.getBySymbolIdYearMonth(symbolId, year, month);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -47,7 +47,7 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public List<CalSampleSpotCoin> getListByYearMonth(Integer year, Integer month) throws StoreException {
+    public List<CalSampleSpotSymbolWeight> getListByYearMonth(Integer year, Integer month) throws StoreException {
         try {
             return this.calSampleCoinService.getListByYearMonth(year, month);
         } catch (HibernateException e) {
@@ -58,7 +58,7 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public List<CalSampleSpotCoin> getList(List<Selector> list) throws StoreException {
+    public List<CalSampleSpotSymbolWeight> getList(List<Selector> list) throws StoreException {
         try {
             return this.calSampleCoinService.getList(list);
         } catch (HibernateException e) {
@@ -69,9 +69,9 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public void save(CalSampleSpotCoin calSampleSpotCoin, Persistent persistent) throws StoreException {
+    public void save(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, Persistent persistent) throws StoreException {
         try {
-            this.calSampleCoinService.save(calSampleSpotCoin, persistent);
+            this.calSampleCoinService.save(calSampleSpotSymbolWeight, persistent);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -80,7 +80,7 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public void save(List<CalSampleSpotCoin> list, Persistent persistent) throws StoreException {
+    public void save(List<CalSampleSpotSymbolWeight> list, Persistent persistent) throws StoreException {
         try {
             this.calSampleCoinService.save(list, persistent);
         } catch (HibernateException e) {
@@ -91,9 +91,9 @@ public class CalSampleSpotCoinStoreImpl implements CalSampleSpotCoinStore {
 
     @Override
     @ConnectManager
-    public void delete(CalSampleSpotCoin calSampleSpotCoin) throws StoreException {
+    public void delete(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
         try {
-            this.calSampleCoinService.delete(calSampleSpotCoin);
+            this.calSampleCoinService.delete(calSampleSpotSymbolWeight);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

@@ -13,7 +13,7 @@ public interface CalSampleSpotCoinStore {
 
     CalSampleSpotCoin getById(Long id, Selector... selectors) throws StoreException;
 
-    CalSampleSpotCoin getByCoinTradeMarket(Long coinId, Integer year, Integer month) throws StoreException;
+    CalSampleSpotCoin getByCoinIdYearMonth(Long coinId, Integer year, Integer month) throws StoreException;
 
     List<CalSampleSpotCoin> getListByYearMonth(Integer year, Integer month) throws StoreException;
 
