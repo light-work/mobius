@@ -33,6 +33,8 @@ public class CalSampleSpotCoin extends IdEntity implements Tracker {
 
     private Double coverRate;
 
+    private Double weight;
+
     private Date created;
 
     private String createdBy;
@@ -99,6 +101,15 @@ public class CalSampleSpotCoin extends IdEntity implements Tracker {
         this.month = month;
     }
 
+
+    @Column(name = "WEIGHT")
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
 
     @Column(name = "CREATED", updatable = false)
     public Date getCreated() {
