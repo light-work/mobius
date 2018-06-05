@@ -161,6 +161,10 @@
         <consumer id="calSampleSpotSymbolStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotSymbolStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+        <consumer id="calSampleSpotSymbolWeightStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
     </group>
 
 </hsf>
