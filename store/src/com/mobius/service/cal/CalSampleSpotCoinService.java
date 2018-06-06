@@ -32,7 +32,7 @@ public class CalSampleSpotCoinService extends HQuery implements CalSampleSpotCoi
 
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
-    public CalSampleSpotCoin getByCoinTradeMarket(Long coinId, Integer year, Integer month) throws StoreException {
+    public CalSampleSpotCoin getByCoinIdYearMonth(Long coinId, Integer year, Integer month) throws StoreException {
         return $($eq("coinId.id", coinId), $eq("year", year), $eq("month", month)).get(CalSampleSpotCoin.class);
     }
 

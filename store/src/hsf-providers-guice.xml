@@ -234,5 +234,12 @@
                   ref="calSampleSpotCoinStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
+
+        <service id="calSampleSpotSymbolWeightStore" class="com.mobius.storeImpl.cal.CalSampleSpotSymbolWeightStoreImpl"/>
+        <provider id="calSampleSpotSymbolWeightStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore"
+                  ref="calSampleSpotSymbolWeightStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
     </group>
 </hsf>

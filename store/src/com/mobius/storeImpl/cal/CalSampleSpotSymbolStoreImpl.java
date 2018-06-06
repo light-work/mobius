@@ -36,9 +36,9 @@ public class CalSampleSpotSymbolStoreImpl implements CalSampleSpotSymbolStore {
 
     @Override
     @ConnectManager
-    public CalSampleSpotSymbol getBySymbolTradeMarket(Long symbolId, Integer year, Integer month) throws StoreException {
+    public CalSampleSpotSymbol getBySymbolIdYearMonth(Long symbolId, Integer year, Integer month) throws StoreException {
         try {
-            return this.calSampleCoinService.getBySymbolTradeMarket(symbolId, year, month);
+            return this.calSampleCoinService.getBySymbolIdYearMonth(symbolId, year, month);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
