@@ -165,6 +165,14 @@
         <consumer id="calSampleSpotSymbolWeightStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+        <consumer id="calSampleSpotWeightHistoryStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotWeightHistoryStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="calSampleSpotPointStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotPointStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
     </group>
 
 </hsf>
