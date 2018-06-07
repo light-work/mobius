@@ -241,5 +241,22 @@
                   ref="calSampleSpotSymbolWeightStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
+
+
+        <service id="calSampleSpotWeightHistoryStore" class="com.mobius.storeImpl.cal.CalSampleSpotWeightHistoryStoreImpl"/>
+        <provider id="calSampleSpotWeightHistoryStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotWeightHistoryStore"
+                  ref="calSampleSpotWeightHistoryStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+        <service id="calSampleSpotPointStore" class="com.mobius.storeImpl.cal.CalSampleSpotPointStoreImpl"/>
+        <provider id="calSampleSpotPointStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotPointStore"
+                  ref="calSampleSpotPointStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
     </group>
 </hsf>
