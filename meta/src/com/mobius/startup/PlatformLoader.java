@@ -138,7 +138,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerCapitalizationTask = newTrigger()
                             .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
-                            .withSchedule(cronSchedule("0 25 0 * * ?"))//每天的 0点到0点10分每分触发
+                            .withSchedule(cronSchedule("0 0 0 * * ?"))//每天的 0点到0点10分每分触发
                             .build();
 
 
