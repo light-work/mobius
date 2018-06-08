@@ -26,6 +26,10 @@ public class CalSampleSpotSymbol extends IdEntity implements Tracker {
 
     private SpotSymbol symbolId;
 
+    private Integer useYear;
+
+    private Integer useMonth;
+
     private Integer year;
 
     private Integer month;
@@ -63,7 +67,23 @@ public class CalSampleSpotSymbol extends IdEntity implements Tracker {
     }
 
 
+    @Column(name = "USE_YEAR")
+    public Integer getUseYear() {
+        return useYear;
+    }
 
+    public void setUseYear(Integer useYear) {
+        this.useYear = useYear;
+    }
+
+    @Column(name = "USE_MONTH")
+    public Integer getUseMonth() {
+        return useMonth;
+    }
+
+    public void setUseMonth(Integer useMonth) {
+        this.useMonth = useMonth;
+    }
 
     @Column(name = "YEAR")
     public Integer getYear() {

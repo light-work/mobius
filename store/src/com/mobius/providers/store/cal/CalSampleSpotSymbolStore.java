@@ -13,9 +13,9 @@ public interface CalSampleSpotSymbolStore {
 
     CalSampleSpotSymbol getById(Long id, Selector... selectors) throws StoreException;
 
-    CalSampleSpotSymbol getBySymbolIdYearMonth(Long symbolId, Integer year, Integer month) throws StoreException;
+    CalSampleSpotSymbol getBySymbolIdYearMonthUse(Long symbolId,Integer useYear, Integer useMonth, Integer year, Integer month) throws StoreException;
 
-    List<CalSampleSpotSymbol> getListByYearMonth(Integer year, Integer month) throws StoreException;
+    List<CalSampleSpotSymbol> getListByYearMonthUse(Integer useYear, Integer useMonth) throws StoreException;
 
     List<CalSampleSpotSymbol> getList(List<Selector> selectorList) throws StoreException;
 

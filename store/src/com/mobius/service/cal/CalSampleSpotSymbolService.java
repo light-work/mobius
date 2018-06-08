@@ -32,14 +32,14 @@ public class CalSampleSpotSymbolService extends HQuery implements CalSampleSpotS
 
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
-    public CalSampleSpotSymbol getBySymbolIdYearMonth(Long symbolId, Integer year, Integer month) throws StoreException {
-        return $($eq("symbolId.id", symbolId), $eq("year", year), $eq("month", month)).get(CalSampleSpotSymbol.class);
+    public CalSampleSpotSymbol getBySymbolIdYearMonthUse(Long symbolId, Integer useYear, Integer useMonth,Integer year, Integer month) throws StoreException {
+        return $($eq("symbolId.id", symbolId), $eq("useYear", useYear), $eq("useMonth", useMonth),$eq("year", year), $eq("month", month)).get(CalSampleSpotSymbol.class);
     }
 
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
-    public List<CalSampleSpotSymbol> getListByYearMonth(Integer year, Integer month) throws StoreException {
-        return $($eq("year", year), $eq("month", month)).list(CalSampleSpotSymbol.class);
+    public List<CalSampleSpotSymbol> getListByYearMonthUse(Integer useYear, Integer useMonth) throws StoreException {
+        return $($eq("useYear", useYear), $eq("useMonth", useMonth)).list(CalSampleSpotSymbol.class);
     }
 
     /**
