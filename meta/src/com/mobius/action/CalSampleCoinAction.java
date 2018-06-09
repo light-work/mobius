@@ -81,14 +81,11 @@ public class CalSampleCoinAction extends BaseAction {
         }
     }
 
-    public String step1() throws Exception {
+    private boolean step1() throws Exception {
         getDate();
         if (month == null || year == null) {
-            return null;
+            return false;
         }
-        JSONObject root = new JSONObject();
-        root.put("result", -1);
-
         //get store
         CalSampleSpotSymbolStore calSampleSpotSymbolStore = hsfServiceFactory.consumer(CalSampleSpotSymbolStore.class);
         SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
@@ -105,7 +102,7 @@ public class CalSampleCoinAction extends BaseAction {
 
             List<Selector> dailySelector = new ArrayList<>();
 
-            //三个月前的数据
+            //三个月前的数据 (offset)
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
@@ -200,15 +197,14 @@ public class CalSampleCoinAction extends BaseAction {
                             calSampleSpotSymbolStore.save(updateList, Persistent.UPDATE);
                         }
                     }
-                    root.put("result", 0);
-                    writeJsonByAction(root.toString());
+                    return true;
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
 
-        return null;
+        return false;
     }
 
     private Map<String, List<Double>> orderList(List<SpotDailyUsdt> list, String endTime) throws Exception {
@@ -292,76 +288,6 @@ public class CalSampleCoinAction extends BaseAction {
         return map;
     }
 
-    @Deprecated
-    private List<CalSampleSpotSymbol> filterSpotSymbolList(int y, int m, Long coinId) throws Exception {
-        CalSampleSpotSymbolStore calSampleSpotSymbolStore = hsfServiceFactory.consumer(CalSampleSpotSymbolStore.class);
-        List<CalSampleSpotSymbol> list = new ArrayList<>();
-        if (calSampleSpotSymbolStore != null) {
-            Calendar c = Calendar.getInstance();
-            c.set(Calendar.YEAR, y);
-            c.set(Calendar.MONTH, m - 1);
-            int year1 = c.get(Calendar.YEAR);
-            int month1 = (c.get(Calendar.MONTH) + 1);
-            List<Selector> selector1 = new ArrayList<>();
-            selector1.add(SelectorUtils.$alias("symbolId", "symbolId"));
-            selector1.add(SelectorUtils.$alias("symbolId.coinId", "coinId"));
-            selector1.add(SelectorUtils.$eq("useYn", "Y"));
-            selector1.add(SelectorUtils.$eq("month", month1));
-            selector1.add(SelectorUtils.$eq("year", year1));
-            if (coinId != null) {
-                selector1.add(SelectorUtils.$eq("coinId.id", coinId));
-            }
-            List<CalSampleSpotSymbol> list1 = calSampleSpotSymbolStore.getList(selector1);
-
-            c.add(Calendar.MONTH, -1);
-            int year2 = c.get(Calendar.YEAR);
-            int month2 = (c.get(Calendar.MONTH) + 1);
-            List<Selector> selector2 = new ArrayList<>();
-            selector2.add(SelectorUtils.$alias("symbolId", "symbolId"));
-            selector2.add(SelectorUtils.$alias("symbolId.coinId", "coinId"));
-            selector2.add(SelectorUtils.$eq("useYn", "Y"));
-            selector2.add(SelectorUtils.$eq("month", month2));
-            selector2.add(SelectorUtils.$eq("year", year2));
-            if (coinId != null) {
-                selector2.add(SelectorUtils.$eq("coinId.id", coinId));
-            }
-            List<CalSampleSpotSymbol> list2 = calSampleSpotSymbolStore.getList(selector2);
-
-
-            c.add(Calendar.MONTH, -1);
-            int year3 = c.get(Calendar.YEAR);
-            int month3 = (c.get(Calendar.MONTH) + 1);
-            List<Selector> selector3 = new ArrayList<>();
-            selector3.add(SelectorUtils.$alias("symbolId", "symbolId"));
-            selector3.add(SelectorUtils.$alias("symbolId.coinId", "coinId"));
-            selector3.add(SelectorUtils.$eq("useYn", "Y"));
-            selector3.add(SelectorUtils.$eq("month", month3));
-            selector3.add(SelectorUtils.$eq("year", year3));
-            if (coinId != null) {
-                selector3.add(SelectorUtils.$eq("coinId.id", coinId));
-            }
-            List<CalSampleSpotSymbol> list3 = calSampleSpotSymbolStore.getList(selector3);
-
-            //求三个数组交集,符合每个月一条连续三个月的样本
-            if (list1 != null && list2 != null && list3 != null && !list1.isEmpty() && !list2.isEmpty() && !list3.isEmpty()) {
-                for (CalSampleSpotSymbol s1 : list1) {
-                    for (CalSampleSpotSymbol s2 : list2) {
-                        for (CalSampleSpotSymbol s3 : list3) {
-                            if (s1.getSymbolId().getId().equals(s2.getSymbolId().getId())
-                                    && s1.getSymbolId().getId().equals(s3.getSymbolId().getId())) {
-                                list.add(s1);
-                            }
-                        }
-                    }
-                }
-            }
-            System.out.print("------filter----" + year1 + "-" + month1 + " size=" + (list1 == null ? "null" : list1.size()));
-            System.out.print(" " + year2 + "-" + month2 + " size=" + (list2 == null ? "null" : list2.size()));
-            System.out.println(" " + year3 + "-" + month3 + " size=" + (list3 == null ? "null" : list3.size()));
-        }
-        return list;
-    }
-
     private List<CalSampleSpotSymbol> getLastMonthList(int y, int m, Long coinId) throws Exception {
         CalSampleSpotSymbolStore calSampleSpotSymbolStore = hsfServiceFactory.consumer(CalSampleSpotSymbolStore.class);
         List<CalSampleSpotSymbol> list = new ArrayList<>();
@@ -385,16 +311,13 @@ public class CalSampleCoinAction extends BaseAction {
         return list;
     }
 
-    public String step2() throws Exception {
+    private boolean step2() throws Exception {
         getDate();
         if (month == null || year == null) {
-            return null;
+            return false;
         }
-        JSONObject root = new JSONObject();
-        root.put("result", -1);
         CalSampleSpotCoinStore calSampleSpotCoinStore = hsfServiceFactory.consumer(CalSampleSpotCoinStore.class);
         SysCapitalizationStore sysCapitalizationStore = hsfServiceFactory.consumer(SysCapitalizationStore.class);
-
 
         if (sysCapitalizationStore != null && calSampleSpotCoinStore != null) {
             List<Selector> selectorList = new ArrayList<>();
@@ -412,6 +335,7 @@ public class CalSampleCoinAction extends BaseAction {
                 if (!coins.isEmpty()) {
                     System.out.println("-------coins size=" + coins.size());
 
+                    //上个月市值(offset)
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.MONTH, month - 1);
                     calendar.set(Calendar.YEAR, year);
@@ -518,8 +442,7 @@ public class CalSampleCoinAction extends BaseAction {
                         if (!updateList.isEmpty()) {
                             calSampleSpotCoinStore.save(updateList, Persistent.UPDATE);
                         }
-                        root.put("result", 0);
-                        writeJsonByAction(root.toString());
+                        return true;
                     }
                 } else {
                     System.out.println("--------coins was empty!");
@@ -528,16 +451,14 @@ public class CalSampleCoinAction extends BaseAction {
                 System.out.println("--------calSampleSpotSymbolList was empty!");
             }
         }
-        return null;
+        return false;
     }
 
-    public String step3() throws Exception {
+    private boolean step3() throws Exception {
         getDate();
         if (month == null || year == null) {
-            return null;
+            return false;
         }
-        JSONObject root = new JSONObject();
-        root.put("result", -1);
         CalSampleSpotCoinStore calSampleSpotCoinStore = hsfServiceFactory.consumer(CalSampleSpotCoinStore.class);
         SysCapitalizationStore sysCapitalizationStore = hsfServiceFactory.consumer(SysCapitalizationStore.class);
         if (calSampleSpotCoinStore != null && sysCapitalizationStore != null) {
@@ -603,18 +524,17 @@ public class CalSampleCoinAction extends BaseAction {
                     if (!updateList.isEmpty()) {
                         calSampleSpotCoinStore.save(updateList, Persistent.UPDATE);
                     }
-                    root.put("result", 0);
-                    writeJsonByAction(root.toString());
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
-    public String step45() throws Exception {
+    private boolean step4() throws Exception {
         getDate();
         if (month == null || year == null) {
-            return null;
+            return false;
         }
         JSONObject root = new JSONObject();
         root.put("result", -1);
@@ -678,18 +598,13 @@ public class CalSampleCoinAction extends BaseAction {
                 if (!updateList.isEmpty()) {
                     calSampleSpotSymbolWeightStore.save(updateList, Persistent.UPDATE);
                 }
-                root.put("result", 0);
-                writeJsonByAction(root.toString());
+                return true;
             } else {
                 System.out.println("-----coinList was null.");
             }
         }
 
-        return null;
-    }
-
-    public static void main(String[] args) throws Exception {
-
+        return false;
     }
 
     private static void reWeight(List<Double> list) {
@@ -1190,6 +1105,26 @@ public class CalSampleCoinAction extends BaseAction {
                 System.out.println("---calSampleSpotSymbolWeightList was null");
             }
         }
+        return null;
+    }
+
+    public String calcWeight() throws Exception {
+        JSONObject root = new JSONObject();
+        root.put("result", -1);
+        try {
+            boolean isSuccessStep1 = step1();//过滤样本
+            boolean isSuccessStep2 = step2();//过滤样本对应币种覆盖率
+            boolean isSuccessStep3 = step3();//计算样本对应币种权重
+            boolean isSuccessStep4 = step4();//反向设置样本的权重
+            root.put("step1", isSuccessStep1 ? 0 : -1);
+            root.put("step2", isSuccessStep2 ? 0 : -1);
+            root.put("step3", isSuccessStep3 ? 0 : -1);
+            root.put("step4", isSuccessStep4 ? 0 : -1);
+            root.put("result", 0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        writeJsonByAction(root.toString());
         return null;
     }
 }
