@@ -47,6 +47,17 @@ public class CalSampleSpotSymbolWeightStoreImpl implements CalSampleSpotSymbolWe
 
     @Override
     @ConnectManager
+    public List<CalSampleSpotSymbolWeight> getListByYearMonthTradeMarketServerNo(Integer year, Integer month, Long tradeId, String market, Integer serverNo) throws StoreException {
+        try {
+            return this.calSampleCoinService.getListByYearMonthTradeMarketServerNo(year, month, tradeId, market, serverNo);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
     public List<CalSampleSpotSymbolWeight> getListByYearMonth(Integer year, Integer month) throws StoreException {
         try {
             return this.calSampleCoinService.getListByYearMonth(year, month);

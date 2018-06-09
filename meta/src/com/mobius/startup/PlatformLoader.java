@@ -149,6 +149,34 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
 
+
+                    JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                            .build();
+
+
+                    JobDetail jobDetailTaskForOKexSpotUsdt = newJob(DetailTaskForOkexSpotUsdt.class).withIdentity("detailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerDetailTaskForOKexSpotUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
+                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                            .build();
+
+                    JobDetail jobDetailTaskForHuobiUsdt = newJob(DetailTaskForHuobiUsdt.class).withIdentity("detailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerDetailTaskForHuobiUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
+                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                            .build();
+
+
+                    scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
+
                 } else {
                     //daily
                     JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
