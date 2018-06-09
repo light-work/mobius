@@ -17,6 +17,8 @@ public interface CalSampleSpotSymbolWeightStore {
 
     List<CalSampleSpotSymbolWeight> getListByYearMonth(Integer year, Integer month) throws StoreException;
 
+    List<CalSampleSpotSymbolWeight> getListByYearMonthTradeMarketServerNo(Integer year, Integer month,Long tradeId,String market,Integer serverNo) throws StoreException;
+
     List<CalSampleSpotSymbolWeight> getList(List<Selector> selectorList) throws StoreException;
 
     void save(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, Persistent persistent) throws StoreException;

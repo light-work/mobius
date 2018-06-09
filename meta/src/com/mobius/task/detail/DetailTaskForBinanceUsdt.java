@@ -18,6 +18,7 @@
 package com.mobius.task.detail;
 
 import com.google.inject.Injector;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -26,6 +27,7 @@ import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
+import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.spot.SpotDailyBtcStore;
 import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
@@ -97,24 +99,26 @@ public class DetailTaskForBinanceUsdt implements Job {
                         System.out.println(" sysIpServer=" + sysIpServer.getServerNo());
                         if (sysIpServer != null) {
                             SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
-                            SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
-                            if (spotSymbolStore != null && sysTradeStore != null) {
+                            CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
+                            if (calSampleSpotSymbolWeightStore != null && sysTradeStore != null) {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
                                     Date d = DateFormatUtil.getCurrentDate(true);
-                                    List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
-                                    if (symbolList != null && !symbolList.isEmpty()) {
-                                        for (SpotSymbol spotSymbol : symbolList) {
+                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(2018, 4,
+                                            sysTrade.getId(), market, sysIpServer.getServerNo());
+                                    if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
+                                        for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                                             try {
-                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+                                                SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
+                                                if (spotSymbol != null) {
+                                                    FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+                                                }
                                             } catch (Exception e) {
 
                                             }
-
                                         }
                                     }
                                 }
-
                             }
                         }
                     }
