@@ -32,14 +32,19 @@ public class Utils {
         return Math.max(Math.max(a, b), c);
     }
 
+    public static double min(double a, double b, double c) {
+        return Math.min(Math.min(a, b), c);
+    }
+
 
     public static double median(List<Double> data){
         double mid = 0;
         Collections.sort(data);
         int len = data.size();
-        System.out.println(data.toString());
-        if(len%2==0) mid = (data.get(len/2)+data.get(len/2+1))/2; else mid = data.get(len/2);
-        System.out.println("数组data的中位数为："+mid);
+        //System.out.println(data.toString());
+        if (len % 2 == 0) mid = (data.get(len / 2 - 1) + data.get(len / 2)) / 2;
+        else mid = data.get(len / 2);
+//        System.out.println("数组data的中位数为："+mid);
         return mid;
     }
 
