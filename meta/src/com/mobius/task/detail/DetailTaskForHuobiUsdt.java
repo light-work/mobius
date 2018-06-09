@@ -86,7 +86,7 @@ public class DetailTaskForHuobiUsdt implements Job {
                                             for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                                                 SpotSymbol spotSymbol=calSampleSpotSymbolWeight.getSymbolId();
                                                 if(spotSymbol!=null){
-                                                    FastCallForHuobi.callUsdt(spotSymbol, hsfServiceFactory, sysTrade, current);
+                                                    FastCallForHuobi.callUsdt(calSampleSpotSymbolWeight,spotSymbol, hsfServiceFactory, sysTrade, current);
                                                 }
                                             }
                                         }

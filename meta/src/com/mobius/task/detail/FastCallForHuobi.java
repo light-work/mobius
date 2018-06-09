@@ -1,6 +1,8 @@
 package com.mobius.task.detail;
 
 
+import com.mobius.Utils;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailBtcHuobi;
 import com.mobius.entity.spot.SpotDetailEthHuobi;
 import com.mobius.entity.spot.SpotDetailUsdtHuobi;
@@ -32,7 +34,7 @@ public class FastCallForHuobi {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
 
-    public static void callUsdt(final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
+    public static void callUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -81,7 +83,9 @@ public class FastCallForHuobi {
                             }
                             detail.setCreated(tradingTime);
                             detail.setCreatedBy("task");
-                            spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE);
+                            calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
+                            Utils.bind(calSampleSpotSymbolWeight,"task");
+                            spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight);
 //                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
                         }
 

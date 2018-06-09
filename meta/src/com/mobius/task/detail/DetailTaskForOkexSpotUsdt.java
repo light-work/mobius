@@ -86,7 +86,7 @@ public class DetailTaskForOkexSpotUsdt implements Job {
                                             for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                                 if (spotSymbol != null) {
-                                                    FastCallForOkex.callSpotUsdt(spotSymbol, hsfServiceFactory, sysTrade, current);
+                                                    FastCallForOkex.callSpotUsdt(calSampleSpotSymbolWeight,spotSymbol, hsfServiceFactory, sysTrade, current);
                                                 }
                                             }
                                         }

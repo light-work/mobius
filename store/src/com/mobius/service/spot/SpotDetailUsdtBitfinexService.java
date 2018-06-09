@@ -1,9 +1,12 @@
 package com.mobius.service.spot;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailUsdtBitfinex;
 import com.mobius.providers.store.spot.SpotDetailUsdtBitfinexStore;
+import com.mobius.service.cal.CalSampleSpotSymbolWeightService;
 import org.guiceside.persistence.TransactionType;
 import org.guiceside.persistence.Transactional;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
@@ -19,6 +22,8 @@ import java.util.List;
 @Singleton
 public class SpotDetailUsdtBitfinexService extends HQuery implements SpotDetailUsdtBitfinexStore {
 
+    @Inject
+    private CalSampleSpotSymbolWeightService calSampleSpotSymbolWeightService;
 
     @Transactional(type = TransactionType.READ_ONLY)
     public SpotDetailUsdtBitfinex getById(Long id, Selector... selectors) throws StoreException {
@@ -44,6 +49,16 @@ public class SpotDetailUsdtBitfinexService extends HQuery implements SpotDetailU
     @Transactional(type = TransactionType.READ_WRITE)
     public void save(SpotDetailUsdtBitfinex SpotDetailUsdtBitfinex, Persistent persistent) throws StoreException {
         $(SpotDetailUsdtBitfinex).save(persistent);
+    }
+
+
+    @Override
+    @Transactional(type = TransactionType.READ_WRITE)
+    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+        $(spotDetailUsdtBitfinex).save(persistent);
+        if(calSampleSpotSymbolWeight!=null){
+            calSampleSpotSymbolWeightService.save(calSampleSpotSymbolWeight,Persistent.UPDATE);
+        }
     }
 
     @Transactional(type = TransactionType.READ_WRITE)

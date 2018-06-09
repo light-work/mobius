@@ -3,6 +3,7 @@ package com.mobius.task.detail;
 
 import com.mobius.OKHttpUtils;
 import com.mobius.Utils;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailBtcBinance;
 import com.mobius.entity.spot.SpotDetailEthBinance;
 import com.mobius.entity.spot.SpotDetailUsdtBinance;
@@ -32,7 +33,7 @@ public class FastCallForBinance {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
 
-    public static void call(final SysTrade sysTrade, final SpotSymbol spotSymbol, final HSFServiceFactory hsfServiceFactory,
+    public static void call(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SysTrade sysTrade, final SpotSymbol spotSymbol, final HSFServiceFactory hsfServiceFactory,
                             final Date tradingDate) {
         executorService.execute(new Runnable() {
             public void run() {
@@ -73,7 +74,11 @@ public class FastCallForBinance {
                                             spotDetailUsdtBinance.setAskPrice(askPrice);
                                             spotDetailUsdtBinance.setAskVolume(askQty);
                                             Utils.bind(spotDetailUsdtBinance,"task");
-                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE);
+
+                                            calSampleSpotSymbolWeight.setLastPrice(lastPrice);
+                                            Utils.bind(calSampleSpotSymbolWeight,"task");
+
+                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeight);
                                             //save
                                         } else if (market.equals("btc")) {
                                             SpotDetailBtcBinance spotDetailBtcBinance = new SpotDetailBtcBinance();
