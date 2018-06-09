@@ -1,6 +1,8 @@
 package com.mobius.task.detail;
 
 
+import com.mobius.Utils;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.futures.FuturesDetailUsdtOkex;
 import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.spot.SpotDetailBtcOkex;
@@ -100,7 +102,7 @@ public class FastCallForOkex {
         }
     }
 
-    public static void callSpotUsdt(final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
+    public static void callSpotUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -115,7 +117,10 @@ public class FastCallForOkex {
                             JSONObject tick = root.getJSONObject("ticker");
                             SpotDetailUsdtOkex detail = new SpotDetailUsdtOkex();
                             setValue(detail, tick, sysTrade, tradingTime, symbol);
-                            spotDetailUsdtOkexStore.save(detail, Persistent.SAVE);
+                            calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
+                            Utils.bind(calSampleSpotSymbolWeight,"task");
+
+                            spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight);
                             System.out.println("DetailTaskForOkexUsdt --- " + symbol.getSymbol() + " save success.");
                         }
                     }

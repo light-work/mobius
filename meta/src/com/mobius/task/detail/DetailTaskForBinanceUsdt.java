@@ -111,7 +111,7 @@ public class DetailTaskForBinanceUsdt implements Job {
                                             try {
                                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                                 if (spotSymbol != null) {
-                                                    FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+                                                    FastCallForBinance.call(calSampleSpotSymbolWeight,sysTrade, spotSymbol, hsfServiceFactory, d);
                                                 }
                                             } catch (Exception e) {
 

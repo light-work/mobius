@@ -2,6 +2,7 @@ package com.mobius.providers.store.spot;
 
 
 import com.mobius.common.StoreException;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailUsdtOkex;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
@@ -19,7 +20,7 @@ public interface SpotDetailUsdtOkexStore {
 
     List<SpotDetailUsdtOkex> getList(List<Selector> selectorList) throws StoreException;
 
-    void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent) throws StoreException;
+    void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent,CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException;
 
     void save(List<SpotDetailUsdtOkex> spotDetailUsdtOkexList, Persistent persistent) throws StoreException;
 
