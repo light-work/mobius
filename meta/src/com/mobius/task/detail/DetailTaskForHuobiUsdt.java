@@ -1,9 +1,11 @@
 package com.mobius.task.detail;
 
 import com.google.inject.Injector;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
+import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -76,12 +78,16 @@ public class DetailTaskForHuobiUsdt implements Job {
                             if (sysTradeStore != null) {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
-                                    SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
-                                    if (spotSymbolStore != null) {
-                                        List<SpotSymbol> spotSymbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
-                                        if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
-                                            for (SpotSymbol symbol : spotSymbolList) {
-                                                FastCallForHuobi.callUsdt(symbol, hsfServiceFactory, sysTrade, current);
+                                    CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
+                                    if (calSampleSpotSymbolWeightStore != null) {
+                                        List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(2018,4,
+                                                sysTrade.getId(), market, sysIpServer.getServerNo());
+                                        if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
+                                            for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
+                                                SpotSymbol spotSymbol=calSampleSpotSymbolWeight.getSymbolId();
+                                                if(spotSymbol!=null){
+                                                    FastCallForHuobi.callUsdt(calSampleSpotSymbolWeight,spotSymbol, hsfServiceFactory, sysTrade, current);
+                                                }
                                             }
                                         }
                                     }

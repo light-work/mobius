@@ -95,11 +95,11 @@ public class DetailTaskForBinanceEth implements Job {
                                     List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
                                     if (symbolList != null && !symbolList.isEmpty()) {
                                         for (SpotSymbol spotSymbol : symbolList) {
-                                            try {
-                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
-                                            } catch (Exception e) {
-
-                                            }
+//                                            try {
+//                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+//                                            } catch (Exception e) {
+//
+//                                            }
 
                                         }
                                     }

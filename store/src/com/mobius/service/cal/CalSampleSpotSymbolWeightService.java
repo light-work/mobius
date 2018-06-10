@@ -33,13 +33,20 @@ public class CalSampleSpotSymbolWeightService extends HQuery implements CalSampl
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
     public CalSampleSpotSymbolWeight getBySymbolIdYearMonth(Long symbolId, Integer year, Integer month) throws StoreException {
-        return $($eq("symbolId.id", symbolId), $eq("year", year), $eq("month", month)).get(CalSampleSpotSymbolWeight.class);
+        return $($alias("symbolId","symbolId"),$eq("symbolId.id", symbolId), $eq("year", year), $eq("month", month)).get(CalSampleSpotSymbolWeight.class);
     }
 
     @Override
     @Transactional(type = TransactionType.READ_ONLY)
     public List<CalSampleSpotSymbolWeight> getListByYearMonth(Integer year, Integer month) throws StoreException {
-        return $($eq("year", year), $eq("month", month)).list(CalSampleSpotSymbolWeight.class);
+        return $($alias("symbolId","symbolId"),$eq("year", year), $eq("month", month)).list(CalSampleSpotSymbolWeight.class);
+    }
+
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public List<CalSampleSpotSymbolWeight> getListByYearMonthTradeMarketServerNo(Integer year, Integer month,Long tradeId,String market, Integer serverNo) throws StoreException {
+        return $($alias("symbolId","symbolId"),$alias("symbolId.tradeId","tradeId"),$eq("tradeId.id",tradeId),
+                $eq("symbolId.market",market),$eq("symbolId.server",serverNo),$eq("year", year), $eq("month", month)).list(CalSampleSpotSymbolWeight.class);
     }
 
     /**

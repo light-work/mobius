@@ -3,6 +3,7 @@ package com.mobius.storeImpl.spot;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailUsdtBitfinex;
 import com.mobius.providers.store.spot.SpotDetailUsdtBitfinexStore;
 import com.mobius.service.spot.SpotDetailUsdtBitfinexService;
@@ -57,11 +58,21 @@ public class SpotDetailUsdtBitfinexStoreImpl implements SpotDetailUsdtBitfinexSt
         }
     }
 
-    @Override
     @ConnectManager
     public void save(SpotDetailUsdtBitfinex SpotDetailUsdtBitfinex, Persistent persistent) throws StoreException {
         try {
             this.spotDetailUsdtBitfinexService.save(SpotDetailUsdtBitfinex, persistent);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
+    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+        try {
+            this.spotDetailUsdtBitfinexService.save(spotDetailUsdtBitfinex, persistent,calSampleSpotSymbolWeight);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

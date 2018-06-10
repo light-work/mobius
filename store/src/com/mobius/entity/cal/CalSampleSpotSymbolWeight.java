@@ -31,6 +31,8 @@ public class CalSampleSpotSymbolWeight extends IdEntity implements Tracker {
 
     private Double weight;
 
+    private Double lastPrice;
+
     private Date created;
 
     private String createdBy;
@@ -79,6 +81,14 @@ public class CalSampleSpotSymbolWeight extends IdEntity implements Tracker {
         this.month = month;
     }
 
+    @Column(name = "LAST_PRICE")
+    public Double getLastPrice() {
+        return lastPrice;
+    }
+
+    public void setLastPrice(Double lastPrice) {
+        this.lastPrice = lastPrice;
+    }
 
     @Column(name = "WEIGHT")
     public Double getWeight() {

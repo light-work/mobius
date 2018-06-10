@@ -95,11 +95,11 @@ public class DetailTaskForBinanceBtc implements Job {
                                     List<SpotSymbol> symbolList = spotSymbolStore.getListByTradeMarketServer(sysTrade.getId(), market, sysIpServer.getServerNo());
                                     if (symbolList != null && !symbolList.isEmpty()) {
                                         for (SpotSymbol spotSymbol : symbolList) {
-                                            try {
-                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
+//                                            try {
+//                                                FastCallForBinance.call(sysTrade, spotSymbol, hsfServiceFactory, d);
+//                                            } catch (Exception e) {
+//                                                e.printStackTrace();
+//                                            }
 
                                         }
                                     }

@@ -3,6 +3,7 @@ package com.mobius.storeImpl.spot;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDetailUsdtHuobi;
 import com.mobius.providers.store.spot.SpotDetailUsdtHuobiStore;
 import com.mobius.service.spot.SpotDetailUsdtHuobiService;
@@ -57,11 +58,21 @@ public class SpotDetailUsdtHuobiStoreImpl implements SpotDetailUsdtHuobiStore {
         }
     }
 
-    @Override
     @ConnectManager
     public void save(SpotDetailUsdtHuobi SpotDetailUsdtHuobi, Persistent persistent) throws StoreException {
         try {
             this.spotDetailUsdtHuobiService.save(SpotDetailUsdtHuobi, persistent);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
+    public void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+        try {
+            this.spotDetailUsdtHuobiService.save(spotDetailUsdtHuobi, persistent,calSampleSpotSymbolWeight);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
