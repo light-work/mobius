@@ -6,12 +6,15 @@ import com.mobius.entity.cal.CalSampleSpotDailyPoint;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 
+import java.util.Date;
 import java.util.List;
 
 
 public interface CalSampleSpotDailyPointStore {
 
     CalSampleSpotDailyPoint getById(Long id, Selector... selectors) throws StoreException;
+
+    CalSampleSpotDailyPoint getByRecordDate(Date recordDate) throws StoreException;
 
     List<CalSampleSpotDailyPoint> getList(List<Selector> selectorList) throws StoreException;
 

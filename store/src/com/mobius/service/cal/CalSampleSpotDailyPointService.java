@@ -10,6 +10,7 @@ import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.HQuery;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +25,11 @@ public class CalSampleSpotDailyPointService extends HQuery implements CalSampleS
         return $(id, selectors).get(CalSampleSpotDailyPoint.class);
     }
 
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public CalSampleSpotDailyPoint getByRecordDate(Date recordDate) throws StoreException {
+        return $($eq("recordDate",recordDate)).get(CalSampleSpotDailyPoint.class);
+    }
 
     @Transactional(type = TransactionType.READ_ONLY)
     public List<CalSampleSpotDailyPoint> getList(List<Selector> selectorList) throws StoreException {
