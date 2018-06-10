@@ -36,7 +36,7 @@ public class CalSampleCoinAction extends BaseAction {
     private HSFServiceFactory hsfServiceFactory;
 
     @ReqGet
-    private Integer offset = 0;
+    private Integer offset;
 
     @ReqGet
     private String date;
@@ -81,7 +81,13 @@ public class CalSampleCoinAction extends BaseAction {
         }
     }
 
-    private boolean step1() throws Exception {
+    /**
+     * 往前推三个月查找适合的样本
+     *
+     * @return 是否成功
+     * @throws Exception
+     */
+    private boolean filterSymbols() throws Exception {
         getDate();
         if (month == null || year == null) {
             return false;
@@ -311,7 +317,13 @@ public class CalSampleCoinAction extends BaseAction {
         return list;
     }
 
-    private boolean step2() throws Exception {
+    /**
+     * 找出样本对应的币种,并计算覆盖率
+     *
+     * @return
+     * @throws Exception
+     */
+    private boolean setCoverRate() throws Exception {
         getDate();
         if (month == null || year == null) {
             return false;
@@ -454,7 +466,13 @@ public class CalSampleCoinAction extends BaseAction {
         return false;
     }
 
-    private boolean step3() throws Exception {
+    /**
+     * 设置币种权重
+     *
+     * @return
+     * @throws Exception
+     */
+    private boolean setCoinWeight() throws Exception {
         getDate();
         if (month == null || year == null) {
             return false;
@@ -531,7 +549,13 @@ public class CalSampleCoinAction extends BaseAction {
         return false;
     }
 
-    private boolean step4() throws Exception {
+    /**
+     * 反向设置币种对应的样本的权重
+     *
+     * @return
+     * @throws Exception
+     */
+    private boolean setSymbolsWeight() throws Exception {
         getDate();
         if (month == null || year == null) {
             return false;
@@ -661,20 +685,26 @@ public class CalSampleCoinAction extends BaseAction {
         return sb.deleteCharAt(sb.toString().length() - 1).append("]").toString();
     }
 
-    public String step6() throws Exception {
+    /**
+     * 计算指数
+     *
+     * @param lastPriceFormDaily 实时价格是否来自历史数据,如果是false,者会从样本权重取lastPrice
+     * @return
+     * @throws Exception
+     */
+    private boolean calcPoint(boolean lastPriceFormDaily) throws Exception {
         getDate();
         if (month == null || year == null) {
-            return null;
+            return false;
         }
-        JSONObject root = new JSONObject();
-        root.put("result", -1);
         CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
         SysCapitalizationStore sysCapitalizationStore = hsfServiceFactory.consumer(SysCapitalizationStore.class);
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
         CalSampleSpotPointStore calSampleSpotPointStore = hsfServiceFactory.consumer(CalSampleSpotPointStore.class);
         CalSampleSpotWeightHistoryStore calSampleSpotWeightHistoryStore = hsfServiceFactory.consumer(CalSampleSpotWeightHistoryStore.class);
+        CalSampleSpotDailyPointStore calSampleSpotDailyPointStore = hsfServiceFactory.consumer(CalSampleSpotDailyPointStore.class);
         if (StringUtils.isNotBlank(dateTime) && calSampleSpotSymbolWeightStore != null
-                && sysCapitalizationStore != null && spotDailyUsdtStore != null
+                && sysCapitalizationStore != null && spotDailyUsdtStore != null && calSampleSpotDailyPointStore!=null
                 && calSampleSpotPointStore != null && calSampleSpotWeightHistoryStore != null) {
             //date
             Date date = DateFormatUtil.parse(dateTime + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN);
@@ -690,7 +720,7 @@ public class CalSampleCoinAction extends BaseAction {
             List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getList(selectorList);
             if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
                 //获取daily
-                Map<Long, Double> todayDailyMap = new HashMap<>();
+                Map<Long, Double> todayLastPriceMap = new HashMap<>();
                 Map<Long, Double> yesterdayDailyMap = new HashMap<>();
                 Map<Long, Double> todayOpenWeightMap = new HashMap<>();
                 Double yesterdayPoint = 0d;
@@ -699,23 +729,28 @@ public class CalSampleCoinAction extends BaseAction {
                 List<Long> symbolIds = new ArrayList<>();
                 for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                     symbolIds.add(weight.getSymbolId().getId());
+                    todayLastPriceMap.put(weight.getSymbolId().getId(), weight.getLastPrice());//实时价格
                 }
 
-
-                //today 收盘价 TODO 样本实时成交价 6s获取一次detail 现在是今天24点收盘价(daily)
                 Date today = c.getTime();
-                List<Selector> todaySelectors = new ArrayList<>();
-                todaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                todaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                todaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                List<SpotDailyUsdt> todayDailyList = spotDailyUsdtStore.getList(todaySelectors);
-                if (todayDailyList != null && !todayDailyList.isEmpty()) {
-                    for (SpotDailyUsdt usdt : todayDailyList) {
-                        todayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                if (lastPriceFormDaily) {//form test
+                    todayLastPriceMap = new HashMap<>();
+                    //today 收盘价
+                    List<Selector> todaySelectors = new ArrayList<>();
+                    todaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
+                    todaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
+                    todaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
+                    List<SpotDailyUsdt> todayDailyList = spotDailyUsdtStore.getList(todaySelectors);
+                    if (todayDailyList != null && !todayDailyList.isEmpty()) {
+                        for (SpotDailyUsdt usdt : todayDailyList) {
+                            todayLastPriceMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                        }
+                    } else {
+                        System.out.println("-------todayDailyList was null.");
                     }
-                } else {
-                    System.out.println("-------todayDailyList was null.");
                 }
+
+
                 //yesterday 收盘价
                 c.add(Calendar.DAY_OF_YEAR, -1);
                 Date yesterdayDate = c.getTime();
@@ -733,20 +768,14 @@ public class CalSampleCoinAction extends BaseAction {
                 }
 
                 // 昨日点位
-                List<Selector> yesterdayPointSelector = new ArrayList<>();
-                yesterdayPointSelector.add(SelectorUtils.$eq("recordDate", yesterdayDate));
-                List<CalSampleSpotPoint> yesterdayPointList = calSampleSpotPointStore.getList(yesterdayPointSelector);
-                if (yesterdayPointList != null && !yesterdayPointList.isEmpty()) {
-                    for (CalSampleSpotPoint obj : yesterdayPointList) {
-                        yesterdayPoint = obj.getPoint();
-                    }
-                } else {
-                    System.out.println("yesterdayPointList was null");
+                CalSampleSpotDailyPoint calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
+                if (calSampleSpotDailyPoint != null) {
+                    yesterdayPoint = calSampleSpotDailyPoint.getPoint();
                 }
 
                 if (dayIndex == 1) {// 月初第一天
                     if (yesterdayPoint == null || yesterdayPoint == 0d) {
-                        yesterdayPoint = 14097.8442835647;
+                        yesterdayPoint = 1000d;
                     }
                     for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                         todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
@@ -755,7 +784,6 @@ public class CalSampleCoinAction extends BaseAction {
 
                     Map<Long, Double> dayBeforeYesterdayDailyMap = new HashMap<>();
                     Map<Long, Double> yesterdayWeightMap = new HashMap<>();
-
 
                     //the day before yesterday 收盘价
                     c.add(Calendar.DAY_OF_YEAR, -1);
@@ -812,7 +840,7 @@ public class CalSampleCoinAction extends BaseAction {
                 Map<Long, Double> map1 = new HashMap<>();
                 Double total = 0d;
                 for (Long symbolId : symbolIds) {
-                    Double todayDealPrice = todayDailyMap.get(symbolId);
+                    Double todayDealPrice = todayLastPriceMap.get(symbolId);
                     Double yesterdayClosePrice = yesterdayDailyMap.get(symbolId);
                     Double todayOpenWeight = todayOpenWeightMap.get(symbolId);
                     if (todayOpenWeight != null && todayOpenWeight != 0d &&
@@ -821,9 +849,6 @@ public class CalSampleCoinAction extends BaseAction {
                         Double v = todayDealPrice / yesterdayClosePrice * todayOpenWeight;
                         map1.put(symbolId, v);
                         total += v;
-                        System.out.println("symbolId=" + symbolId + " " + todayDealPrice +
-                                "/" + yesterdayClosePrice + " *" + todayOpenWeight +
-                                "=" + v);
                     } else {
                         System.out.println("symbolId=" + symbolId + " currentDealPrice=" + todayDealPrice +
                                 "  yesterdayClosePrice=" + yesterdayClosePrice + "  todayOpenWeight" + todayOpenWeight);
@@ -858,253 +883,57 @@ public class CalSampleCoinAction extends BaseAction {
                 if (!updateList.isEmpty()) {
                     calSampleSpotWeightHistoryStore.save(updateList, Persistent.UPDATE);
                 }
-
-
                 //计算实时点位
-                Double currentPoint = yesterdayPoint * total;
-                CalSampleSpotPoint point = new CalSampleSpotPoint();
-                point.setRecordDate(today);
-                point.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                point.setPoint(currentPoint);
-                point.setCreated(new Date());
-                point.setCreatedBy("batch");
-                point.setUseYn("Y");
-                calSampleSpotPointStore.save(point, Persistent.SAVE);
-                root.put("result", 0);
-                writeJsonByAction(root.toString());
+                if (yesterdayPoint != null && yesterdayPoint != 0d) {
+                    Double currentPoint = yesterdayPoint * total;
+
+                    Date created = new Date();
+                    Persistent status = Persistent.UPDATE;
+                    CalSampleSpotDailyPoint todayPoint = calSampleSpotDailyPointStore.getByRecordDate(today);
+                    if (todayPoint == null) {
+                        status = Persistent.SAVE;
+                        todayPoint = new CalSampleSpotDailyPoint();
+                        todayPoint.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                        todayPoint.setCreated(created);
+                        todayPoint.setCreatedBy("batch");
+                        todayPoint.setUpdatedBy("batch");
+                        todayPoint.setUpdated(created);
+                        todayPoint.setRecordDate(today);
+                        todayPoint.setUseYn("Y");
+                    }
+                    todayPoint.setPoint(currentPoint);
+
+                    CalSampleSpotPoint point = new CalSampleSpotPoint();
+                    point.setRecordDate(today);
+                    point.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                    point.setPoint(currentPoint);
+                    point.setCreated(created);
+                    point.setCreatedBy("batch");
+                    point.setUseYn("Y");
+                    calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
+                    return true;
+                } else {
+                    System.out.println("yesterday point was null and date is " + DateFormatUtil.format(today, DateFormatUtil.YEAR_MONTH_DAY_PATTERN_SHORT));
+                }
             } else {
                 System.out.println("---calSampleSpotSymbolWeightList was null");
             }
         }
-        return null;
+        return false;
     }
 
     public String batchUpdate() throws Exception {
         String starDate = "2018-1-1 00:00:00";
-        String endDate = "2018-5-26 00:00:00";
+        String endDate = "2018-6-9 00:00:00";
         new Date().getTime();
         long startTime = DateFormatUtil.parse(starDate, DateFormatUtil.YMDHMS_PATTERN).getTime();
         long endTime = DateFormatUtil.parse(endDate, DateFormatUtil.YMDHMS_PATTERN).getTime();
         for (; startTime <= endTime; ) {
             this.dateTime = DateFormatUtil.format(new Date(startTime), DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
-            System.out.println("-------update point on " + this.dateTime);
-            this.updatePoint();
+            this.calcPoint(true);
             startTime += 24 * 60 * 60 * 1000;
         }
 
-        return null;
-    }
-
-    private String updatePoint() throws Exception {
-        getDate();
-        if (month == null || year == null) {
-            return null;
-        }
-        CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
-        SysCapitalizationStore sysCapitalizationStore = hsfServiceFactory.consumer(SysCapitalizationStore.class);
-        SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
-        CalSampleSpotPointStore calSampleSpotPointStore = hsfServiceFactory.consumer(CalSampleSpotPointStore.class);
-        CalSampleSpotWeightHistoryStore calSampleSpotWeightHistoryStore = hsfServiceFactory.consumer(CalSampleSpotWeightHistoryStore.class);
-        if (StringUtils.isNotBlank(dateTime) && calSampleSpotSymbolWeightStore != null
-                && sysCapitalizationStore != null && spotDailyUsdtStore != null
-                && calSampleSpotPointStore != null && calSampleSpotWeightHistoryStore != null) {
-            //date
-            Date date = DateFormatUtil.parse(dateTime + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN);
-            Calendar c = Calendar.getInstance();
-            c.setTime(date);
-            int dayIndex = c.get(Calendar.DAY_OF_MONTH);
-
-            //获取全部样本合约
-            List<Selector> selectorList = new ArrayList<>();
-            selectorList.add(SelectorUtils.$eq("year", year));
-            selectorList.add(SelectorUtils.$eq("month", month));
-            selectorList.add(SelectorUtils.$alias("symbolId", "symbolId"));
-            List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getList(selectorList);
-            if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
-                //获取daily
-                Map<Long, Double> todayDailyMap = new HashMap<>();
-                Map<Long, Double> yesterdayDailyMap = new HashMap<>();
-                Map<Long, Double> todayOpenWeightMap = new HashMap<>();
-                Double yesterdayPoint = 0d;
-
-
-                List<Long> symbolIds = new ArrayList<>();
-                for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
-                    symbolIds.add(weight.getSymbolId().getId());
-                }
-
-
-                //today 收盘价 TODO 样本实时成交价 6s获取一次detail 现在是今天24点收盘价(daily)
-                Date today = c.getTime();
-                List<Selector> todaySelectors = new ArrayList<>();
-                todaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                todaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                todaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                List<SpotDailyUsdt> todayDailyList = spotDailyUsdtStore.getList(todaySelectors);
-                if (todayDailyList != null && !todayDailyList.isEmpty()) {
-                    for (SpotDailyUsdt usdt : todayDailyList) {
-                        todayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
-                    }
-                } else {
-                    System.out.println("-------todayDailyList was null.");
-                }
-                //yesterday 收盘价
-                c.add(Calendar.DAY_OF_YEAR, -1);
-                Date yesterdayDate = c.getTime();
-                List<Selector> yesterdaySelectors = new ArrayList<>();
-                yesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                yesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                yesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                List<SpotDailyUsdt> yesterdayDailyList = spotDailyUsdtStore.getList(yesterdaySelectors);
-                if (yesterdayDailyList != null && !yesterdayDailyList.isEmpty()) {
-                    for (SpotDailyUsdt usdt : yesterdayDailyList) {
-                        yesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
-                    }
-                } else {
-                    System.out.println("-------yesterdayDailyList was null.");
-                }
-
-                // 昨日点位
-                List<Selector> yesterdayPointSelector = new ArrayList<>();
-                yesterdayPointSelector.add(SelectorUtils.$eq("recordDate", yesterdayDate));
-                List<CalSampleSpotPoint> yesterdayPointList = calSampleSpotPointStore.getList(yesterdayPointSelector);
-                if (yesterdayPointList != null && !yesterdayPointList.isEmpty()) {
-                    for (CalSampleSpotPoint obj : yesterdayPointList) {
-                        yesterdayPoint = obj.getPoint();
-                    }
-                } else {
-                    System.out.println("yesterdayPointList was null");
-                }
-
-                if (dayIndex == 1) {// 月初第一天
-                    if (yesterdayPoint == null || yesterdayPoint == 0d) {
-                        yesterdayPoint = 14097.8442835647;
-                    }
-                    System.out.print(DateFormatUtil.format(yesterdayDate, DateFormatUtil.YMDHM_PATTERN) + " yesterday point=" + "--" + yesterdayPoint);
-
-                    for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
-                        todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
-                    }
-                } else {
-
-                    Map<Long, Double> dayBeforeYesterdayDailyMap = new HashMap<>();
-                    Map<Long, Double> yesterdayWeightMap = new HashMap<>();
-
-
-                    //the day before yesterday 收盘价
-                    c.add(Calendar.DAY_OF_YEAR, -1);
-                    List<Selector> beforeYesterdaySelectors = new ArrayList<>();
-                    beforeYesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                    beforeYesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                    beforeYesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                    List<SpotDailyUsdt> dayBeforeYesterdayDailyList = spotDailyUsdtStore.getList(beforeYesterdaySelectors);
-                    if (dayBeforeYesterdayDailyList != null && !dayBeforeYesterdayDailyList.isEmpty()) {
-                        for (SpotDailyUsdt usdt : dayBeforeYesterdayDailyList) {
-                            dayBeforeYesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
-                        }
-                    } else {
-                        System.out.println("-------dayBeforeYesterdayDailyList was null.");
-                    }
-
-
-                    List<Selector> yesterdayWeightSelector = new ArrayList<>();
-                    yesterdayWeightSelector.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                    yesterdayWeightSelector.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                    yesterdayWeightSelector.add(SelectorUtils.$eq("recordDate", yesterdayDate));
-                    List<CalSampleSpotWeightHistory> yesterdayWeightList = calSampleSpotWeightHistoryStore.getList(yesterdayWeightSelector);
-                    if (yesterdayWeightList != null && !yesterdayWeightList.isEmpty()) {
-                        for (CalSampleSpotWeightHistory obj : yesterdayWeightList) {
-                            yesterdayWeightMap.put(obj.getSymbolId().getId(), obj.getWeight());
-                        }
-                    } else {
-                        System.out.println("yesterdayWeightList was null");
-                    }
-
-                    //样本权重 map sum(样本昨日收市价/样本前日收市价*样本昨日开市权重)
-                    Map<Long, Double> numeratorMap = new HashMap<>();
-                    Double denominator = 0d;
-                    for (Long symbolId : symbolIds) {
-                        Double yesterdayClosePrice = yesterdayDailyMap.get(symbolId);
-                        Double dayBeforeYeseterdayClosePrice = dayBeforeYesterdayDailyMap.get(symbolId);
-                        Double yesterdayWeight = yesterdayWeightMap.get(symbolId);
-                        Double numerator = yesterdayClosePrice / dayBeforeYeseterdayClosePrice * yesterdayWeight;
-                        numeratorMap.put(symbolId, numerator);
-                        denominator += numerator;
-                    }
-                    for (Long symbolId : symbolIds) {
-                        if (denominator != 0d && numeratorMap.get(symbolId) != null && numeratorMap.get(symbolId) != 0d) {
-                            Double yesterdayCloseWeight = numeratorMap.get(symbolId) / denominator;
-                            todayOpenWeightMap.put(symbolId, yesterdayCloseWeight);
-                        } else {
-                            System.out.println("---denominator==0? " + (denominator == 0d) + " numeratorMap.get(" + symbolId + ")=" + numeratorMap.get(symbolId));
-                        }
-                    }
-
-                }
-
-                //计算当日实时成交价/昨日收市价*样本权重 & sum
-                Map<Long, Double> map1 = new HashMap<>();
-                Double total = 0d;
-                for (Long symbolId : symbolIds) {
-                    Double todayDealPrice = todayDailyMap.get(symbolId);
-                    Double yesterdayClosePrice = yesterdayDailyMap.get(symbolId);
-                    Double todayOpenWeight = todayOpenWeightMap.get(symbolId);
-                    if (todayOpenWeight != null && todayOpenWeight != 0d &&
-                            todayDealPrice != null && todayDealPrice != 0d &&
-                            yesterdayClosePrice != null && yesterdayClosePrice != 0d) {
-                        Double v = todayDealPrice / yesterdayClosePrice * todayOpenWeight;
-                        map1.put(symbolId, v);
-                        total += v;
-                    } else {
-                        System.out.println("symbolId=" + symbolId + " currentDealPrice=" + todayDealPrice +
-                                "  yesterdayClosePrice=" + yesterdayClosePrice + "  todayOpenWeight" + todayOpenWeight);
-                    }
-                }
-                System.out.println("total=" + total);
-                List<CalSampleSpotWeightHistory> saveList = new ArrayList<>();
-                List<CalSampleSpotWeightHistory> updateList = new ArrayList<>();
-                for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
-                    CalSampleSpotWeightHistory history = calSampleSpotWeightHistoryStore.getBySymbolIdDate(weight.getSymbolId().getId(), today);
-                    if (history == null) {
-                        history = new CalSampleSpotWeightHistory();
-                        history.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                        history.setSymbolId(weight.getSymbolId());
-                        history.setRecordDate(today);
-                        history.setWeight(todayOpenWeightMap.get(weight.getSymbolId().getId()));
-                        history.setCreated(new Date());
-                        history.setCreatedBy("batch");
-                        history.setUseYn("Y");
-                        saveList.add(history);
-                    } else {
-                        history.setWeight(todayOpenWeightMap.get(weight.getSymbolId().getId()));
-                        history.setUpdatedBy("batchUpdate");
-                        history.setUpdated(new Date());
-                        updateList.add(history);
-                    }
-                    todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
-                }
-                if (!saveList.isEmpty()) {
-                    calSampleSpotWeightHistoryStore.save(saveList, Persistent.SAVE);
-                }
-                if (!updateList.isEmpty()) {
-                    calSampleSpotWeightHistoryStore.save(updateList, Persistent.UPDATE);
-                }
-
-
-                //计算实时点位
-                Double currentPoint = yesterdayPoint * total;
-                CalSampleSpotPoint point = new CalSampleSpotPoint();
-                point.setRecordDate(today);
-                point.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                point.setPoint(currentPoint);
-                point.setCreated(new Date());
-                point.setCreatedBy("batch");
-                point.setUseYn("Y");
-                calSampleSpotPointStore.save(point, Persistent.SAVE);
-            } else {
-                System.out.println("---calSampleSpotSymbolWeightList was null");
-            }
-        }
         return null;
     }
 
@@ -1112,14 +941,14 @@ public class CalSampleCoinAction extends BaseAction {
         JSONObject root = new JSONObject();
         root.put("result", -1);
         try {
-            boolean isSuccessStep1 = step1();//过滤样本
-            boolean isSuccessStep2 = step2();//过滤样本对应币种覆盖率
-            boolean isSuccessStep3 = step3();//计算样本对应币种权重
-            boolean isSuccessStep4 = step4();//反向设置样本的权重
-            root.put("step1", isSuccessStep1 ? 0 : -1);
-            root.put("step2", isSuccessStep2 ? 0 : -1);
-            root.put("step3", isSuccessStep3 ? 0 : -1);
-            root.put("step4", isSuccessStep4 ? 0 : -1);
+            boolean isSuccessStep1 = filterSymbols();//过滤样本
+            boolean isSuccessStep2 = setCoverRate();//过滤样本对应币种覆盖率
+            boolean isSuccessStep3 = setCoinWeight();//计算样本对应币种权重
+            boolean isSuccessStep4 = setSymbolsWeight();//反向设置样本的权重
+            root.put("filterSymbols", isSuccessStep1 ? 0 : -1);
+            root.put("setCoverRate", isSuccessStep2 ? 0 : -1);
+            root.put("setCoinWeight", isSuccessStep3 ? 0 : -1);
+            root.put("setSymbolsWeight", isSuccessStep4 ? 0 : -1);
             root.put("result", 0);
         } catch (Exception ex) {
             ex.printStackTrace();
