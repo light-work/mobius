@@ -21,7 +21,9 @@ import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
+import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
+import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
@@ -38,11 +40,40 @@ public class DailyBinanceAction extends BaseAction {
     @ReqGet
     private Long marketId;
 
+
+    @ReqGet
+    private Long tradeId;
+
     @Inject
     private HSFServiceFactory hsfServiceFactory;
 
     @Override
     public String execute() throws Exception {
+        return null;
+    }
+
+    public String symbolServer() throws Exception {
+        SpotSymbolStore spotSymbolStore=hsfServiceFactory.consumer(SpotSymbolStore.class);
+        if(spotSymbolStore!=null&&tradeId!=null){
+            List<Selector> selectorList=new ArrayList<>();
+            selectorList.add(SelectorUtils.$alias("coinId","coinId"));
+            selectorList.add(SelectorUtils.$eq("tradeId.id",tradeId));
+            selectorList.add(SelectorUtils.$eq("market","usdt"));
+            selectorList.add(SelectorUtils.$order("displayOrder"));
+            List<SpotSymbol> spotSymbolList=spotSymbolStore.getList(selectorList);
+            if(spotSymbolList!=null&&!spotSymbolList.isEmpty()){
+                int i=1;
+                for(SpotSymbol spotSymbol:spotSymbolList){
+                    spotSymbol.setServer(i);
+                    i++;
+                    if(i==3){
+                        i=1;
+                    }
+                }
+                spotSymbolStore.save(spotSymbolList,Persistent.UPDATE);
+            }
+
+        }
         return null;
     }
 
