@@ -173,6 +173,10 @@
         <consumer id="calSampleSpotPointStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotPointStore"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+        <consumer id="calSampleSpotDailyPointStoreConsumer" interface="com.mobius.providers.store.cal.CalSampleSpotDailyPointStore"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
     </group>
 
 </hsf>
