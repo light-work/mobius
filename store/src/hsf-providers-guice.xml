@@ -258,5 +258,13 @@
                   enableTXC="true">
         </provider>
 
+        <service id="calSampleSpotDailyPointStore" class="com.mobius.storeImpl.cal.CalSampleSpotDailyPointStoreImpl"/>
+        <provider id="calSampleSpotDailyPointStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotDailyPointStore"
+                  ref="calSampleSpotDailyPointStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
     </group>
 </hsf>

@@ -74,9 +74,9 @@ public class PlatformLoader {
         EnvironmentValue.getInstance().setWebConfig(webConfig);
         String testIP = EnvironmentValue.getInstance().getValue("TEST_IP");
 
-        int detailInteval = 50;
+        int detailInteval = 30;
         if (!testIP.equals(localIP)) {
-            detailInteval = 6;//正是服务器 6s
+            detailInteval = 4;//正是服务器 6s
         }
         try {
             // Grab the Scheduler instance from the Factory
@@ -157,6 +157,13 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                             .build();
 
+                    JobDetail jobDetailTaskForBitfinexUsdt = newJob(DetailTaskForBitfinexUsdt.class).withIdentity("detailTaskForBitfinexUsdt", "groupDetailTaskForBitfinexUsdt")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerDetailTaskForBitfinexUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForBitfinexUsdt", "groupDetailTaskForBitfinexUsdt")
+                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                            .build();
+
 
                     JobDetail jobDetailTaskForOKexSpotUsdt = newJob(DetailTaskForOkexSpotUsdt.class).withIdentity("detailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
                             .usingJobData(jobDataMap).build();
@@ -175,6 +182,7 @@ public class PlatformLoader {
 
                     scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
                     scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForBitfinexUsdt, triggerDetailTaskForBitfinexUsdt);
                     scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
 
                 } else {

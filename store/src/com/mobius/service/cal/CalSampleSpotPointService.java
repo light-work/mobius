@@ -1,7 +1,9 @@
 package com.mobius.service.cal;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
+import com.mobius.entity.cal.CalSampleSpotDailyPoint;
 import com.mobius.entity.cal.CalSampleSpotPoint;
 import com.mobius.providers.store.cal.CalSampleSpotPointStore;
 import org.guiceside.persistence.TransactionType;
@@ -18,6 +20,8 @@ import java.util.List;
 @Singleton
 public class CalSampleSpotPointService extends HQuery implements CalSampleSpotPointStore {
 
+    @Inject
+    private CalSampleSpotDailyPointService calSampleSpotDailyPointService;
 
     @Transactional(type = TransactionType.READ_ONLY)
     public CalSampleSpotPoint getById(Long id, Selector... selectors) throws StoreException {
@@ -42,6 +46,16 @@ public class CalSampleSpotPointService extends HQuery implements CalSampleSpotPo
     @Transactional(type = TransactionType.READ_WRITE)
     public void save(List<CalSampleSpotPoint> calSampleSpotPointList, Persistent persistent) throws StoreException {
         $(calSampleSpotPointList).save(persistent);
+    }
+
+
+    @Override
+    @Transactional(type = TransactionType.READ_WRITE)
+    public void saveAndDaily(CalSampleSpotPoint calSampleSpotPoint, Persistent persistent, CalSampleSpotDailyPoint calSampleSpotDailyPoint, Persistent dailyPersistent) throws StoreException {
+        $(calSampleSpotPoint).save(persistent);
+        if(calSampleSpotDailyPoint!=null){
+            calSampleSpotDailyPointService.save(calSampleSpotDailyPoint,dailyPersistent);
+        }
     }
 
     /**

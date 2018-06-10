@@ -4,9 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotDailyPoint;
-import com.mobius.entity.cal.CalSampleSpotPoint;
-import com.mobius.providers.store.cal.CalSampleSpotPointStore;
-import com.mobius.service.cal.CalSampleSpotPointService;
+import com.mobius.providers.store.cal.CalSampleSpotDailyPointStore;
+import com.mobius.service.cal.CalSampleSpotDailyPointService;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
@@ -18,14 +17,14 @@ import java.util.List;
  * Created by Lara Croft on 2016/12/21.
  */
 @Singleton
-public class CalSampleSpotPointStoreImpl implements CalSampleSpotPointStore {
+public class CalSampleSpotDailyPointStoreImpl implements CalSampleSpotDailyPointStore {
 
     @Inject
-    private CalSampleSpotPointService calSampleCoinService;
+    private CalSampleSpotDailyPointService calSampleCoinService;
 
     @Override
     @ConnectManager
-    public CalSampleSpotPoint getById(Long id, Selector... selectors) throws StoreException {
+    public CalSampleSpotDailyPoint getById(Long id, Selector... selectors) throws StoreException {
         try {
             return this.calSampleCoinService.getById(id, selectors);
         } catch (HibernateException e) {
@@ -37,7 +36,7 @@ public class CalSampleSpotPointStoreImpl implements CalSampleSpotPointStore {
 
     @Override
     @ConnectManager
-    public List<CalSampleSpotPoint> getList(List<Selector> list) throws StoreException {
+    public List<CalSampleSpotDailyPoint> getList(List<Selector> list) throws StoreException {
         try {
             return this.calSampleCoinService.getList(list);
         } catch (HibernateException e) {
@@ -48,9 +47,9 @@ public class CalSampleSpotPointStoreImpl implements CalSampleSpotPointStore {
 
     @Override
     @ConnectManager
-    public void save(CalSampleSpotPoint calSampleSpotPoint, Persistent persistent) throws StoreException {
+    public void save(CalSampleSpotDailyPoint calSampleSpotDailyPoint, Persistent persistent) throws StoreException {
         try {
-            this.calSampleCoinService.save(calSampleSpotPoint, persistent);
+            this.calSampleCoinService.save(calSampleSpotDailyPoint, persistent);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -59,18 +58,7 @@ public class CalSampleSpotPointStoreImpl implements CalSampleSpotPointStore {
 
     @Override
     @ConnectManager
-    public void saveAndDaily(CalSampleSpotPoint calSampleSpotPoint, Persistent persistent, CalSampleSpotDailyPoint calSampleSpotDailyPoint, Persistent dailyPersistent) throws StoreException {
-        try {
-            this.calSampleCoinService.saveAndDaily(calSampleSpotPoint, persistent, calSampleSpotDailyPoint, dailyPersistent);
-        } catch (HibernateException e) {
-            Throwable throwable = e.getCause() != null ? e.getCause() : e;
-            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
-        }
-    }
-
-    @Override
-    @ConnectManager
-    public void save(List<CalSampleSpotPoint> list, Persistent persistent) throws StoreException {
+    public void save(List<CalSampleSpotDailyPoint> list, Persistent persistent) throws StoreException {
         try {
             this.calSampleCoinService.save(list, persistent);
         } catch (HibernateException e) {
@@ -81,9 +69,9 @@ public class CalSampleSpotPointStoreImpl implements CalSampleSpotPointStore {
 
     @Override
     @ConnectManager
-    public void delete(CalSampleSpotPoint calSampleSpotPoint) throws StoreException {
+    public void delete(CalSampleSpotDailyPoint calSampleSpotDailyPoint) throws StoreException {
         try {
-            this.calSampleCoinService.delete(calSampleSpotPoint);
+            this.calSampleCoinService.delete(calSampleSpotDailyPoint);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
