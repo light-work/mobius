@@ -68,9 +68,9 @@ public class DetailTaskForOkexSpotUsdt implements Job {
                     if (sysIpServerStore != null) {
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                         if (sysIpServer != null) {
-                            System.out.println("DailyTaskForOKexSpotUsdt " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
-                                    + " 当前ip" + localIP + "获取market " + market +
-                                    " serverNo" + sysIpServer.getServerNo() + "的币");
+//                            System.out.println("DailyTaskForOKexSpotUsdt " + DateFormatUtil.getCurrentDateFormat(DateFormatUtil.YMDHMS_PATTERN)
+//                                    + " 当前ip" + localIP + "获取market " + market +
+//                                    " serverNo" + sysIpServer.getServerNo() + "的币");
 
                             //
                             Date current = Calendar.getInstance().getTime();
@@ -80,7 +80,11 @@ public class DetailTaskForOkexSpotUsdt implements Job {
                                 if (sysTrade != null) {
                                     CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
                                     if (calSampleSpotSymbolWeightStore != null) {
-                                        List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(2018, 4,
+                                        Date weightDate=DateFormatUtil.getCurrentDate(false);
+                                        weightDate=DateFormatUtil.addMonth(weightDate,-1);
+                                        Integer weightYear=DateFormatUtil.getDayInYear(weightDate);
+                                        Integer weightMonth=DateFormatUtil.getDayInMonth(weightDate)+1;
+                                        List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
                                                 sysTrade.getId(), market, sysIpServer.getServerNo());
                                         if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
                                             for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {

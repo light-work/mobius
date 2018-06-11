@@ -242,6 +242,13 @@
                   enableTXC="true">
         </provider>
 
+        <service id="calSampleSpotSymbolWeightPriceStore" class="com.mobius.storeImpl.cal.CalSampleSpotSymbolWeightPriceStoreImpl"/>
+        <provider id="calSampleSpotSymbolWeightPriceStoreProvider"
+                  interface="com.mobius.providers.store.cal.CalSampleSpotSymbolWeightPriceStore"
+                  ref="calSampleSpotSymbolWeightPriceStore" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
 
         <service id="calSampleSpotWeightHistoryStore" class="com.mobius.storeImpl.cal.CalSampleSpotWeightHistoryStoreImpl"/>
         <provider id="calSampleSpotWeightHistoryStoreProvider"

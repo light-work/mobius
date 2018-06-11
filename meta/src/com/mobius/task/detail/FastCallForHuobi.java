@@ -3,6 +3,7 @@ package com.mobius.task.detail;
 
 import com.mobius.Utils;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailBtcHuobi;
 import com.mobius.entity.spot.SpotDetailEthHuobi;
 import com.mobius.entity.spot.SpotDetailUsdtHuobi;
@@ -16,6 +17,7 @@ import com.mobius.providers.store.spot.SpotDetailUsdtHuobiStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
+import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -38,58 +40,74 @@ public class FastCallForHuobi {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
+                    Integer y=DateFormatUtil.getDayInYear(tradingTime);
+                    Integer m=DateFormatUtil.getDayInMonth(tradingTime)+1;
+                    Integer d=DateFormatUtil.getDayInDay(tradingTime);
                     SpotDetailUsdtHuobiStore spotDetailUsdtHuobiStore = hsfServiceFactory.consumer(SpotDetailUsdtHuobiStore.class);
-                    Map<String, String> params = new HashMap<>();
-                    params.put("symbol", symbol.getSymbol());
-                    String action = "https://api.huobi.pro/market/detail/merged";
-                    String resultData = OKHttpUtil.get(action, params);
-                    if (StringUtils.isNotBlank(resultData)) {
-                        JSONObject root = JSONObject.fromObject(resultData);
-                        if (root.containsKey("tick") && root.getString("status").equals("ok")) {
-                            JSONObject tick = root.getJSONObject("tick");
-                            Date date = new Date(root.getLong("ts"));
-                            SpotDetailUsdtHuobi detail = new SpotDetailUsdtHuobi();
-                            detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                            detail.setTradeId(sysTrade);
-                            detail.setSymbolId(symbol);
-                            detail.setTradingDay(date);
-                            detail.setTradingTime(tradingTime);
-                            if (tick.containsKey("close")) {
-                                detail.setPrice(tick.getDouble("close"));
-                            }
-                            if (tick.containsKey("bid")) {
-                                JSONArray array = tick.getJSONArray("bid");
-                                if (array.size() > 0) {
-                                    detail.setBidPrice(array.getDouble(0));
+                    if(spotDetailUsdtHuobiStore!=null){
+                        Map<String, String> params = new HashMap<>();
+                        params.put("symbol", symbol.getSymbol());
+                        String action = "https://api.huobi.pro/market/detail/merged";
+                        String resultData = OKHttpUtil.get(action, params);
+                        if (StringUtils.isNotBlank(resultData)) {
+                            JSONObject root = JSONObject.fromObject(resultData);
+                            if (root.containsKey("tick") && root.getString("status").equals("ok")) {
+                                JSONObject tick = root.getJSONObject("tick");
+                                Date date = new Date(root.getLong("ts"));
+                                SpotDetailUsdtHuobi detail = new SpotDetailUsdtHuobi();
+                                detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                detail.setTradeId(sysTrade);
+                                detail.setSymbolId(symbol);
+                                detail.setTradingDay(date);
+                                detail.setTradingTime(tradingTime);
+                                if (tick.containsKey("close")) {
+                                    detail.setPrice(tick.getDouble("close"));
                                 }
-                                if (array.size() > 1) {
-                                    detail.setBidVolume(array.getDouble(1));
+                                if (tick.containsKey("bid")) {
+                                    JSONArray array = tick.getJSONArray("bid");
+                                    if (array.size() > 0) {
+                                        detail.setBidPrice(array.getDouble(0));
+                                    }
+                                    if (array.size() > 1) {
+                                        detail.setBidVolume(array.getDouble(1));
+                                    }
                                 }
-                            }
-                            if (tick.containsKey("ask")) {
-                                JSONArray array = tick.getJSONArray("ask");
-                                if (array.size() > 0) {
-                                    detail.setAskPrice(array.getDouble(0));
+                                if (tick.containsKey("ask")) {
+                                    JSONArray array = tick.getJSONArray("ask");
+                                    if (array.size() > 0) {
+                                        detail.setAskPrice(array.getDouble(0));
+                                    }
+                                    if (array.size() > 1) {
+                                        detail.setAskVolume(array.getDouble(1));
+                                    }
                                 }
-                                if (array.size() > 1) {
-                                    detail.setAskVolume(array.getDouble(1));
+                                if (tick.containsKey("amount")) {
+                                    detail.setVolume(tick.getDouble("amount"));
                                 }
-                            }
-                            if (tick.containsKey("amount")) {
-                                detail.setVolume(tick.getDouble("amount"));
-                            }
-                            if (tick.containsKey("vol")) {
-                                detail.setTurnover(tick.getDouble("vol"));
-                            }
-                            detail.setCreated(tradingTime);
-                            detail.setCreatedBy("task");
-                            calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
-                            Utils.bind(calSampleSpotSymbolWeight,"task");
-                            spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight);
-//                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
-                        }
+                                if (tick.containsKey("vol")) {
+                                    detail.setTurnover(tick.getDouble("vol"));
+                                }
+                                detail.setCreated(tradingTime);
+                                detail.setCreatedBy("task");
+                                calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
+                                Utils.bind(calSampleSpotSymbolWeight,"task");
 
+                                CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
+                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                calSampleSpotSymbolWeightPrice.setPrice(detail.getPrice());
+                                calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
+                                calSampleSpotSymbolWeightPrice.setYear(y);
+                                calSampleSpotSymbolWeightPrice.setMonth(m);
+                                calSampleSpotSymbolWeightPrice.setDay(d);
+                                Utils.bind(calSampleSpotSymbolWeightPrice,"task");
+
+                                spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+//                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
+                            }
+
+                        }
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

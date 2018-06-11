@@ -91,6 +91,7 @@ public class PlatformLoader {
             System.out.println(DAILY_TASK_IP);
             if (StringUtils.isNotBlank(DAILY_TASK_IP)) {
                 if (DAILY_TASK_IP.equals(localIP)) {
+                    //
                     //daily ip task
 
                     /*****************Daily*******************/
@@ -149,135 +150,25 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
 
-
-                    JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
                             .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    CronTrigger triggerDetailTaskForUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForUsdt", "groupDetailTaskForUsdt")
                             .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                             .build();
 
-                    JobDetail jobDetailTaskForBitfinexUsdt = newJob(DetailTaskForBitfinexUsdt.class).withIdentity("detailTaskForBitfinexUsdt", "groupDetailTaskForBitfinexUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForBitfinexUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForBitfinexUsdt", "groupDetailTaskForBitfinexUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    JobDetail jobDetailTaskForOKexSpotUsdt = newJob(DetailTaskForOkexSpotUsdt.class).withIdentity("detailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForOKexSpotUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-                    JobDetail jobDetailTaskForHuobiUsdt = newJob(DetailTaskForHuobiUsdt.class).withIdentity("detailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForHuobiUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForBitfinexUsdt, triggerDetailTaskForBitfinexUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
+                    scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
 
                 } else {
-                    //daily
-                    JobDetail jobDetailTaskForBinanceUsdt = newJob(DetailTaskForBinanceUsdt.class).withIdentity("detailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+
+                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
                             .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForBinanceUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForBinanceUsdt", "groupDetailTaskForBinanceUsdt")
+                    CronTrigger triggerDetailTaskForUsdt = newTrigger()
+                            .withIdentity("triggerDetailTaskForUsdt", "groupDetailTaskForUsdt")
                             .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
                             .build();
 
-                    JobDetail jobDetailTaskForBinanceBtc = newJob(DetailTaskForBinanceBtc.class).withIdentity("detailTaskForBinanceBtc", "groupDetailTaskForBinanceBtc")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForBinanceBtc = newTrigger()
-                            .withIdentity("triggerDetailTaskForBinanceBtc", "groupDetailTaskForBinanceBtc")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-                    JobDetail jobDetailTaskForBinanceEth = newJob(DetailTaskForBinanceEth.class).withIdentity("detailTaskForBinanceEth", "groupDetailTaskForBinanceEth")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForBinanceEth = newTrigger()
-                            .withIdentity("triggerDetailTaskForBinanceEth", "groupDetailTaskForBinanceEth")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    //okex
-                    JobDetail jobDetailTaskForOKexSpotUsdt = newJob(DetailTaskForOkexSpotUsdt.class).withIdentity("detailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForOKexSpotUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForOKexSpotUsdt", "groupDetailTaskForOKexSpotUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    JobDetail jobDetailTaskForOKexSpotBtc = newJob(DetailTaskForOkexSpotBtc.class).withIdentity("detailTaskForOKexSpotBtc", "groupDetailTaskForOKexSpotBtc")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForOKexSpotBtc = newTrigger()
-                            .withIdentity("triggerDetailTaskForOKexSpotBtc", "groupDetailTaskForOKexSpotBtc")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-                    JobDetail jobDetailTaskForOKexSpotEth = newJob(DetailTaskForOkexSpotEth.class).withIdentity("detailTaskForOKexEth", "groupDetailTaskForOKexSpotEth")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForOKexSpotEth = newTrigger()
-                            .withIdentity("triggerDetailTaskForOKexSpotEth", "groupDetailTaskForOKexSpotEth")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-                    JobDetail jobDetailTaskForOKexFuturesUsdt = newJob(DetailTaskForOkexFuturesUsdt.class).withIdentity("detailTaskForOKexFuturesUsdt", "groupDetailTaskForOKexFuturesUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForOKexFuturesUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForOKexFuturesUsdt", "groupDetailTaskForOKexFuturesUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    //huobi
-                    JobDetail jobDetailTaskForHuobiUsdt = newJob(DetailTaskForHuobiUsdt.class).withIdentity("detailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForHuobiUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForHuobiUsdt", "groupDetailTaskForHuobiUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    JobDetail jobDetailTaskForHuobiBtc = newJob(DetailTaskForHuobiBtc.class).withIdentity("detailTaskForHuobiBtc", "groupDetailTaskForHuobiBtc")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForHuobiBtc = newTrigger()
-                            .withIdentity("triggerDetailTaskForHuobiBtc", "groupDetailTaskForHuobiBtc")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-                    JobDetail jobDetailTaskForHuobiEth = newJob(DetailTaskForHuobiEth.class).withIdentity("detailTaskForHuobiEth", "groupDetailTaskForHuobiEth")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForHuobiEth = newTrigger()
-                            .withIdentity("triggerDetailTaskForHuobiEth", "groupDetailTaskForHuobiEth")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
-
-
-                    scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
-                    scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
-
-
-                    scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
-                    scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
-
-
-                    scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
-                    scheduler.scheduleJob(jobDetailTaskForBinanceBtc, triggerDetailTaskForBinanceBtc);
-                    scheduler.scheduleJob(jobDetailTaskForBinanceEth, triggerDetailTaskForBinanceEth);
+                    scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
                 }
             }
 

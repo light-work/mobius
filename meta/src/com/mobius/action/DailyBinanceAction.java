@@ -62,11 +62,12 @@ public class DailyBinanceAction extends BaseAction {
             selectorList.add(SelectorUtils.$order("displayOrder"));
             List<SpotSymbol> spotSymbolList=spotSymbolStore.getList(selectorList);
             if(spotSymbolList!=null&&!spotSymbolList.isEmpty()){
+                System.out.println(spotSymbolList.size());
                 int i=1;
                 for(SpotSymbol spotSymbol:spotSymbolList){
                     spotSymbol.setServer(i);
                     i++;
-                    if(i==3){
+                    if(i==4){
                         i=1;
                     }
                 }
