@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailUsdtBitfinex;
 import com.mobius.providers.store.spot.SpotDetailUsdtBitfinexStore;
 import com.mobius.service.spot.SpotDetailUsdtBitfinexService;
@@ -70,9 +71,11 @@ public class SpotDetailUsdtBitfinexStoreImpl implements SpotDetailUsdtBitfinexSt
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+                     CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtBitfinexService.save(spotDetailUsdtBitfinex, persistent,calSampleSpotSymbolWeight);
+            this.spotDetailUsdtBitfinexService.save(spotDetailUsdtBitfinex, persistent,calSampleSpotSymbolWeight,
+                    calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

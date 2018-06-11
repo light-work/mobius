@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailUsdtBinance;
 import com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore;
+import com.mobius.service.cal.CalSampleSpotSymbolWeightPriceService;
 import com.mobius.service.cal.CalSampleSpotSymbolWeightService;
 import org.guiceside.persistence.TransactionType;
 import org.guiceside.persistence.Transactional;
@@ -24,6 +26,9 @@ public class SpotDetailUsdtBinanceService extends HQuery implements SpotDetailUs
 
     @Inject
     private CalSampleSpotSymbolWeightService calSampleSpotSymbolWeightService;
+
+    @Inject
+    private CalSampleSpotSymbolWeightPriceService calSampleSpotSymbolWeightPriceService;
 
     @Transactional(type = TransactionType.READ_ONLY)
     public SpotDetailUsdtBinance getById(Long id, Selector... selectors) throws StoreException {
@@ -53,10 +58,14 @@ public class SpotDetailUsdtBinanceService extends HQuery implements SpotDetailUs
 
     @Override
     @Transactional(type = TransactionType.READ_WRITE)
-    public void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+    public void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+                     CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         $(spotDetailUsdtBinance).save(persistent);
         if(calSampleSpotSymbolWeight!=null){
             calSampleSpotSymbolWeightService.save(calSampleSpotSymbolWeight,Persistent.UPDATE);
+        }
+        if(calSampleSpotSymbolWeightPrice!=null){
+            calSampleSpotSymbolWeightPriceService.save(calSampleSpotSymbolWeightPrice,Persistent.SAVE);
         }
     }
 

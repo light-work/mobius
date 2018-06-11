@@ -3,6 +3,7 @@ package com.mobius.task.detail;
 
 import com.mobius.Utils;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.futures.FuturesDetailUsdtOkex;
 import com.mobius.entity.futures.FuturesSymbol;
 import com.mobius.entity.spot.SpotDetailBtcOkex;
@@ -20,6 +21,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.BeanUtils;
+import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
@@ -106,24 +108,38 @@ public class FastCallForOkex {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
+                    Integer y=DateFormatUtil.getDayInYear(tradingTime);
+                    Integer m=DateFormatUtil.getDayInMonth(tradingTime)+1;
+                    Integer d=DateFormatUtil.getDayInDay(tradingTime);
                     SpotDetailUsdtOkexStore spotDetailUsdtOkexStore = hsfServiceFactory.consumer(SpotDetailUsdtOkexStore.class);
-                    Map<String, String> params = new HashMap<>();
-                    params.put("symbol", symbol.getSymbol());
-                    String action = "https://www.okex.com/api/v1/ticker.do";
-                    String resultData = OKHttpUtil.get(action, params);
-                    if (StringUtils.isNotBlank(resultData)) {
-                        JSONObject root = JSONObject.fromObject(resultData);
-                        if (root.containsKey("ticker")) {
-                            JSONObject tick = root.getJSONObject("ticker");
-                            SpotDetailUsdtOkex detail = new SpotDetailUsdtOkex();
-                            setValue(detail, tick, sysTrade, tradingTime, symbol);
-                            calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
-                            Utils.bind(calSampleSpotSymbolWeight,"task");
+                    if(spotDetailUsdtOkexStore!=null){
+                        Map<String, String> params = new HashMap<>();
+                        params.put("symbol", symbol.getSymbol());
+                        String action = "https://www.okex.com/api/v1/ticker.do";
+                        String resultData = OKHttpUtil.get(action, params);
+                        if (StringUtils.isNotBlank(resultData)) {
+                            JSONObject root = JSONObject.fromObject(resultData);
+                            if (root.containsKey("ticker")) {
+                                JSONObject tick = root.getJSONObject("ticker");
+                                SpotDetailUsdtOkex detail = new SpotDetailUsdtOkex();
+                                setValue(detail, tick, sysTrade, tradingTime, symbol);
+                                calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
+                                Utils.bind(calSampleSpotSymbolWeight,"task");
 
-                            spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight);
-                            System.out.println("DetailTaskForOkexUsdt --- " + symbol.getSymbol() + " save success.");
+                                CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
+                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                calSampleSpotSymbolWeightPrice.setPrice(detail.getPrice());
+                                calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
+                                calSampleSpotSymbolWeightPrice.setYear(y);
+                                calSampleSpotSymbolWeightPrice.setMonth(m);
+                                calSampleSpotSymbolWeightPrice.setDay(d);
+                                Utils.bind(calSampleSpotSymbolWeightPrice,"task");
+
+                                spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+                            }
                         }
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -3,6 +3,7 @@ package com.mobius.providers.store.spot;
 
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailUsdtBinance;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
@@ -22,7 +23,7 @@ public interface SpotDetailUsdtBinanceStore {
 
     void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent) throws StoreException;
 
-    void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException;
+    void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
 
 
     void save(List<SpotDetailUsdtBinance> spotDetailUsdtBinanceList, Persistent persistent) throws StoreException;
