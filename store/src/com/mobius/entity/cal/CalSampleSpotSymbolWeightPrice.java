@@ -23,6 +23,8 @@ public class CalSampleSpotSymbolWeightPrice extends IdEntity implements Tracker 
 
     private CalSampleSpotSymbolWeight symbolId;
 
+    private Date recordDate;
+
     private Integer year;
 
     private Integer month;
@@ -70,6 +72,14 @@ public class CalSampleSpotSymbolWeightPrice extends IdEntity implements Tracker 
         this.price = price;
     }
 
+    @Column(name = "RECORD_DATE")
+    public Date getRecordDate() {
+        return recordDate;
+    }
+
+    public void setRecordDate(Date recordDate) {
+        this.recordDate = recordDate;
+    }
 
     @Column(name = "DAY")
     public Integer getDay() {

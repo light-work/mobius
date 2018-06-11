@@ -133,6 +133,7 @@ public class FastCallForOkex {
                                 calSampleSpotSymbolWeightPrice.setYear(y);
                                 calSampleSpotSymbolWeightPrice.setMonth(m);
                                 calSampleSpotSymbolWeightPrice.setDay(d);
+                                calSampleSpotSymbolWeightPrice.setRecordDate(tradingTime);
                                 Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
                                 spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);

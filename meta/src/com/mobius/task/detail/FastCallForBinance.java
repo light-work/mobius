@@ -90,6 +90,7 @@ public class FastCallForBinance {
                                             calSampleSpotSymbolWeightPrice.setYear(y);
                                             calSampleSpotSymbolWeightPrice.setMonth(m);
                                             calSampleSpotSymbolWeightPrice.setDay(d);
+                                            calSampleSpotSymbolWeightPrice.setRecordDate(tradingDate);
                                             Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
                                             spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
