@@ -108,6 +108,7 @@ public class FastCallForBitfinex {
                                                     calSampleSpotSymbolWeightPrice.setYear(y);
                                                     calSampleSpotSymbolWeightPrice.setMonth(m);
                                                     calSampleSpotSymbolWeightPrice.setDay(d);
+                                                    calSampleSpotSymbolWeightPrice.setRecordDate(tradingDate);
                                                     Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
                                                     spotDetailUsdtBitfinexStore.save(spotDetailUsdtBitfinex, Persistent.SAVE, calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);

@@ -99,6 +99,7 @@ public class FastCallForHuobi {
                                 calSampleSpotSymbolWeightPrice.setYear(y);
                                 calSampleSpotSymbolWeightPrice.setMonth(m);
                                 calSampleSpotSymbolWeightPrice.setDay(d);
+                                calSampleSpotSymbolWeightPrice.setRecordDate(tradingTime);
                                 Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
                                 spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
