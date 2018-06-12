@@ -94,9 +94,7 @@ public class DetailTaskForBinanceUsdt implements Job {
                 try {
                     SysIpServerStore sysIpServerStore = hsfServiceFactory.consumer(SysIpServerStore.class);
                     if (sysIpServerStore != null) {
-                        System.out.print(System.currentTimeMillis() + " localIP=" + localIP + " market=" + market);
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
-                        System.out.println(" sysIpServer=" + sysIpServer.getServerNo());
                         if (sysIpServer != null) {
                             SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
                             CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
@@ -104,13 +102,19 @@ public class DetailTaskForBinanceUsdt implements Job {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
                                     Date d = DateFormatUtil.getCurrentDate(true);
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(2018, 4,
+                                    Date weightDate=DateFormatUtil.getCurrentDate(false);
+                                    weightDate=DateFormatUtil.addMonth(weightDate,-1);
+                                    Integer weightYear=DateFormatUtil.getDayInYear(weightDate);
+                                    Integer weightMonth=DateFormatUtil.getDayInMonth(weightDate)+1;
+
+                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
                                             sysTrade.getId(), market, sysIpServer.getServerNo());
                                     if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
                                         for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                                             try {
                                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                                 if (spotSymbol != null) {
+                                                    System.out.println(d.getTime()+" "+spotSymbol.getId());
                                                     FastCallForBinance.call(calSampleSpotSymbolWeight,sysTrade, spotSymbol, hsfServiceFactory, d);
                                                 }
                                             } catch (Exception e) {

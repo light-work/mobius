@@ -30,8 +30,7 @@ import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.quartz.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -83,9 +82,7 @@ public class DetailTaskForBitfinexUsdt implements Job {
                 try {
                     SysIpServerStore sysIpServerStore = hsfServiceFactory.consumer(SysIpServerStore.class);
                     if (sysIpServerStore != null) {
-                        System.out.print(System.currentTimeMillis() + " localIP=" + localIP + " market=" + market);
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
-                        System.out.println(" sysIpServer=" + sysIpServer.getServerNo());
                         if (sysIpServer != null) {
                             SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
                             CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
@@ -93,19 +90,36 @@ public class DetailTaskForBitfinexUsdt implements Job {
                                 SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
                                 if (sysTrade != null) {
                                     Date d = DateFormatUtil.getCurrentDate(true);
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(2018, 4,
+                                    Date weightDate=DateFormatUtil.getCurrentDate(false);
+                                    weightDate=DateFormatUtil.addMonth(weightDate,-1);
+                                    Integer weightYear=DateFormatUtil.getDayInYear(weightDate);
+                                    Integer weightMonth=DateFormatUtil.getDayInMonth(weightDate)+1;
+
+                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
                                             sysTrade.getId(), market, sysIpServer.getServerNo());
                                     if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
+                                        List<SpotSymbol> spotSymbolList=new ArrayList<>();
+                                        Map<String,CalSampleSpotSymbolWeight> sampleSpotSymbolWeightMap=new HashMap<>();
+                                        Map<String,SpotSymbol> spotSymbolHashMap=new HashMap<>();
+
                                         for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                                             try {
                                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                                 if (spotSymbol != null) {
-                                                    FastCallForBitfinex.call(calSampleSpotSymbolWeight, sysTrade, spotSymbol, hsfServiceFactory, d);
+                                                    spotSymbolList.add(spotSymbol);
+                                                    sampleSpotSymbolWeightMap.put("t"+spotSymbol.getSymbol().toUpperCase(),calSampleSpotSymbolWeight);
+                                                    spotSymbolHashMap.put("t"+spotSymbol.getSymbol().toUpperCase(),spotSymbol);
                                                 }
                                             } catch (Exception e) {
 
                                             }
                                         }
+                                        try {
+                                            FastCallForBitfinex.call(sampleSpotSymbolWeightMap, spotSymbolHashMap,sysTrade, spotSymbolList, hsfServiceFactory, d);
+                                        } catch (Exception e) {
+
+                                        }
+
                                     }
                                 }
                             }

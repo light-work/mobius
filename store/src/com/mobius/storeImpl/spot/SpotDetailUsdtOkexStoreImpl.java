@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailUsdtOkex;
 import com.mobius.providers.store.spot.SpotDetailUsdtOkexStore;
 import com.mobius.service.spot.SpotDetailUsdtOkexService;
@@ -70,9 +71,10 @@ public class SpotDetailUsdtOkexStoreImpl implements SpotDetailUsdtOkexStore {
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) throws StoreException {
+    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+                     CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtOkexService.save(spotDetailUsdtOkex, persistent,calSampleSpotSymbolWeight);
+            this.spotDetailUsdtOkexService.save(spotDetailUsdtOkex, persistent,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

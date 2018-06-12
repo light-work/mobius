@@ -4,6 +4,7 @@ package com.mobius.task.detail;
 import com.mobius.OKHttpUtils;
 import com.mobius.Utils;
 import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeightPrice;
 import com.mobius.entity.spot.SpotDetailBtcBinance;
 import com.mobius.entity.spot.SpotDetailEthBinance;
 import com.mobius.entity.spot.SpotDetailUsdtBinance;
@@ -15,6 +16,7 @@ import com.mobius.providers.store.spot.SpotDetailBtcBinanceStore;
 import com.mobius.providers.store.spot.SpotDetailEthBinanceStore;
 import com.mobius.providers.store.spot.SpotDetailUsdtBinanceStore;
 import net.sf.json.JSONObject;
+import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
@@ -43,6 +45,9 @@ public class FastCallForBinance {
                         SpotDetailUsdtBinanceStore spotDetailUsdtBinanceStore = hsfServiceFactory.consumer(SpotDetailUsdtBinanceStore.class);
                         SpotDetailEthBinanceStore spotDetailEthBinanceStore = hsfServiceFactory.consumer(SpotDetailEthBinanceStore.class);
                         SpotDetailBtcBinanceStore spotDetailBtcBinanceStore = hsfServiceFactory.consumer(SpotDetailBtcBinanceStore.class);
+                        Integer y=DateFormatUtil.getDayInYear(tradingDate);
+                        Integer m=DateFormatUtil.getDayInMonth(tradingDate)+1;
+                        Integer d=DateFormatUtil.getDayInDay(tradingDate);
                         if (spotDetailBtcBinanceStore != null && spotDetailUsdtBinanceStore != null && spotDetailEthBinanceStore != null) {
                             //todo 调用api 保存 都在这里写
                             Map<String, String> params = new HashMap<>();
@@ -78,7 +83,17 @@ public class FastCallForBinance {
                                             calSampleSpotSymbolWeight.setLastPrice(lastPrice);
                                             Utils.bind(calSampleSpotSymbolWeight,"task");
 
-                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeight);
+                                            CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
+                                            calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                            calSampleSpotSymbolWeightPrice.setPrice(lastPrice);
+                                            calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
+                                            calSampleSpotSymbolWeightPrice.setYear(y);
+                                            calSampleSpotSymbolWeightPrice.setMonth(m);
+                                            calSampleSpotSymbolWeightPrice.setDay(d);
+                                            calSampleSpotSymbolWeightPrice.setRecordDate(tradingDate);
+                                            Utils.bind(calSampleSpotSymbolWeightPrice,"task");
+
+                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
                                             //save
                                         } else if (market.equals("btc")) {
                                             SpotDetailBtcBinance spotDetailBtcBinance = new SpotDetailBtcBinance();
