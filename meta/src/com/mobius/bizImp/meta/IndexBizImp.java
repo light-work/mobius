@@ -1,6 +1,7 @@
 package com.mobius.bizImp.meta;
 
 import com.google.inject.Inject;
+import com.mobius.Utils;
 import com.mobius.common.BizException;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotDailyPoint;
@@ -18,8 +19,10 @@ import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.cal.CalSampleSpotWeightHistoryStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
 import com.mobius.providers.store.sys.SysCapitalizationStore;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.guiceside.commons.Page;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
@@ -41,19 +44,45 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
     private HSFServiceFactory hsfServiceFactory;
 
     @Override
-    public String buildDetail(Integer useYear,Integer useMonth) throws BizException {
+    public String index() throws BizException {
         JSONObject resultObj = new JSONObject();
-        resultObj.put("result", -1);
+        resultObj.put("result", "-1");
         try {
-            CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore=hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
-            if(calSampleSpotSymbolWeightStore!=null){
-                Date useDate=DateFormatUtil.parse(useYear+"-"+useMonth+"-01",DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
-                Date beforeDate=DateFormatUtil.addMonth(useDate,-1);
-                Integer year=DateFormatUtil.getDayInYear(beforeDate);
-                Integer month=DateFormatUtil.getDayInMonth(beforeDate)-1;
-                List<CalSampleSpotSymbolWeight> sampleSpotSymbolWeightList= calSampleSpotSymbolWeightStore.getListByYearMonth(year,month);
-                if(sampleSpotSymbolWeightList!=null&&!sampleSpotSymbolWeightList.isEmpty()){
+            resultObj.put("index", Utils.getIndex());
+            resultObj.put("result", "0");
+        } catch (Exception ex) {
+            if (ex instanceof StoreException) {
+                throw new StoreException(ex);
+            } else {
+                throw new BizException(ex);
+            }
+        }
+        return resultObj.toString();
+    }
 
+    @Override
+    public String historyIndex() throws BizException {
+        JSONObject resultObj = new JSONObject();
+        resultObj.put("result", "-1");
+        try {
+            CalSampleSpotDailyPointStore calSampleSpotDailyPointStore = hsfServiceFactory.consumer(CalSampleSpotDailyPointStore.class);
+            if (calSampleSpotDailyPointStore != null) {
+                List<Selector> selectorList = new ArrayList<>();
+                selectorList.add(SelectorUtils.$order("id", false));
+                Page<CalSampleSpotDailyPoint> calSampleSpotDailyPointPage = calSampleSpotDailyPointStore.getPageList(0, 90, selectorList);
+                if (calSampleSpotDailyPointPage != null) {
+                    List<CalSampleSpotDailyPoint> sampleSpotDailyPointList = calSampleSpotDailyPointPage.getResultList();
+                    if (sampleSpotDailyPointList != null && !sampleSpotDailyPointList.isEmpty()) {
+                        JSONArray jsonArray = new JSONArray();
+                        for (CalSampleSpotDailyPoint calSampleSpotDailyPoint : sampleSpotDailyPointList) {
+                            JSONObject daily = new JSONObject();
+                            daily.put("index", calSampleSpotDailyPoint.getPoint());
+                            daily.put("time", calSampleSpotDailyPoint.getRecordDate().getTime());
+                            jsonArray.add(daily);
+                        }
+                        resultObj.put("indexs", jsonArray);
+                        resultObj.put("result", "0");
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -69,7 +98,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
     @Override
     public String buildIndex() throws BizException {
         JSONObject resultObj = new JSONObject();
-        resultObj.put("result", -1);
+        resultObj.put("result", "-1");
         try {
             Calendar now = Calendar.getInstance();
             String dateTime = DateFormatUtil.format(now.getTime(), DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
@@ -273,7 +302,8 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         point.setCreatedBy("batch");
                         point.setUseYn("Y");
                         calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
-                        resultObj.put("result", 0);
+                        Utils.setIndex(point.getPoint());
+                        resultObj.put("result", "0");
                     } else {
                         System.out.println("yesterday point was null and date is " + DateFormatUtil.format(today, DateFormatUtil.YEAR_MONTH_DAY_PATTERN_SHORT));
                     }
