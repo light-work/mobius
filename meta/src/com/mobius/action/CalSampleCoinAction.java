@@ -956,4 +956,15 @@ public class CalSampleCoinAction extends BaseAction {
         writeJsonByAction(root.toString());
         return null;
     }
+
+    public String calPoint() throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result", -1);
+        Boolean isSuccess = calcPoint(true);
+        if (isSuccess) {
+            result.put("result", 0);
+        }
+        writeJsonByAction(result.toString());
+        return null;
+    }
 }
