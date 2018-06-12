@@ -42,6 +42,9 @@ public class DailyOkexAction extends BaseAction {
     private static String tradeSign="OKEX";
 
 
+    @ReqGet
+    private String since;
+
     @Inject
     private HSFServiceFactory hsfServiceFactory;
 
@@ -532,7 +535,11 @@ public class DailyOkexAction extends BaseAction {
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
                             params.put("type", "1day");
-                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            if (StringUtils.isNotBlank(since)) {
+                                params.put("since", (DateFormatUtil.parse(since + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime() - 24 * 60 * 60 * 1000) + "");
+                            } else {
+                                params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            }
                             for (SpotSymbol spotSymbol : symbolList) {
                                 params.put("symbol", spotSymbol.getSymbol());
                                 try {
@@ -569,7 +576,7 @@ public class DailyOkexAction extends BaseAction {
                                                             spotDailyUsdt.setLastPrice(lastPrice);
                                                             spotDailyUsdt.setVolume(volume);
                                                             spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
-                                                            spotDailyUsdt.setCreatedBy("task");
+                                                            spotDailyUsdt.setCreatedBy("bySave");
                                                             spotDailyUsdt.setCreated(new Date());
                                                             dailyUsdtList.add(spotDailyUsdt);
                                                         }
@@ -588,7 +595,7 @@ public class DailyOkexAction extends BaseAction {
                                                             spotDailyBtc.setLastPrice(lastPrice);
                                                             spotDailyBtc.setVolume(volume);
                                                             spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
-                                                            spotDailyBtc.setCreatedBy("task");
+                                                            spotDailyBtc.setCreatedBy("bySave");
                                                             spotDailyBtc.setCreated(new Date());
                                                             dailyBtcList.add(spotDailyBtc);
                                                         }
@@ -607,7 +614,7 @@ public class DailyOkexAction extends BaseAction {
                                                             spotDailyEth.setLastPrice(lastPrice);
                                                             spotDailyEth.setVolume(volume);
                                                             spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
-                                                            spotDailyEth.setCreatedBy("task");
+                                                            spotDailyEth.setCreatedBy("bySave");
                                                             spotDailyEth.setCreated(new Date());
                                                             dailyEthList.add(spotDailyEth);
                                                         }
@@ -663,7 +670,11 @@ public class DailyOkexAction extends BaseAction {
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
                             params.put("type", "1day");
-                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            if (StringUtils.isNotBlank(since)) {
+                                params.put("since", (DateFormatUtil.parse(since + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime() - 24 * 60 * 60 * 1000) + "");
+                            } else {
+                                params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                            }
                             for (FuturesSymbol symbol : symbolList) {
                                 params.put("symbol", symbol.getSymbol());
                                 params.put("contract_type", symbol.getSymbolDesc());
@@ -699,7 +710,7 @@ public class DailyOkexAction extends BaseAction {
                                                         dailyUsdt.setLastPrice(lastPrice);
                                                         dailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
                                                         dailyUsdt.setVolume(volume);
-                                                        dailyUsdt.setCreatedBy("task");
+                                                        dailyUsdt.setCreatedBy("bySave");
                                                         dailyUsdt.setCreated(new Date());
                                                         dailyUsdtList.add(dailyUsdt);
                                                     }
