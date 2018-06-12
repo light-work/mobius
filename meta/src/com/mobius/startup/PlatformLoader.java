@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.support.properties.PropertiesConfig;
+import org.guiceside.support.redis.RedisPoolProvider;
 import org.guiceside.web.listener.DefaultGuiceSideListener;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -70,9 +71,10 @@ public class PlatformLoader {
 
         String releaseEnvironment = webConfig.getString("releaseEnvironment");
         if (StringUtils.isNotBlank(releaseEnvironment)) {
-
+            if(releaseEnvironment.equals("DIS")){
+                RedisPoolProvider.init(webConfig);
+            }
         }
-        EnvironmentValue.getInstance().setWebConfig(webConfig);
         String testIP = EnvironmentValue.getInstance().getValue("TEST_IP");
 
         int detailInteval = 30;
@@ -183,37 +185,6 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
                 }
             }
-
-//            JobDetail jobBTCPrice = newJob(PushJobBTCPrice.class).withIdentity("jobBTCPrice", "group1")
-//                    .usingJobData(jobDataMap).build();
-//
-//            CronTrigger triggerBTCPrice = newTrigger()
-//                    .withIdentity("triggerBTCPrice", "group1")
-//                    .withSchedule(cronSchedule("0 */1 * * * ?"))
-//                    .build();
-//
-//
-////
-//            scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForBinanceBtc, triggerDetailTaskForBinanceBtc);
-//            scheduler.scheduleJob(jobDetailTaskForBinanceEth, triggerDetailTaskForBinanceEth);
-
-
-//
-//            scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
-//            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
-
-//
-//            scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
-
-
-//            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
-
-            //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);
             // and start it off
             scheduler.start();
             System.out.println(localIP + "启动 task");
@@ -227,7 +198,8 @@ public class PlatformLoader {
 
 
     public void destroyed(ServletContext servletContext) throws Exception {
-        //RedisPoolProvider.destroyAll();
+
+        RedisPoolProvider.destroyAll();
         scheduler.shutdown();
     }
 }
