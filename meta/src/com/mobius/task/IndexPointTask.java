@@ -88,8 +88,9 @@ public class IndexPointTask implements Job {
                 try {
                     IndexBiz indexBiz = hsfServiceFactory.consumer(IndexBiz.class);
                     if (indexBiz != null) {
-                        System.out.println(System.currentTimeMillis()+"==");
-                        indexBiz.buildIndex();
+                        System.out.print(System.currentTimeMillis()+"==");
+                        String str=indexBiz.buildIndex();
+                        System.out.println(str);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
