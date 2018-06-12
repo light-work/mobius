@@ -221,6 +221,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                                 System.out.println("stmbolId=" + symbolId);
                                 System.out.println(" dayBeforeYeseterdayClosePrice=" +
                                         dayBeforeYeseterdayClosePrice + " yesterdayClosePrice =" + yesterdayClosePrice);
+                                throw new Exception(" -----price was null ------ !");
                             }
                             Double numerator = yesterdayClosePrice / dayBeforeYeseterdayClosePrice * yesterdayWeight;
                             numeratorMap.put(symbolId, numerator);
