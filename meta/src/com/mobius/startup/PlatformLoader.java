@@ -75,6 +75,7 @@ public class PlatformLoader {
                 RedisPoolProvider.init(webConfig);
             }
         }
+        EnvironmentValue.getInstance().setWebConfig(webConfig);
         String testIP = EnvironmentValue.getInstance().getValue("TEST_IP");
 
         int detailInteval = 30;
@@ -87,6 +88,7 @@ public class PlatformLoader {
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put("injector", injector);
             jobDataMap.put("localIP", localIP);
+            jobDataMap.put("releaseEnvironment", releaseEnvironment);
             System.out.println("detailInteval=" + detailInteval);
 
 
@@ -142,7 +144,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerCapitalizationTask = newTrigger()
                             .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
-                            .withSchedule(cronSchedule("0 0 0 * * ?"))//每天的 0点到0点10分每分触发
+                            .withSchedule(cronSchedule("0 15-20 2 * * ?"))//每天的 0点到0点10分每分触发
                             .build();
 
 
@@ -160,9 +162,8 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
                             .build();
 
-                    //scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                    scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
-                    IndexPoint.getInstance().setIndex(0.00d);
 
 //                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
 //                            .usingJobData(jobDataMap).build();

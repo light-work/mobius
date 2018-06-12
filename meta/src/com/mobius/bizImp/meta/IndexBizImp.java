@@ -22,14 +22,15 @@ import com.mobius.providers.store.spot.SpotDailyUsdtStore;
 import com.mobius.providers.store.sys.SysCapitalizationStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.guiceside.commons.Page;
 import org.guiceside.commons.lang.DateFormatUtil;
+import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.BaseBiz;
 import org.guiceside.support.hsf.HSFServiceFactory;
+import org.guiceside.support.redis.RedisPoolProvider;
 
 import java.util.*;
 
@@ -49,7 +50,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
-            System.out.println(IndexPoint.getInstance().getIndex()+"##");
+            System.out.println(IndexPoint.getInstance().getIndex() + "##");
             resultObj.put("index", IndexPoint.getInstance().getIndex());
             resultObj.put("result", "0");
         } catch (Exception ex) {
@@ -98,7 +99,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
     }
 
     @Override
-    public String buildIndex() throws BizException {
+    public String buildIndex(String releaseEnvironment) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
@@ -313,7 +314,9 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         point.setCreatedBy("batch");
                         point.setUseYn("Y");
                         calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
-                        IndexPoint.getInstance().setIndex(point.getPoint());
+                        if (releaseEnvironment.equals("DIS")) {
+                            IndexPoint.getInstance().setIndex(point.getPoint());
+                        }
                         resultObj.put("result", "0");
                     } else {
                         System.out.println("yesterday point was null and date is " + DateFormatUtil.format(today, DateFormatUtil.YEAR_MONTH_DAY_PATTERN_SHORT));
@@ -324,6 +327,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
             }
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             if (ex instanceof StoreException) {
                 throw new StoreException(ex);
             } else {

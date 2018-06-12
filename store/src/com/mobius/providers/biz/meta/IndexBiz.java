@@ -4,7 +4,7 @@ import com.mobius.common.BizException;
 
 public interface IndexBiz {
 
-    String buildIndex() throws BizException;
+    String buildIndex(String releaseEnvironment) throws BizException;
 
     String index() throws BizException;
 
