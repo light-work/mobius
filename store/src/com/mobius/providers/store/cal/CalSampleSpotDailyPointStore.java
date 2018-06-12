@@ -3,6 +3,7 @@ package com.mobius.providers.store.cal;
 
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotDailyPoint;
+import org.guiceside.commons.Page;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 
@@ -17,6 +18,9 @@ public interface CalSampleSpotDailyPointStore {
     CalSampleSpotDailyPoint getByRecordDate(Date recordDate) throws StoreException;
 
     List<CalSampleSpotDailyPoint> getList(List<Selector> selectorList) throws StoreException;
+
+    Page<CalSampleSpotDailyPoint> getPageList(int start,
+                                                     int limit, List<Selector> selectorList) throws StoreException;
 
     void save(CalSampleSpotDailyPoint calSampleSpotDailyPoint, Persistent persistent) throws StoreException;
 

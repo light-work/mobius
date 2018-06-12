@@ -8,13 +8,12 @@
 
         <!-- *************biz  begin************-->
 
-        <service id="dailyBiz" class="com.mobius.bizImp.meta.DailyBizImp"/>
-        <provider id="dailyBizProvider"
-                  interface="com.mobius.providers.biz.meta.DailyBiz"
-                  ref="dailyBiz" version="for-dev" clientTimeout="3000" serializeType="hessian"
+        <service id="indexBiz" class="com.mobius.bizImp.meta.IndexBizImp"/>
+        <provider id="indexBizProvider"
+                  interface="com.mobius.providers.biz.meta.IndexBiz"
+                  ref="indexBiz" version="for-dev" clientTimeout="3000" serializeType="hessian"
                   enableTXC="true">
         </provider>
-
 
 
         <!-- *************biz  end************-->
