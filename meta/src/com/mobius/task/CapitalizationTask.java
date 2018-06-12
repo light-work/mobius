@@ -13,6 +13,7 @@ import com.mobius.providers.store.sys.SysCoinStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
+import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
@@ -77,6 +78,12 @@ public class CapitalizationTask implements Job {
         SysCoinStore sysCoinStore = hsfServiceFactory.consumer(SysCoinStore.class);
 
         if (sysCapitalizationStore != null && sysCoinStore != null) {
+            List<Selector> vailDataExistSelector = new ArrayList<>();
+            vailDataExistSelector.add(SelectorUtils.$eq("recordDate", DateFormatUtil.getCurrentDate(false)));
+            List<SysCapitalization> todayList = sysCapitalizationStore.getList(vailDataExistSelector);
+            if (todayList != null && !todayList.isEmpty()) {
+                return;
+            }
             List<Selector> selectorList = new ArrayList<>();
             selectorList.add(SelectorUtils.$eq("useYn", "Y"));
             List<SysCoin> sysCoinList = sysCoinStore.getList(selectorList);
