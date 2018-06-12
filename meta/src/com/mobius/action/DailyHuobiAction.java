@@ -22,6 +22,7 @@ import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
+import org.guiceside.web.annotation.ReqGet;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,8 @@ public class DailyHuobiAction extends BaseAction {
 
     private static String tradeSign = "HUOBIPRO";
 
+    @ReqGet
+    private Integer size;
 
     @Inject
     private HSFServiceFactory hsfServiceFactory;
@@ -396,7 +399,11 @@ public class DailyHuobiAction extends BaseAction {
                         if (symbolList != null && !symbolList.isEmpty()) {
                             Map<String, String> params = new HashMap<>();
                             params.put("period", "1day");
-                            params.put("size", "2");
+                            if (size != null && size != 0) {
+                                params.put("size", size + "");
+                            } else {
+                                params.put("size", "2");
+                            }
                             for (SpotSymbol spotSymbol : symbolList) {
                                 params.put("symbol", spotSymbol.getSymbol());
                                 try {
@@ -440,7 +447,7 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             usdt.setTurnover(jsonObj.getDouble("vol"));
                                                         }
-                                                        usdt.setCreatedBy("task");
+                                                        usdt.setCreatedBy("bySave");
                                                         usdt.setCreated(new Date());
                                                         usdtList.add(usdt);
                                                     }
@@ -462,7 +469,7 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             btc.setTurnover(jsonObj.getDouble("vol"));
                                                         }
-                                                        btc.setCreatedBy("task");
+                                                        btc.setCreatedBy("bySave");
                                                         btc.setCreated(new Date());
                                                         btcList.add(btc);
                                                     }
@@ -484,7 +491,7 @@ public class DailyHuobiAction extends BaseAction {
                                                         if (jsonObj.containsKey("vol")) {
                                                             eth.setTurnover(jsonObj.getDouble("vol"));
                                                         }
-                                                        eth.setCreatedBy("task");
+                                                        eth.setCreatedBy("bySave");
                                                         eth.setCreated(new Date());
                                                         ethList.add(eth);
                                                     }
