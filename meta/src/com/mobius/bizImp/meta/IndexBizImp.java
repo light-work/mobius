@@ -212,6 +212,14 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                             Double yesterdayClosePrice = yesterdayDailyMap.get(symbolId);
                             Double dayBeforeYeseterdayClosePrice = dayBeforeYesterdayDailyMap.get(symbolId);
                             Double yesterdayWeight = yesterdayWeightMap.get(symbolId);
+                            if (yesterdayWeight == null || dayBeforeYeseterdayClosePrice == null || yesterdayClosePrice == null) {
+                                System.out.println("yesterdayWeight=" + yesterdayWeight + "  yesterdayDate=" +
+                                        DateFormatUtil.format(yesterdayDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN)
+                                        + " and today=" + DateFormatUtil.format(today, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
+                                System.out.println("stmbolId=" + symbolId);
+                                System.out.println(" dayBeforeYeseterdayClosePrice=" +
+                                        dayBeforeYeseterdayClosePrice + " yesterdayClosePrice =" + yesterdayClosePrice);
+                            }
                             Double numerator = yesterdayClosePrice / dayBeforeYeseterdayClosePrice * yesterdayWeight;
                             numeratorMap.put(symbolId, numerator);
                             denominator += numerator;
