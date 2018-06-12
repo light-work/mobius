@@ -828,6 +828,7 @@ public class CalSampleCoinAction extends BaseAction {
                             System.out.println("stmbolId=" + symbolId);
                             System.out.println(" dayBeforeYeseterdayClosePrice=" +
                                     dayBeforeYeseterdayClosePrice + " yesterdayClosePrice =" + yesterdayClosePrice);
+                            return false;
                         }
                         Double numerator = yesterdayClosePrice / dayBeforeYeseterdayClosePrice * yesterdayWeight;
                         numeratorMap.put(symbolId, numerator);
