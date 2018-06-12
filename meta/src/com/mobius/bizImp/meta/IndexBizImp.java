@@ -1,6 +1,7 @@
 package com.mobius.bizImp.meta;
 
 import com.google.inject.Inject;
+import com.mobius.IndexPoint;
 import com.mobius.Utils;
 import com.mobius.common.BizException;
 import com.mobius.common.StoreException;
@@ -48,7 +49,8 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
-            resultObj.put("index", Utils.getIndex());
+            System.out.println(IndexPoint.getInstance().getIndex()+"##");
+            resultObj.put("index", IndexPoint.getInstance().getIndex());
             resultObj.put("result", "0");
         } catch (Exception ex) {
             if (ex instanceof StoreException) {
@@ -310,7 +312,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         point.setCreatedBy("batch");
                         point.setUseYn("Y");
                         calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
-                        Utils.setIndex(point.getPoint());
+                        IndexPoint.getInstance().setIndex(point.getPoint());
                         resultObj.put("result", "0");
                     } else {
                         System.out.println("yesterday point was null and date is " + DateFormatUtil.format(today, DateFormatUtil.YEAR_MONTH_DAY_PATTERN_SHORT));

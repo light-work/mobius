@@ -2,6 +2,7 @@ package com.mobius.startup;
 
 
 import com.google.inject.Injector;
+import com.mobius.IndexPoint;
 import com.mobius.entity.utils.EnvironmentUtils;
 import com.mobius.entity.utils.EnvironmentValue;
 import com.mobius.task.*;
@@ -101,21 +102,21 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForOkex = newTrigger()
                             .withIdentity("triggerDailyTaskForOkex", "groupDailyTaskForOkex")
-                            .withSchedule(cronSchedule("0 30 0 * * ?"))//每天的 0点到0点5分触发
+                            .withSchedule(cronSchedule("0 5 0 * * ?"))//每天的 0点到0点5分触发
                             .build();
 
                     JobDetail jobDailyTaskForHuobi = newJob(DailyTaskForHuobi.class).withIdentity("dailyTaskForHuobi", "groupDailyTaskForHuobi")
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForHuobi = newTrigger()
                             .withIdentity("triggerDailyTaskForHuobi", "groupDailyTaskForHuobi")
-                            .withSchedule(cronSchedule("0 40 0 * * ?"))//每天的 0点到0点10分触发
+                            .withSchedule(cronSchedule("0 10 0 * * ?"))//每天的 0点到0点10分触发
                             .build();
 
                     JobDetail jobDailyTaskForBitmex = newJob(DailyTaskForBitmex.class).withIdentity("dailyTaskForBitmex", "groupDailyTaskForBitmex")
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForBitmex = newTrigger()
                             .withIdentity("triggerDailyTaskForBitmex", "groupDailyTaskForBitmex")
-                            .withSchedule(cronSchedule("0 32 0 * * ?"))//每天的 0点到0点6分触发
+                            .withSchedule(cronSchedule("0 15 0 * * ?"))//每天的 0点到0点6分触发
                             .build();
 
 
@@ -123,7 +124,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForBinance = newTrigger()
                             .withIdentity("triggerDailyTaskForBinance", "groupDailyTaskForBinance")
-                            .withSchedule(cronSchedule("0 45 0 * * ?"))//每天的 0点到0点15分触发
+                            .withSchedule(cronSchedule("0 20 0 * * ?"))//每天的 0点到0点15分触发
                             .build();
 
 
@@ -131,7 +132,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForBitfinex = newTrigger()
                             .withIdentity("triggerDailyTaskForBitfinex", "groupDailyTaskForBitfinex")
-                            .withSchedule(cronSchedule("0 55 0 * * ?"))//每天的 0点到0点25分触发
+                            .withSchedule(cronSchedule("0 25 0 * * ?"))//每天的 0点到0点25分触发
                             .build();
 
 
@@ -150,14 +151,16 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
 
-//                    JobDetail jobIndexPointTask = newJob(IndexPointTask.class).withIdentity("jobIndexPointTask", "groupJobIndexPointTask")
-//                            .usingJobData(jobDataMap).build();
-//                    CronTrigger triggerJobIndexPointTask = newTrigger()
-//                            .withIdentity("triggerJobIndexPointTask", "groupJobIndexPointTask")
-//                            .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
-//                            .build();
-//
-//                    scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                    JobDetail jobIndexPointTask = newJob(IndexPointTask.class).withIdentity("jobIndexPointTask", "groupJobIndexPointTask")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerJobIndexPointTask = newTrigger()
+                            .withIdentity("triggerJobIndexPointTask", "groupJobIndexPointTask")
+                            .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
+                            .build();
+
+                    //scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+
+                    IndexPoint.getInstance().setIndex(0.00d);
 
 //                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
 //                            .usingJobData(jobDataMap).build();

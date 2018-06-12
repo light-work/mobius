@@ -12,17 +12,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class Utils {
+public  class Utils {
 
-    private static Double index;
 
-    public static Double getIndex() {
-        return index;
-    }
-
-    public static void setIndex(Double index) {
-        Utils.index = index;
-    }
 
     public static Date parseDateForZ(String timeStr) {
         timeStr = timeStr.replace("Z", " UTC");//UTC是本地时间
