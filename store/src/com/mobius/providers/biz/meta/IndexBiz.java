@@ -4,7 +4,9 @@ import com.mobius.common.BizException;
 
 public interface IndexBiz {
 
-    String buildDetail(Integer useYear,Integer useMonth) throws BizException;
-
     String buildIndex() throws BizException;
+
+    String index() throws BizException;
+
+    String historyIndex() throws BizException;
 }

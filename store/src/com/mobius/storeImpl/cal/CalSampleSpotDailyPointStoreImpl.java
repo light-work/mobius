@@ -6,6 +6,7 @@ import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotDailyPoint;
 import com.mobius.providers.store.cal.CalSampleSpotDailyPointStore;
 import com.mobius.service.cal.CalSampleSpotDailyPointService;
+import org.guiceside.commons.Page;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.ConnectManager;
@@ -39,6 +40,17 @@ public class CalSampleSpotDailyPointStoreImpl implements CalSampleSpotDailyPoint
     public CalSampleSpotDailyPoint getByRecordDate(Date recordDate) throws StoreException {
         try {
             return this.calSampleCoinService.getByRecordDate(recordDate);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
+    public Page<CalSampleSpotDailyPoint> getPageList(int start, int limit, List<Selector> selectorList) throws StoreException {
+        try {
+            return this.calSampleCoinService.getPageList(start, limit, selectorList);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

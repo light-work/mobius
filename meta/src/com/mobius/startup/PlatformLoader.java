@@ -150,14 +150,23 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
 
-                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDetailTaskForUsdt = newTrigger()
-                            .withIdentity("triggerDetailTaskForUsdt", "groupDetailTaskForUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
-                            .build();
+//                    JobDetail jobIndexPointTask = newJob(IndexPointTask.class).withIdentity("jobIndexPointTask", "groupJobIndexPointTask")
+//                            .usingJobData(jobDataMap).build();
+//                    CronTrigger triggerJobIndexPointTask = newTrigger()
+//                            .withIdentity("triggerJobIndexPointTask", "groupJobIndexPointTask")
+//                            .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
+//                            .build();
+//
+//                    scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
-                    scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
+//                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
+//                            .usingJobData(jobDataMap).build();
+//                    CronTrigger triggerDetailTaskForUsdt = newTrigger()
+//                            .withIdentity("triggerDetailTaskForUsdt", "groupDetailTaskForUsdt")
+//                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+//                            .build();
+//
+//                    scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
 
                 } else {
 

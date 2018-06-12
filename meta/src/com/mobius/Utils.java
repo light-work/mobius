@@ -14,6 +14,16 @@ import java.util.List;
 
 public class Utils {
 
+    private static Double index;
+
+    public static Double getIndex() {
+        return index;
+    }
+
+    public static void setIndex(Double index) {
+        Utils.index = index;
+    }
+
     public static Date parseDateForZ(String timeStr) {
         timeStr = timeStr.replace("Z", " UTC");//UTC是本地时间
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");

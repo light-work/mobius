@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import com.mobius.common.StoreException;
 import com.mobius.entity.cal.CalSampleSpotDailyPoint;
 import com.mobius.providers.store.cal.CalSampleSpotDailyPointStore;
+import org.guiceside.commons.Page;
 import org.guiceside.persistence.TransactionType;
 import org.guiceside.persistence.Transactional;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
@@ -36,6 +37,11 @@ public class CalSampleSpotDailyPointService extends HQuery implements CalSampleS
         return $(selectorList).list(CalSampleSpotDailyPoint.class);
     }
 
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public Page<CalSampleSpotDailyPoint> getPageList(int start, int limit, List<Selector> selectorList) throws StoreException {
+        return $(selectorList).page(CalSampleSpotDailyPoint.class, start, limit);
+    }
 
     /**
      * 保存对象
