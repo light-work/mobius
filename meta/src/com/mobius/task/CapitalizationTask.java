@@ -13,6 +13,7 @@ import com.mobius.providers.store.sys.SysCoinStore;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
+import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.entity.search.SelectorUtils;
@@ -76,7 +77,7 @@ public class CapitalizationTask implements Job {
     private void getTicker(HSFServiceFactory hsfServiceFactory) throws Exception {
         SysCapitalizationStore sysCapitalizationStore = hsfServiceFactory.consumer(SysCapitalizationStore.class);
         SysCoinStore sysCoinStore = hsfServiceFactory.consumer(SysCoinStore.class);
-
+        long start=System.currentTimeMillis();
         if (sysCapitalizationStore != null && sysCoinStore != null) {
             List<Selector> vailDataExistSelector = new ArrayList<>();
             vailDataExistSelector.add(SelectorUtils.$eq("recordDate", DateFormatUtil.getCurrentDate(false)));
@@ -84,6 +85,7 @@ public class CapitalizationTask implements Job {
             if (todayList != null && !todayList.isEmpty()) {
                 return;
             }
+            System.out.println("CoinMarketCapAction task save star.......");
             List<Selector> selectorList = new ArrayList<>();
             selectorList.add(SelectorUtils.$eq("useYn", "Y"));
             List<SysCoin> sysCoinList = sysCoinStore.getList(selectorList);
@@ -145,13 +147,11 @@ public class CapitalizationTask implements Job {
                     }
                 }
                 if (!sysCapitalizationList.isEmpty()) {
-                    System.out.println("CoinMarketCapAction task save star.......");
                     sysCapitalizationStore.save(sysCapitalizationList, Persistent.SAVE);
-                    System.out.println("CoinMarketCapAction task save over");
                 }
             }
-
-
+            long end=System.currentTimeMillis();
+            System.out.println("CoinMarketCapAction task save over  "+TimeUtils.getTimeDiff(start,end));
         }
     }
 

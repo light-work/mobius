@@ -1,10 +1,15 @@
 package com.mobius;
 
+import com.mobius.entity.spot.SpotSymbol;
 import ognl.NoSuchPropertyException;
 import org.guiceside.commons.lang.BeanUtils;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.entity.Tracker;
+import org.guiceside.support.redis.RedisPoolProvider;
+import org.guiceside.support.redis.RedisStoreUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,8 +17,72 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public  class Utils {
+public class Utils {
 
+    public static void setSymbolWeight(SpotSymbol spotSymbol,Date cud, Double weight) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_WEIGHT", spotSymbol.getId() + "_"+DateFormatUtil.format(cud,DateFormatUtil.YEAR_MONTH_DAY_PATTERN), weight + "");
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+    }
+
+    public static Double getSymbolWeight(SpotSymbol spotSymbol,Date cud) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        Double price = null;
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_WEIGHT", spotSymbol.getId() + "_"+DateFormatUtil.format(cud,DateFormatUtil.YEAR_MONTH_DAY_PATTERN), 8);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return price;
+    }
+
+
+    public static void setSymbolPrice(SpotSymbol spotSymbol, Double price) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", price + "");
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+    }
+
+    public static Double getSymbolPrice(SpotSymbol spotSymbol) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        Double price = null;
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", 8);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return price;
+    }
 
 
     public static Date parseDateForZ(String timeStr) {
@@ -30,7 +99,7 @@ public  class Utils {
         return d;
     }
 
-    public static double max(double a ,double b ,double c ){
+    public static double max(double a, double b, double c) {
         return Math.max(Math.max(a, b), c);
     }
 
@@ -39,7 +108,7 @@ public  class Utils {
     }
 
 
-    public static double median(List<Double> data){
+    public static double median(List<Double> data) {
         double mid = 0;
         Collections.sort(data);
         int len = data.size();
@@ -51,12 +120,12 @@ public  class Utils {
     }
 
 
-    public static void bind(Object entity,String by) throws Exception {
+    public static void bind(Object entity, String by) throws Exception {
         if (entity instanceof Tracker) {
             BeanUtils.setValue(entity, "created", DateFormatUtil.getCurrentDate(true));
             BeanUtils.setValue(entity, "updated", DateFormatUtil.getCurrentDate(true));
-            BeanUtils.setValue(entity, "createdBy", StringUtils.defaultIfEmpty(by,"sys"));
-            BeanUtils.setValue(entity, "updatedBy", StringUtils.defaultIfEmpty(by,"sys"));
+            BeanUtils.setValue(entity, "createdBy", StringUtils.defaultIfEmpty(by, "sys"));
+            BeanUtils.setValue(entity, "updatedBy", StringUtils.defaultIfEmpty(by, "sys"));
         }
         try {
             String useYn = BeanUtils.getValue(entity, "useYn", String.class);

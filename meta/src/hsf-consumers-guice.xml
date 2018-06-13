@@ -185,6 +185,14 @@
         <consumer id="indexBizConsumer" interface="com.mobius.providers.biz.meta.IndexBiz"
                   version="for-dev" clientTimeout="5000">
         </consumer>
+
+        <consumer id="dailyBizConsumer" interface="com.mobius.providers.biz.meta.DailyBiz"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
+
+        <consumer id="detailBizConsumer" interface="com.mobius.providers.biz.meta.DetailBiz"
+                  version="for-dev" clientTimeout="5000">
+        </consumer>
     </group>
 
 </hsf>

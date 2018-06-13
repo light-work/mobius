@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.support.properties.PropertiesConfig;
+import org.guiceside.support.redis.RedisPoolProvider;
 import org.guiceside.web.listener.DefaultGuiceSideListener;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -70,7 +71,9 @@ public class PlatformLoader {
 
         String releaseEnvironment = webConfig.getString("releaseEnvironment");
         if (StringUtils.isNotBlank(releaseEnvironment)) {
-
+            if(releaseEnvironment.equals("DIS")){
+                RedisPoolProvider.init(webConfig);
+            }
         }
         EnvironmentValue.getInstance().setWebConfig(webConfig);
         String testIP = EnvironmentValue.getInstance().getValue("TEST_IP");
@@ -85,6 +88,7 @@ public class PlatformLoader {
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put("injector", injector);
             jobDataMap.put("localIP", localIP);
+            jobDataMap.put("releaseEnvironment", releaseEnvironment);
             System.out.println("detailInteval=" + detailInteval);
 
 
@@ -97,20 +101,20 @@ public class PlatformLoader {
 
                     /*****************Daily*******************/
 
+                    JobDetail jobCapitalizationTask = newJob(CapitalizationTask.class).withIdentity("dailyCapitalizationTask", "groupCapitalizationTask")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerCapitalizationTask = newTrigger()
+                            .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
+                            .withSchedule(cronSchedule("0 0-5 0 * * ?"))//每天的 0点到0点10分每分触发
+                            .build();
 //
                     JobDetail jobDailyTaskForOkex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDailyTaskForOkex = newTrigger()
                             .withIdentity("triggerDailyTaskForOkex", "groupDailyTaskForOkex")
-                            .withSchedule(cronSchedule("0 5 0 * * ?"))//每天的 0点到0点5分触发
+                            .withSchedule(cronSchedule("0 10 0 * * ?"))//每天的 0点到0点5分触发
                             .build();
 
-                    JobDetail jobDailyTaskForHuobi = newJob(DailyTaskForHuobi.class).withIdentity("dailyTaskForHuobi", "groupDailyTaskForHuobi")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDailyTaskForHuobi = newTrigger()
-                            .withIdentity("triggerDailyTaskForHuobi", "groupDailyTaskForHuobi")
-                            .withSchedule(cronSchedule("0 10 0 * * ?"))//每天的 0点到0点10分触发
-                            .build();
 
                     JobDetail jobDailyTaskForBitmex = newJob(DailyTaskForBitmex.class).withIdentity("dailyTaskForBitmex", "groupDailyTaskForBitmex")
                             .usingJobData(jobDataMap).build();
@@ -120,36 +124,12 @@ public class PlatformLoader {
                             .build();
 
 
-                    JobDetail jobDailyTaskForBinance = newJob(DailyTaskForBinance.class).withIdentity("dailyTaskForBinance", "groupDailyTaskForBinance")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDailyTaskForBinance = newTrigger()
-                            .withIdentity("triggerDailyTaskForBinance", "groupDailyTaskForBinance")
-                            .withSchedule(cronSchedule("0 20 0 * * ?"))//每天的 0点到0点15分触发
-                            .build();
 
 
-                    JobDetail jobDailyTaskForBitfinex = newJob(DailyTaskForBitfinex.class).withIdentity("dailyTaskForBitfinex", "groupDailyTaskForBitfinex")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerDailyTaskForBitfinex = newTrigger()
-                            .withIdentity("triggerDailyTaskForBitfinex", "groupDailyTaskForBitfinex")
-                            .withSchedule(cronSchedule("0 25 0 * * ?"))//每天的 0点到0点25分触发
-                            .build();
-
-
-                    JobDetail jobCapitalizationTask = newJob(CapitalizationTask.class).withIdentity("dailyCapitalizationTask", "groupCapitalizationTask")
-                            .usingJobData(jobDataMap).build();
-                    CronTrigger triggerCapitalizationTask = newTrigger()
-                            .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
-                            .withSchedule(cronSchedule("0 0 0 * * ?"))//每天的 0点到0点10分每分触发
-                            .build();
-
-
-                    scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
-                    scheduler.scheduleJob(jobDailyTaskForBinance, triggerDailyTaskForBinance);
-                    scheduler.scheduleJob(jobDailyTaskForBitfinex, triggerDailyTaskForBitfinex);
-                    scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
-                    scheduler.scheduleJob(jobDailyTaskForHuobi, triggerDailyTaskForHuobi);
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
+                    scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
+                    scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
+
 
                     JobDetail jobIndexPointTask = newJob(IndexPointTask.class).withIdentity("jobIndexPointTask", "groupJobIndexPointTask")
                             .usingJobData(jobDataMap).build();
@@ -158,9 +138,8 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
                             .build();
 
-                    //scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                   // scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
-                    IndexPoint.getInstance().setIndex(0.00d);
 
 //                    JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
 //                            .usingJobData(jobDataMap).build();
@@ -173,6 +152,15 @@ public class PlatformLoader {
 
                 } else {
 
+                    JobDetail jobDailyTask= newJob(DailyTask.class).withIdentity("jobDailyTask", "groupJobDaily")
+                            .usingJobData(jobDataMap).build();
+                    CronTrigger triggerDailyTask = newTrigger()
+                            .withIdentity("triggerDailyTask", "groupJobDaily")
+                            .withSchedule(cronSchedule("0 5 0 * * ?"))//每天的 0点到0点5分触发
+                            .build();
+
+                    scheduler.scheduleJob(jobDailyTask, triggerDailyTask);
+
                     JobDetail jobDetailTaskForUsdt = newJob(DetailTaskForUsdt.class).withIdentity("detailTaskForUsdt", "groupDetailTaskForUsdt")
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDetailTaskForUsdt = newTrigger()
@@ -183,37 +171,6 @@ public class PlatformLoader {
                     scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
                 }
             }
-
-//            JobDetail jobBTCPrice = newJob(PushJobBTCPrice.class).withIdentity("jobBTCPrice", "group1")
-//                    .usingJobData(jobDataMap).build();
-//
-//            CronTrigger triggerBTCPrice = newTrigger()
-//                    .withIdentity("triggerBTCPrice", "group1")
-//                    .withSchedule(cronSchedule("0 */1 * * * ?"))
-//                    .build();
-//
-//
-////
-//            scheduler.scheduleJob(jobDetailTaskForBinanceUsdt, triggerDetailTaskForBinanceUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForBinanceBtc, triggerDetailTaskForBinanceBtc);
-//            scheduler.scheduleJob(jobDetailTaskForBinanceEth, triggerDetailTaskForBinanceEth);
-
-
-//
-//            scheduler.scheduleJob(jobDetailTaskForHuobiUsdt, triggerDetailTaskForHuobiUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForHuobiBtc, triggerDetailTaskForHuobiBtc);
-//            scheduler.scheduleJob(jobDetailTaskForHuobiEth, triggerDetailTaskForHuobiEth);
-
-//
-//            scheduler.scheduleJob(jobDetailTaskForOKexFuturesUsdt, triggerDetailTaskForOKexFuturesUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotUsdt, triggerDetailTaskForOKexSpotUsdt);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotBtc, triggerDetailTaskForOKexSpotBtc);
-//            scheduler.scheduleJob(jobDetailTaskForOKexSpotEth, triggerDetailTaskForOKexSpotEth);
-
-
-//            scheduler.scheduleJob(jobBTCPrice, triggerBTCPrice);
-
-            //scheduler.scheduleJob(jobBtcPrice, triggerBTCPrice);
             // and start it off
             scheduler.start();
             System.out.println(localIP + "启动 task");
@@ -227,7 +184,8 @@ public class PlatformLoader {
 
 
     public void destroyed(ServletContext servletContext) throws Exception {
-        //RedisPoolProvider.destroyAll();
+
+        RedisPoolProvider.destroyAll();
         scheduler.shutdown();
     }
 }

@@ -22,6 +22,8 @@ import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
+import com.mobius.providers.biz.meta.DailyBiz;
+import com.mobius.providers.biz.meta.DetailBiz;
 import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.sys.SysIpServerStore;
 import com.mobius.providers.store.sys.SysTradeStore;
@@ -78,7 +80,8 @@ public class DetailTaskForUsdt implements Job {
             if (hsfServiceFactory != null) {
                 try {
                     SysIpServerStore sysIpServerStore = hsfServiceFactory.consumer(SysIpServerStore.class);
-                    if (sysIpServerStore != null) {
+                    DetailBiz detailBiz = hsfServiceFactory.consumer(DetailBiz.class);
+                    if (sysIpServerStore != null&&detailBiz!=null) {
                         SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                         if (sysIpServer != null) {
                             SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
@@ -90,83 +93,14 @@ public class DetailTaskForUsdt implements Job {
                                 Integer weightYear = DateFormatUtil.getDayInYear(weightDate);
                                 Integer weightMonth = DateFormatUtil.getDayInMonth(weightDate) + 1;
 
+                                detailBiz.dailyForBinance(weightYear,weightMonth,weightDate,market,sysIpServer);
+
+                                detailBiz.dailyForOkex(weightYear,weightMonth,weightDate,market,sysIpServer);
+
+                                detailBiz.dailyForHuobiPro(weightYear,weightMonth,weightDate,market,sysIpServer);
+
+                                detailBiz.dailyForBitfinex(weightYear,weightMonth,weightDate,market,sysIpServer);
                                 System.out.println(d.getTime()+" ===");
-
-
-                                SysTrade sysTradeBinance = sysTradeStore.getBySign("BINANCE");
-                                if (sysTradeBinance != null) {
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
-                                            sysTradeBinance.getId(), market, sysIpServer.getServerNo());
-                                    if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
-                                        for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
-                                            try {
-                                                SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
-                                                if (spotSymbol != null) {
-                                                    FastCallForBinance.call(calSampleSpotSymbolWeight, sysTradeBinance, spotSymbol, hsfServiceFactory, d);
-                                                }
-                                            } catch (Exception e) {
-
-                                            }
-                                        }
-                                    }
-                                }
-
-                                SysTrade sysTradeHuoBi = sysTradeStore.getBySign("HUOBIPRO");
-                                if (sysTradeHuoBi != null) {
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
-                                            sysTradeHuoBi.getId(), market, sysIpServer.getServerNo());
-                                    if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
-                                        for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
-                                            SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
-                                            if (spotSymbol != null) {
-                                                FastCallForHuobi.callUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeHuoBi, d);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                SysTrade sysTradeOKEX = sysTradeStore.getBySign("OKEX");
-                                if (sysTradeOKEX != null) {
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
-                                            sysTradeOKEX.getId(), market, sysIpServer.getServerNo());
-                                    if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
-                                        for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
-                                            SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
-                                            if (spotSymbol != null) {
-                                                FastCallForOkex.callSpotUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeOKEX, d);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                SysTrade sysTradeBITFINEX = sysTradeStore.getBySign("BITFINEX");
-                                if (sysTradeBITFINEX != null) {
-                                    List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonthTradeMarketServerNo(weightYear, weightMonth,
-                                            sysTradeBITFINEX.getId(), market, sysIpServer.getServerNo());
-                                    if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
-                                        List<SpotSymbol> spotSymbolList = new ArrayList<>();
-                                        Map<String, CalSampleSpotSymbolWeight> sampleSpotSymbolWeightMap = new HashMap<>();
-                                        Map<String, SpotSymbol> spotSymbolHashMap = new HashMap<>();
-
-                                        for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
-                                            try {
-                                                SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
-                                                if (spotSymbol != null) {
-                                                    spotSymbolList.add(spotSymbol);
-                                                    sampleSpotSymbolWeightMap.put("t" + spotSymbol.getSymbol().toUpperCase(), calSampleSpotSymbolWeight);
-                                                    spotSymbolHashMap.put("t" + spotSymbol.getSymbol().toUpperCase(), spotSymbol);
-                                                }
-                                            } catch (Exception e) {
-
-                                            }
-                                        }
-                                        try {
-                                            FastCallForBitfinex.call(sampleSpotSymbolWeightMap, spotSymbolHashMap, sysTradeBITFINEX, spotSymbolList, hsfServiceFactory, d);
-                                        } catch (Exception e) {
-
-                                        }
-                                    }
-                                }
                             }
                         }
                     }

@@ -11,7 +11,22 @@
         <service id="indexBiz" class="com.mobius.bizImp.meta.IndexBizImp"/>
         <provider id="indexBizProvider"
                   interface="com.mobius.providers.biz.meta.IndexBiz"
-                  ref="indexBiz" version="for-dev" clientTimeout="3000" serializeType="hessian"
+                  ref="indexBiz" version="for-dev" clientTimeout="5000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+        <service id="dailyBiz" class="com.mobius.bizImp.meta.DailyBizImp"/>
+        <provider id="dailyBizProvider"
+                  interface="com.mobius.providers.biz.meta.DailyBiz"
+                  ref="dailyBiz" version="for-dev" clientTimeout="5000" serializeType="hessian"
+                  enableTXC="true">
+        </provider>
+
+
+        <service id="detailBiz" class="com.mobius.bizImp.meta.DetailBizImp"/>
+        <provider id="detailBizProvider"
+                  interface="com.mobius.providers.biz.meta.DetailBiz"
+                  ref="detailBiz" version="for-dev" clientTimeout="5000" serializeType="hessian"
                   enableTXC="true">
         </provider>
 

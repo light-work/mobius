@@ -81,15 +81,15 @@ public class IndexPointTask implements Job {
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Injector injector = (Injector) dataMap.get("injector");
-
+        String releaseEnvironment = dataMap.getString("releaseEnvironment");
         if (injector != null) {
             HSFServiceFactory hsfServiceFactory = injector.getInstance(HSFServiceFactory.class);
             if (hsfServiceFactory != null) {
                 try {
                     IndexBiz indexBiz = hsfServiceFactory.consumer(IndexBiz.class);
                     if (indexBiz != null) {
-                        System.out.print(System.currentTimeMillis()+"==");
-                        String str=indexBiz.buildIndex();
+                        System.out.print(System.currentTimeMillis() + "==");
+                        String str = indexBiz.buildIndex(releaseEnvironment);
                         System.out.println(str);
                     }
                 } catch (Exception e) {
