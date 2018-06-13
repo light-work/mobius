@@ -44,6 +44,10 @@ public class DailyBinanceAction extends BaseAction {
     @ReqGet
     private Long tradeId;
 
+    @ReqGet
+    private String market;
+
+
     @Inject
     private HSFServiceFactory hsfServiceFactory;
 
@@ -54,11 +58,11 @@ public class DailyBinanceAction extends BaseAction {
 
     public String symbolServer() throws Exception {
         SpotSymbolStore spotSymbolStore=hsfServiceFactory.consumer(SpotSymbolStore.class);
-        if(spotSymbolStore!=null&&tradeId!=null){
+        if(spotSymbolStore!=null&&tradeId!=null&&StringUtils.isNotBlank(market)){
             List<Selector> selectorList=new ArrayList<>();
             selectorList.add(SelectorUtils.$alias("coinId","coinId"));
             selectorList.add(SelectorUtils.$eq("tradeId.id",tradeId));
-            selectorList.add(SelectorUtils.$eq("market","usdt"));
+            selectorList.add(SelectorUtils.$eq("market",market));
             selectorList.add(SelectorUtils.$order("displayOrder"));
             List<SpotSymbol> spotSymbolList=spotSymbolStore.getList(selectorList);
             if(spotSymbolList!=null&&!spotSymbolList.isEmpty()){
