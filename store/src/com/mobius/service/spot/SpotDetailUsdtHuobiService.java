@@ -60,12 +60,9 @@ public class SpotDetailUsdtHuobiService extends HQuery implements SpotDetailUsdt
 
     @Override
     @Transactional(type = TransactionType.READ_WRITE)
-    public void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         $(spotDetailUsdtHuobi).save(persistent);
-        if(calSampleSpotSymbolWeight!=null){
-            calSampleSpotSymbolWeightService.save(calSampleSpotSymbolWeight,Persistent.UPDATE);
-        }
         if(calSampleSpotSymbolWeightPrice!=null){
             calSampleSpotSymbolWeightPriceService.save(calSampleSpotSymbolWeightPrice,Persistent.SAVE);
         }

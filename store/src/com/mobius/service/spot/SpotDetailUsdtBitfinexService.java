@@ -60,12 +60,9 @@ public class SpotDetailUsdtBitfinexService extends HQuery implements SpotDetailU
 
     @Override
     @Transactional(type = TransactionType.READ_WRITE)
-    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         $(spotDetailUsdtBitfinex).save(persistent);
-        if(calSampleSpotSymbolWeight!=null){
-            calSampleSpotSymbolWeightService.save(calSampleSpotSymbolWeight,Persistent.UPDATE);
-        }
         if(calSampleSpotSymbolWeightPrice!=null){
             calSampleSpotSymbolWeightPriceService.save(calSampleSpotSymbolWeightPrice,Persistent.SAVE);
         }

@@ -16,27 +16,27 @@
         <!--连接数据库的URL -->
 
 
-        <property name="url">
-        jdbc:mysql://rm-j6cx1p79i05lns91v.mysql.rds.aliyuncs.com:3306/mobius?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false
-        </property>
         <!--<property name="url">-->
-        <!--jdbc:mysql://drds9j4c53jsqgg0public.drds.aliyuncs.com:3306/o2_trading_drds-->
+        <!--jdbc:mysql://rm-j6cx1p79i05lns91v.mysql.rds.aliyuncs.com:3306/mobius?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false-->
         <!--</property>-->
-        <!--连接的登录名-->
-        <property name="username">mobius</property>
-
-        <!--登录密码-->
-        <property name="password">Mobius2018</property>
-
-        <!--<property name="url">-->
-            <!--jdbc:mysql://rm-j6cm604168ii34b45.mysql.rds.aliyuncs.com:3306/mobius?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false-->
-        <!--</property>-->
-
+        <!--&lt;!&ndash;<property name="url">&ndash;&gt;-->
+        <!--&lt;!&ndash;jdbc:mysql://drds9j4c53jsqgg0public.drds.aliyuncs.com:3306/o2_trading_drds&ndash;&gt;-->
+        <!--&lt;!&ndash;</property>&ndash;&gt;-->
         <!--&lt;!&ndash;连接的登录名&ndash;&gt;-->
         <!--<property name="username">mobius</property>-->
 
         <!--&lt;!&ndash;登录密码&ndash;&gt;-->
         <!--<property name="password">Mobius2018</property>-->
+
+        <property name="url">
+            jdbc:mysql://rm-j6cm604168ii34b45.mysql.rds.aliyuncs.com:3306/mobius?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;failOverReadOnly=false
+        </property>
+
+        <!--连接的登录名-->
+        <property name="username">mobius</property>
+
+        <!--登录密码-->
+        <property name="password">Mobius2018</property>
 
         <property name="hibernate.connection.provider_class">
             org.guiceside.persistence.hibernate.support.DruidConnectionProvider
