@@ -877,6 +877,11 @@ public class CalSampleCoinAction extends BaseAction {
                         history.setCreatedBy("batch");
                         history.setUseYn("Y");
                         saveList.add(history);
+                    } else {
+                        Double _w = todayOpenWeightMap.get(weight.getSymbolId().getId());
+                        if (history.getWeight() != null && _w != null && !history.getWeight().equals(_w)) {
+                            System.out.println("symbolId=" + weight.getSymbolId().getId() + "history weight=" + history.getWeight() + " new =" + _w);
+                        }
                     }
                     todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
                 }
