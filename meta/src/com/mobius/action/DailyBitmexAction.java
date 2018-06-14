@@ -47,7 +47,7 @@ public class DailyBitmexAction extends BaseAction {
                       FuturesDailyUsdtStore futuresDailyUsdtStore) throws Exception {
         Date d = null;
         if (startTime == 0) {
-            d = DateFormatUtil.parse("2017-01-01 00:00", DateFormatUtil.YMDHM_PATTERN);
+            d = DateFormatUtil.parse("2018-05-26 00:00:00", DateFormatUtil.YMDHM_PATTERN);
         } else {
             d = new Date(startTime);
         }

@@ -34,7 +34,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
 
 
     @Override
-    public String dailyForOkex(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer) throws BizException {
+    public String dailyForOkex(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer,String releaseEnvironment) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
@@ -49,7 +49,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
                         for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                             SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                             if (spotSymbol != null) {
-                                FastCallForOkex.callSpotUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeOKEX, date);
+                                FastCallForOkex.callSpotUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeOKEX, date,releaseEnvironment);
                                 resultObj.put("result", "0");
                             }
                         }
@@ -67,7 +67,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
     }
 
     @Override
-    public String dailyForHuobiPro(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer) throws BizException {
+    public String dailyForHuobiPro(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer,String releaseEnvironment) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
@@ -82,7 +82,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
                         for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
                             SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                             if (spotSymbol != null) {
-                                FastCallForHuobi.callUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeHuoBi, date);
+                                FastCallForHuobi.callUsdt(calSampleSpotSymbolWeight, spotSymbol, hsfServiceFactory, sysTradeHuoBi, date,releaseEnvironment);
                                 resultObj.put("result", "0");
                             }
                         }
@@ -101,7 +101,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
     }
 
     @Override
-    public String dailyForBitfinex(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer) throws BizException {
+    public String dailyForBitfinex(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer,String releaseEnvironment) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
@@ -131,7 +131,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
                             }
                         }
                         try {
-                            FastCallForBitfinex.call(sampleSpotSymbolWeightMap, spotSymbolHashMap, sysTradeBITFINEX, spotSymbolList, hsfServiceFactory, date);
+                            FastCallForBitfinex.call(sampleSpotSymbolWeightMap, spotSymbolHashMap, sysTradeBITFINEX, spotSymbolList, hsfServiceFactory, date,releaseEnvironment);
                             resultObj.put("result", "0");
                         } catch (Exception e) {
 
@@ -152,7 +152,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
     }
 
     @Override
-    public String dailyForBinance(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer) throws BizException {
+    public String dailyForBinance(Integer weightYear, Integer weightMonth, Date date, String market, SysIpServer sysIpServer,String releaseEnvironment) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         try {
@@ -168,7 +168,7 @@ public class DetailBizImp extends BaseBiz implements DetailBiz {
                             try {
                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                 if (spotSymbol != null) {
-                                    FastCallForBinance.call(calSampleSpotSymbolWeight, sysTradeBinance, spotSymbol, hsfServiceFactory, date);
+                                    FastCallForBinance.call(calSampleSpotSymbolWeight, sysTradeBinance, spotSymbol, hsfServiceFactory, date,releaseEnvironment);
                                     resultObj.put("result", "0");
                                 }
                             } catch (Exception e) {

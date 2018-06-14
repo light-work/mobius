@@ -75,7 +75,8 @@ public class DetailTaskForUsdt implements Job {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Injector injector = (Injector) dataMap.get("injector");
         String localIP = dataMap.getString("localIP");
-        if (injector != null && StringUtils.isNotBlank(localIP)) {
+        String releaseEnvironment = dataMap.getString("releaseEnvironment");
+        if (injector != null && StringUtils.isNotBlank(localIP)&&StringUtils.isNotBlank(releaseEnvironment)) {
             HSFServiceFactory hsfServiceFactory = injector.getInstance(HSFServiceFactory.class);
             if (hsfServiceFactory != null) {
                 try {
@@ -93,13 +94,13 @@ public class DetailTaskForUsdt implements Job {
                                 Integer weightYear = DateFormatUtil.getDayInYear(weightDate);
                                 Integer weightMonth = DateFormatUtil.getDayInMonth(weightDate) + 1;
 
-                                detailBiz.dailyForBinance(weightYear,weightMonth,weightDate,market,sysIpServer);
+                                detailBiz.dailyForBinance(weightYear,weightMonth,d,market,sysIpServer,releaseEnvironment);
 
-                                detailBiz.dailyForOkex(weightYear,weightMonth,weightDate,market,sysIpServer);
+                                detailBiz.dailyForOkex(weightYear,weightMonth,d,market,sysIpServer,releaseEnvironment);
 
-                                detailBiz.dailyForHuobiPro(weightYear,weightMonth,weightDate,market,sysIpServer);
+                                detailBiz.dailyForHuobiPro(weightYear,weightMonth,d,market,sysIpServer,releaseEnvironment);
 
-                                detailBiz.dailyForBitfinex(weightYear,weightMonth,weightDate,market,sysIpServer);
+                                detailBiz.dailyForBitfinex(weightYear,weightMonth,d,market,sysIpServer,releaseEnvironment);
                                 System.out.println(d.getTime()+" ===");
                             }
                         }

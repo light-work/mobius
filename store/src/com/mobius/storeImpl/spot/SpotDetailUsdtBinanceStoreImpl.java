@@ -73,10 +73,10 @@ public class SpotDetailUsdtBinanceStoreImpl implements SpotDetailUsdtBinanceStor
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtBinanceService.save(spotDetailUsdtBinance, persistent,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+            this.spotDetailUsdtBinanceService.save(spotDetailUsdtBinance, persistent,calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

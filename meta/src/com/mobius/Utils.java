@@ -1,9 +1,11 @@
 package com.mobius;
 
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotSymbol;
 import ognl.NoSuchPropertyException;
 import org.guiceside.commons.lang.BeanUtils;
 import org.guiceside.commons.lang.DateFormatUtil;
+import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.persistence.entity.Tracker;
 import org.guiceside.support.redis.RedisPoolProvider;
@@ -25,6 +27,7 @@ public class Utils {
             Jedis jedis = null;
             try {
                 jedis = pool.getResource();
+                weight=NumberUtils.multiply(weight,1,8);
                 RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_WEIGHT", spotSymbol.getId() + "_"+DateFormatUtil.format(cud,DateFormatUtil.YEAR_MONTH_DAY_PATTERN), weight + "");
             } finally {
                 if (jedis != null) {
@@ -52,12 +55,13 @@ public class Utils {
     }
 
 
-    public static void setSymbolPrice(SpotSymbol spotSymbol, Double price) {
+    public static void setDetailSymbolPrice(SpotSymbol spotSymbol, Double price) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
             Jedis jedis = null;
             try {
                 jedis = pool.getResource();
+                price=NumberUtils.multiply(price,1,8);
                 RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", price + "");
             } finally {
                 if (jedis != null) {
@@ -67,7 +71,7 @@ public class Utils {
         }
     }
 
-    public static Double getSymbolPrice(SpotSymbol spotSymbol) {
+    public static Double getDetailSymbolPrice(SpotSymbol spotSymbol) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         Double price = null;
         if (pool != null) {
@@ -75,6 +79,40 @@ public class Utils {
             try {
                 jedis = pool.getResource();
                 price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", 8);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return price;
+    }
+
+
+    public static void setWeightSymbolPrice(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, Double price) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price=NumberUtils.multiply(price,1,8);
+                RedisStoreUtils.hset(jedis, "WEIGHT_SYMBOL_PRICE", calSampleSpotSymbolWeight.getId() + "", price + "");
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+    }
+
+    public static Double getWeightSymbolPrice(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        Double price = null;
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = RedisStoreUtils.hgetDouble(jedis, "WEIGHT_SYMBOL_PRICE", calSampleSpotSymbolWeight.getId() + "", 8);
             } finally {
                 if (jedis != null) {
                     jedis.close();

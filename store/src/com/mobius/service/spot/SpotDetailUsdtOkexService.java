@@ -60,12 +60,9 @@ public class SpotDetailUsdtOkexService extends HQuery implements SpotDetailUsdtO
 
     @Override
     @Transactional(type = TransactionType.READ_WRITE)
-    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         $(spotDetailUsdtOkex).save(persistent);
-        if(calSampleSpotSymbolWeight!=null){
-            calSampleSpotSymbolWeightService.save(calSampleSpotSymbolWeight,Persistent.UPDATE);
-        }
         if(calSampleSpotSymbolWeightPrice!=null){
             calSampleSpotSymbolWeightPriceService.save(calSampleSpotSymbolWeightPrice,Persistent.SAVE);
         }

@@ -55,6 +55,7 @@ public class SpotDetailEthBinance extends IdEntity implements Tracker {
     private String useYn;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

@@ -71,10 +71,10 @@ public class SpotDetailUsdtBitfinexStoreImpl implements SpotDetailUsdtBitfinexSt
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtBitfinexService.save(spotDetailUsdtBitfinex, persistent,calSampleSpotSymbolWeight,
+            this.spotDetailUsdtBitfinexService.save(spotDetailUsdtBitfinex, persistent,
                     calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;

@@ -36,7 +36,7 @@ public class FastCallForBinance {
 
 
     public static void call(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SysTrade sysTrade, final SpotSymbol spotSymbol, final HSFServiceFactory hsfServiceFactory,
-                            final Date tradingDate) {
+                            final Date tradingDate,final String releaseEnvironment) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -66,7 +66,6 @@ public class FastCallForBinance {
                                         Double quoteVolume=jsonObject.getDouble("quoteVolume");
                                         if (market.equals("usdt")) {
                                             SpotDetailUsdtBinance spotDetailUsdtBinance = new SpotDetailUsdtBinance();
-                                            spotDetailUsdtBinance.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                             spotDetailUsdtBinance.setTradeId(sysTrade);
                                             spotDetailUsdtBinance.setSymbolId(spotSymbol);
                                             spotDetailUsdtBinance.setTradingDay(tradingDate);
@@ -80,11 +79,9 @@ public class FastCallForBinance {
                                             spotDetailUsdtBinance.setAskVolume(askQty);
                                             Utils.bind(spotDetailUsdtBinance,"task");
 
-                                            calSampleSpotSymbolWeight.setLastPrice(lastPrice);
-                                            Utils.bind(calSampleSpotSymbolWeight,"task");
 
                                             CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
-                                            calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                            calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.CAL));
                                             calSampleSpotSymbolWeightPrice.setPrice(lastPrice);
                                             calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
                                             calSampleSpotSymbolWeightPrice.setYear(y);
@@ -93,11 +90,13 @@ public class FastCallForBinance {
                                             calSampleSpotSymbolWeightPrice.setRecordDate(tradingDate);
                                             Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
-                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+                                            spotDetailUsdtBinanceStore.save(spotDetailUsdtBinance,Persistent.SAVE,calSampleSpotSymbolWeightPrice);
+                                            if (releaseEnvironment.equals("DIS")) {
+                                                Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,lastPrice);
+                                            }
                                             //save
                                         } else if (market.equals("btc")) {
                                             SpotDetailBtcBinance spotDetailBtcBinance = new SpotDetailBtcBinance();
-                                            spotDetailBtcBinance.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                             spotDetailBtcBinance.setTradeId(sysTrade);
                                             spotDetailBtcBinance.setSymbolId(spotSymbol);
                                             spotDetailBtcBinance.setTradingDay(tradingDate);
@@ -115,7 +114,6 @@ public class FastCallForBinance {
                                         } else if (market.equals("eth")) {
                                             //save
                                             SpotDetailEthBinance spotDetailBinanceEth = new SpotDetailEthBinance();
-                                            spotDetailBinanceEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                             spotDetailBinanceEth.setTradeId(sysTrade);
                                             spotDetailBinanceEth.setSymbolId(spotSymbol);
                                             spotDetailBinanceEth.setTradingDay(tradingDate);

@@ -36,7 +36,8 @@ public class FastCallForHuobi {
     private static ExecutorService executorService = Executors.newCachedThreadPool();
 
 
-    public static void callUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
+    public static void callUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime,
+                                final String releaseEnvironment) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -55,7 +56,6 @@ public class FastCallForHuobi {
                                 JSONObject tick = root.getJSONObject("tick");
                                 Date date = new Date(root.getLong("ts"));
                                 SpotDetailUsdtHuobi detail = new SpotDetailUsdtHuobi();
-                                detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                 detail.setTradeId(sysTrade);
                                 detail.setSymbolId(symbol);
                                 detail.setTradingDay(date);
@@ -89,11 +89,9 @@ public class FastCallForHuobi {
                                 }
                                 detail.setCreated(tradingTime);
                                 detail.setCreatedBy("task");
-                                calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
-                                Utils.bind(calSampleSpotSymbolWeight,"task");
 
                                 CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
-                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.CAL));
                                 calSampleSpotSymbolWeightPrice.setPrice(detail.getPrice());
                                 calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
                                 calSampleSpotSymbolWeightPrice.setYear(y);
@@ -102,7 +100,10 @@ public class FastCallForHuobi {
                                 calSampleSpotSymbolWeightPrice.setRecordDate(tradingTime);
                                 Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
-                                spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+                                spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeightPrice);
+                                if (releaseEnvironment.equals("DIS")) {
+                                    Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,detail.getPrice());
+                                }
 //                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
                             }
 
@@ -131,7 +132,6 @@ public class FastCallForHuobi {
                             JSONObject tick = root.getJSONObject("tick");
                             Date date = new Date(root.getLong("ts"));
                             SpotDetailBtcHuobi detail = new SpotDetailBtcHuobi();
-                            detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                             detail.setTradeId(sysTrade);
                             detail.setSymbolId(symbol);
                             detail.setTradingDay(date);
@@ -192,7 +192,6 @@ public class FastCallForHuobi {
                             JSONObject tick = root.getJSONObject("tick");
                             Date date = new Date(root.getLong("ts"));
                             SpotDetailEthHuobi detail = new SpotDetailEthHuobi();
-                            detail.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                             detail.setTradeId(sysTrade);
                             detail.setSymbolId(symbol);
                             detail.setTradingDay(date);

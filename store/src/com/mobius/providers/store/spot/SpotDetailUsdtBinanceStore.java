@@ -23,7 +23,7 @@ public interface SpotDetailUsdtBinanceStore {
 
     void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent) throws StoreException;
 
-    void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
+    void save(SpotDetailUsdtBinance spotDetailUsdtBinance, Persistent persistent,  CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
 
 
     void save(List<SpotDetailUsdtBinance> spotDetailUsdtBinanceList, Persistent persistent) throws StoreException;

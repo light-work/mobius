@@ -78,7 +78,6 @@ public class FastCallForOkex {
     }
 
     private static void setValue(Object obj, JSONObject tick, SysTrade sysTrade, Date date, SpotSymbol symbol) throws Exception {
-        BeanUtils.setValue(obj, "id", DrdsIDUtils.getID(DrdsTable.SPOT));
         BeanUtils.setValue(obj, "tradeId", sysTrade);
         BeanUtils.setValue(obj, "symbolId", symbol);
         BeanUtils.setValue(obj, "tradingDay", date);
@@ -104,7 +103,8 @@ public class FastCallForOkex {
         }
     }
 
-    public static void callSpotUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime) {
+    public static void callSpotUsdt(final CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,final SpotSymbol symbol, final HSFServiceFactory hsfServiceFactory, final SysTrade sysTrade, final Date tradingTime,
+                                    final String releaseEnvironment) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -123,11 +123,9 @@ public class FastCallForOkex {
                                 JSONObject tick = root.getJSONObject("ticker");
                                 SpotDetailUsdtOkex detail = new SpotDetailUsdtOkex();
                                 setValue(detail, tick, sysTrade, tradingTime, symbol);
-                                calSampleSpotSymbolWeight.setLastPrice(detail.getPrice());
-                                Utils.bind(calSampleSpotSymbolWeight,"task");
 
                                 CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
-                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.CAL));
                                 calSampleSpotSymbolWeightPrice.setPrice(detail.getPrice());
                                 calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
                                 calSampleSpotSymbolWeightPrice.setYear(y);
@@ -136,7 +134,11 @@ public class FastCallForOkex {
                                 calSampleSpotSymbolWeightPrice.setRecordDate(tradingTime);
                                 Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
-                                spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+                                spotDetailUsdtOkexStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeightPrice);
+
+                                if (releaseEnvironment.equals("DIS")) {
+                                    Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,detail.getPrice());
+                                }
                             }
                         }
                     }

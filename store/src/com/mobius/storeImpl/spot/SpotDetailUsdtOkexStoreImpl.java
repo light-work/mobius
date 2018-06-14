@@ -71,10 +71,10 @@ public class SpotDetailUsdtOkexStoreImpl implements SpotDetailUsdtOkexStore {
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtOkexService.save(spotDetailUsdtOkex, persistent,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+            this.spotDetailUsdtOkexService.save(spotDetailUsdtOkex, persistent,calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
