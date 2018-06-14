@@ -141,7 +141,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -152,7 +152,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -163,7 +163,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -310,7 +310,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (usdtList != null && !usdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : usdtList) {
-                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -321,7 +321,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (btcList != null && !btcList.isEmpty()) {
                                     for (SpotDailyBtc btc : btcList) {
-                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -332,7 +332,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (ethList != null && !ethList.isEmpty()) {
                                     for (SpotDailyEth eth : ethList) {
-                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -462,7 +462,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -474,7 +474,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -486,7 +486,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -622,7 +622,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -634,7 +634,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -646,7 +646,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
