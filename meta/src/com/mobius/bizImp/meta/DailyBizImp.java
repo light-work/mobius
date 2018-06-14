@@ -38,7 +38,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     private HSFServiceFactory hsfServiceFactory;
 
     @Override
-    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment) throws BizException {
+    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -172,7 +172,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -318,7 +318,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -327,11 +327,10 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
-            Date d = DateFormatUtil.getCurrentDate(false);
-            d = DateFormatUtil.addDay(d, -1);//提前一天
+
             params.put("sort", "1");//旧的在前面
             params.put("limit", "1");//只显示前一天数据
-            params.put("start", d.getTime() + "");//从前一天开始返回
+            params.put("start", dailyDate.getTime() + "");//从前一天开始返回
             try {
                 String url = "https://api.bitfinex.com/v2/candles/trade:1D:t" + spotSymbol.getSymbol().toUpperCase() + "/hist";
                 String resultStr = OKHttpUtil.get(url, params);
@@ -474,12 +473,12 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         return null;
     }
 
     @Override
-    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -488,9 +487,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
-            Date d = DateFormatUtil.getCurrentDate(false);
-            d = DateFormatUtil.addDay(d, -1);
-            params.put("startTime", d.getTime() + "");//从前一天开始返回
+            params.put("startTime", dailyDate.getTime() + "");//从前一天开始返回
             params.put("limit", "1");//只显示前一天数据
             params.put("interval", "1d");//按天返回
             params.put("symbol", spotSymbol.getSymbol());
