@@ -127,8 +127,8 @@ public class PlatformLoader {
 
 
                     scheduler.scheduleJob(jobCapitalizationTask, triggerCapitalizationTask);
-                    scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
-                    scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
+                 //   scheduler.scheduleJob(jobDailyTaskForOkex, triggerDailyTaskForOkex);
+                   // scheduler.scheduleJob(jobDailyTaskForBitmex, triggerDailyTaskForBitmex);
 
 
                     JobDetail jobIndexPointTask = newJob(IndexPointTask.class).withIdentity("jobIndexPointTask", "groupJobIndexPointTask")
