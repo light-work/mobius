@@ -21,7 +21,7 @@ public interface SpotDetailUsdtOkexStore {
 
     List<SpotDetailUsdtOkex> getList(List<Selector> selectorList) throws StoreException;
 
-    void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent,CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    void save(SpotDetailUsdtOkex spotDetailUsdtOkex, Persistent persistent,
               CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
 
     void save(List<SpotDetailUsdtOkex> spotDetailUsdtOkexList, Persistent persistent) throws StoreException;

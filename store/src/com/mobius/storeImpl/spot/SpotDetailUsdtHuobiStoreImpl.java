@@ -71,10 +71,10 @@ public class SpotDetailUsdtHuobiStoreImpl implements SpotDetailUsdtHuobiStore {
 
     @Override
     @ConnectManager
-    public void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent, CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    public void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent,
                      CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException {
         try {
-            this.spotDetailUsdtHuobiService.save(spotDetailUsdtHuobi, persistent,calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+            this.spotDetailUsdtHuobiService.save(spotDetailUsdtHuobi, persistent,calSampleSpotSymbolWeightPrice);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());

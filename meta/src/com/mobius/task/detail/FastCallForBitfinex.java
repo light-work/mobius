@@ -39,7 +39,7 @@ public class FastCallForBitfinex {
     public static void call(final Map<String, CalSampleSpotSymbolWeight> sampleSpotSymbolWeightMap,
                             final Map<String, SpotSymbol> spotSymbolHashMap,
                             final SysTrade sysTrade, final List<SpotSymbol> spotSymbolList, final HSFServiceFactory hsfServiceFactory,
-                            final Date tradingDate) {
+                            final Date tradingDate,final String releaseEnvironment) {
         executorService.execute(new Runnable() {
             public void run() {
                 try {
@@ -84,7 +84,6 @@ public class FastCallForBitfinex {
                                                 String market = spotSymbol.getMarket();
                                                 if (market.equals("usdt")) {
                                                     SpotDetailUsdtBitfinex spotDetailUsdtBitfinex = new SpotDetailUsdtBitfinex();
-                                                    spotDetailUsdtBitfinex.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                     spotDetailUsdtBitfinex.setTradeId(sysTrade);
                                                     spotDetailUsdtBitfinex.setSymbolId(spotSymbol);
                                                     spotDetailUsdtBitfinex.setTradingDay(tradingDate);
@@ -98,11 +97,9 @@ public class FastCallForBitfinex {
                                                     spotDetailUsdtBitfinex.setAskVolume(askQty);
                                                     Utils.bind(spotDetailUsdtBitfinex, "task");
 
-                                                    calSampleSpotSymbolWeight.setLastPrice(lastPrice);
-                                                    Utils.bind(calSampleSpotSymbolWeight, "task");
 
                                                     CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice=new CalSampleSpotSymbolWeightPrice();
-                                                    calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.SYS));
+                                                    calSampleSpotSymbolWeightPrice.setId(DrdsIDUtils.getID(DrdsTable.CAL));
                                                     calSampleSpotSymbolWeightPrice.setPrice(lastPrice);
                                                     calSampleSpotSymbolWeightPrice.setSymbolId(calSampleSpotSymbolWeight);
                                                     calSampleSpotSymbolWeightPrice.setYear(y);
@@ -111,11 +108,13 @@ public class FastCallForBitfinex {
                                                     calSampleSpotSymbolWeightPrice.setRecordDate(tradingDate);
                                                     Utils.bind(calSampleSpotSymbolWeightPrice,"task");
 
-                                                    spotDetailUsdtBitfinexStore.save(spotDetailUsdtBitfinex, Persistent.SAVE, calSampleSpotSymbolWeight,calSampleSpotSymbolWeightPrice);
+                                                    spotDetailUsdtBitfinexStore.save(spotDetailUsdtBitfinex, Persistent.SAVE,calSampleSpotSymbolWeightPrice);
+                                                    if (releaseEnvironment.equals("DIS")) {
+                                                        Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,lastPrice);
+                                                    }
                                                     //save
                                                 } else if (market.equals("btc")) {
                                                     SpotDetailBtcBitfinex spotDetailBtcBitfinex = new SpotDetailBtcBitfinex();
-                                                    spotDetailBtcBitfinex.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                     spotDetailBtcBitfinex.setTradeId(sysTrade);
                                                     spotDetailBtcBitfinex.setSymbolId(spotSymbol);
                                                     spotDetailBtcBitfinex.setTradingDay(tradingDate);
@@ -133,7 +132,6 @@ public class FastCallForBitfinex {
                                                 } else if (market.equals("eth")) {
                                                     //save
                                                     SpotDetailEthBitfinex spotDetailBitfinexEth = new SpotDetailEthBitfinex();
-                                                    spotDetailBitfinexEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                                     spotDetailBitfinexEth.setTradeId(sysTrade);
                                                     spotDetailBitfinexEth.setSymbolId(spotSymbol);
                                                     spotDetailBitfinexEth.setTradingDay(tradingDate);

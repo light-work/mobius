@@ -21,7 +21,7 @@ public interface SpotDetailUsdtBitfinexStore {
 
     List<SpotDetailUsdtBitfinex> getList(List<Selector> selectorList) throws StoreException;
 
-    void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent,CalSampleSpotSymbolWeight calSampleSpotSymbolWeight,
+    void save(SpotDetailUsdtBitfinex spotDetailUsdtBitfinex, Persistent persistent,
               CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
 
     void save(List<SpotDetailUsdtBitfinex> spotDetailUsdtBitfinexList, Persistent persistent) throws StoreException;

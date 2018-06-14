@@ -22,6 +22,10 @@ public class DrdsIDUtils {
         idWorkerMap.put(DrdsTable.FUTURES, transferIdWorker);
 
 
+        IdWorker calIdWorker = new IdWorker(4);
+        idWorkerMap.put(DrdsTable.CAL, calIdWorker);
+
+
     }
 
     public static Long getID(DrdsTable drdsTable) {

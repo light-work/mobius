@@ -1,29 +1,19 @@
 package com.mobius.bizImp.meta;
 
 import com.google.inject.Inject;
-import com.mobius.IndexPoint;
 import com.mobius.Utils;
 import com.mobius.common.BizException;
-import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
 import com.mobius.entity.spot.SpotSymbol;
-import com.mobius.entity.sys.SysIpServer;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
 import com.mobius.providers.biz.meta.DailyBiz;
-import com.mobius.common.StoreException;
-import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.spot.SpotDailyBtcStore;
 import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
-import com.mobius.providers.store.sys.SysTradeStore;
-import com.mobius.task.detail.FastCallForBinance;
-import com.mobius.task.detail.FastCallForBitfinex;
-import com.mobius.task.detail.FastCallForHuobi;
-import com.mobius.task.detail.FastCallForOkex;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
@@ -35,7 +25,6 @@ import org.guiceside.support.hsf.BaseBiz;
 import org.guiceside.support.hsf.HSFServiceFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhenjiaWang
@@ -49,7 +38,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     private HSFServiceFactory hsfServiceFactory;
 
     @Override
-    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment) throws BizException {
+    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -145,7 +134,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -156,7 +145,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -167,7 +156,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -183,7 +172,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -291,7 +280,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (usdtList != null && !usdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : usdtList) {
-                                        Utils.setSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -302,7 +291,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (btcList != null && !btcList.isEmpty()) {
                                     for (SpotDailyBtc btc : btcList) {
-                                        Utils.setSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -313,7 +302,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (ethList != null && !ethList.isEmpty()) {
                                     for (SpotDailyEth eth : ethList) {
-                                        Utils.setSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -329,7 +318,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -338,11 +327,10 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
-            Date d = DateFormatUtil.getCurrentDate(false);
-            d = DateFormatUtil.addDay(d, -1);//提前一天
+
             params.put("sort", "1");//旧的在前面
             params.put("limit", "1");//只显示前一天数据
-            params.put("start", d.getTime() + "");//从前一天开始返回
+            params.put("start", dailyDate.getTime() + "");//从前一天开始返回
             try {
                 String url = "https://api.bitfinex.com/v2/candles/trade:1D:t" + spotSymbol.getSymbol().toUpperCase() + "/hist";
                 String resultStr = OKHttpUtil.get(url, params);
@@ -444,7 +432,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -456,7 +444,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -468,7 +456,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }
@@ -485,12 +473,12 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         return null;
     }
 
     @Override
-    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment) throws BizException {
+    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -499,9 +487,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
-            Date d = DateFormatUtil.getCurrentDate(false);
-            d = DateFormatUtil.addDay(d, -1);
-            params.put("startTime", d.getTime() + "");//从前一天开始返回
+            params.put("startTime", dailyDate.getTime() + "");//从前一天开始返回
             params.put("limit", "1");//只显示前一天数据
             params.put("interval", "1d");//按天返回
             params.put("symbol", spotSymbol.getSymbol());
@@ -606,7 +592,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
                                     for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
+                                        Utils.setDetailSymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
                                     }
                                 }
                             }
@@ -618,7 +604,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
                                     for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
+                                        Utils.setDetailSymbolPrice(btc.getSymbolId(), btc.getLastPrice());
                                     }
                                 }
                             }
@@ -630,7 +616,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             if (releaseEnvironment.equals("DIS")) {
                                 if (dailyEthList != null && !dailyEthList.isEmpty()) {
                                     for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
+                                        Utils.setDetailSymbolPrice(eth.getSymbolId(), eth.getLastPrice());
                                     }
                                 }
                             }

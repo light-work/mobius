@@ -110,6 +110,9 @@ public class DailyTask implements Job {
             marketList.add("usdt");
             marketList.add("btc");
             marketList.add("eth");
+
+            Date dailyDate=DateFormatUtil.getCurrentDate(false);
+            dailyDate=DateFormatUtil.addDay(dailyDate,-2);//减去2天
             for (String market : marketList) {
                 SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                 if (sysIpServer != null) {
@@ -119,7 +122,7 @@ public class DailyTask implements Job {
                         if (spotSymbolListBINANCE != null && !spotSymbolListBINANCE.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListBINANCE) {
                                 try {
-                                    dailyBiz.dailyForBinance(spotSymbol, sysTradeBINANCE,releaseEnvironment);
+                                    dailyBiz.dailyForBinance(spotSymbol, sysTradeBINANCE,releaseEnvironment,dailyDate);
                                 } catch (Exception e) {
 
                                 } finally {
@@ -140,7 +143,7 @@ public class DailyTask implements Job {
                         if (spotSymbolListBITFINEX != null && !spotSymbolListBITFINEX.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListBITFINEX) {
                                 try {
-                                    dailyBiz.dailyForBitfinex(spotSymbol, sysTradeBITFINEX,releaseEnvironment);
+                                    dailyBiz.dailyForBitfinex(spotSymbol, sysTradeBITFINEX,releaseEnvironment,dailyDate);
                                 } catch (Exception e) {
 
                                 } finally {
@@ -159,7 +162,7 @@ public class DailyTask implements Job {
                         if (spotSymbolListOKEX != null && !spotSymbolListOKEX.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListOKEX) {
                                 try {
-                                    dailyBiz.dailyForOkex(spotSymbol, sysTradeOKEX,releaseEnvironment);
+                                    dailyBiz.dailyForOkex(spotSymbol, sysTradeOKEX,releaseEnvironment,dailyDate);
                                 } catch (Exception e) {
 
                                 } finally {
@@ -178,7 +181,7 @@ public class DailyTask implements Job {
                         if (spotSymbolListHUOBIPRO != null && !spotSymbolListHUOBIPRO.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListHUOBIPRO) {
                                 try {
-                                    dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeHUOBIPRO,releaseEnvironment);
+                                    dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeHUOBIPRO,releaseEnvironment,dailyDate);
                                 } catch (Exception e) {
 
                                 } finally {

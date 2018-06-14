@@ -21,8 +21,8 @@ public interface SpotDetailUsdtHuobiStore {
 
     List<SpotDetailUsdtHuobi> getList(List<Selector> selectorList) throws StoreException;
 
-    void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent,CalSampleSpotSymbolWeight calSampleSpotSymbolWeigh,
-              CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPricet) throws StoreException;
+    void save(SpotDetailUsdtHuobi spotDetailUsdtHuobi, Persistent persistent,
+              CalSampleSpotSymbolWeightPrice calSampleSpotSymbolWeightPrice) throws StoreException;
 
     void save(List<SpotDetailUsdtHuobi> spotDetailUsdtHuobiList, Persistent persistent) throws StoreException;
 
