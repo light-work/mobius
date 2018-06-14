@@ -126,7 +126,7 @@ public class DailyBitfinexAction extends BaseAction {
             }
         }
         if (startTime == 0) {
-            startTime = DateFormatUtil.parse("2017-01-01 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime();
+            startTime = DateFormatUtil.parse("2018-05-26 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime();
         }
         params.put("sort", "1");
         params.put("limit", "1000");
