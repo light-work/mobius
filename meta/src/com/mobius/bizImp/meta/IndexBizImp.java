@@ -316,7 +316,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                             history.setCreatedBy("batch");
                             history.setUseYn("Y");
                             saveList.add(history);
-                            Utils.setSymbolWeight(weight.getSymbolId(), yesterdayDate, todayOpenWeightMap.get(weight.getSymbolId().getId()));//设置今日开市权重
+                            Utils.setSymbolWeight(weight.getSymbolId(), today, todayOpenWeightMap.get(weight.getSymbolId().getId()));//设置今日开市权重
                         } else {
                             Double _w = todayOpenWeightMap.get(weight.getSymbolId().getId());
                             if (history.getWeight() != null && _w != null && !history.getWeight().equals(_w)) {
