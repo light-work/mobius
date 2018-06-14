@@ -66,6 +66,52 @@ public class Utils {
         return price;
     }
 
+    /**
+     * 设置昨日指数
+     *
+     * @param cud
+     * @param weight
+     */
+    public static void setYesterdayPoint(Date cud, Double weight) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                weight = NumberUtils.multiply(weight, 1, 8);
+                RedisStoreUtils.hset(jedis, "INDEX_POINT", DateFormatUtil.format(cud, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), weight + "");
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取昨日指数
+     *
+     * @param cud
+     */
+    public static Double getYesterdayPoint(Date cud) {
+        Double price = null;
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = RedisStoreUtils.hgetDouble(jedis, "INDEX_POINT", DateFormatUtil.format(cud, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), 8);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return price;
+    }
+
+
+
 
     /**
      * 设置样本日频 收盘价格
