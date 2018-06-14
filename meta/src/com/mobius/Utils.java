@@ -21,6 +21,12 @@ import java.util.List;
 
 public class Utils {
 
+    /**
+     * 设置样本开市权重
+     * @param spotSymbol
+     * @param cud
+     * @param weight
+     */
     public static void setSymbolWeight(SpotSymbol spotSymbol,Date cud, Double weight) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
@@ -37,6 +43,12 @@ public class Utils {
         }
     }
 
+    /**
+     * 获取样本开市权重
+     * @param spotSymbol
+     * @param cud
+     * @return
+     */
     public static Double getSymbolWeight(SpotSymbol spotSymbol,Date cud) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         Double price = null;
@@ -55,7 +67,12 @@ public class Utils {
     }
 
 
-    public static void setDetailSymbolPrice(SpotSymbol spotSymbol, Double price) {
+    /**
+     * 设置样本日频 收盘价格
+     * @param spotSymbol
+     * @param price
+     */
+    public static void setDailySymbolPrice(SpotSymbol spotSymbol, Double price) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
             Jedis jedis = null;
@@ -71,7 +88,12 @@ public class Utils {
         }
     }
 
-    public static Double getDetailSymbolPrice(SpotSymbol spotSymbol) {
+    /**
+     * 获取样本日频 收盘价格
+     * @param spotSymbol
+     * @return
+     */
+    public static Double getDailySymbolPrice(SpotSymbol spotSymbol) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         Double price = null;
         if (pool != null) {
@@ -89,6 +111,11 @@ public class Utils {
     }
 
 
+    /**
+     * 设置样本合约 高频当前价格
+     * @param calSampleSpotSymbolWeight
+     * @param price
+     */
     public static void setWeightSymbolPrice(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight, Double price) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
@@ -105,6 +132,11 @@ public class Utils {
         }
     }
 
+    /**
+     * 获取样本合约 高频当前价格
+     * @param calSampleSpotSymbolWeight
+     * @return
+     */
     public static Double getWeightSymbolPrice(CalSampleSpotSymbolWeight calSampleSpotSymbolWeight) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         Double price = null;
