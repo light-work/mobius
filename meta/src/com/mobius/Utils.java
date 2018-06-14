@@ -158,6 +158,53 @@ public class Utils {
 
 
     /**
+     * 设置样本日频 收盘价格
+     *
+     * @param spotSymbol
+     * @param price
+     */
+    public static void setDailySymbolPrice(SpotSymbol spotSymbol, Double price, Date dateTIme) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = NumberUtils.multiply(price, 1, 8);
+                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE_WITH_DATE", spotSymbol.getId() + "_" +
+                        DateFormatUtil.format(dateTIme, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), price + "");
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取样本日频 收盘价格
+     *
+     * @param spotSymbol
+     * @return
+     */
+    public static Double getDailySymbolPrice(SpotSymbol spotSymbol, Date dateTime) {
+        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
+        Double price = null;
+        if (pool != null) {
+            Jedis jedis = null;
+            try {
+                jedis = pool.getResource();
+                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE_WITH_DATE", spotSymbol.getId() + "_" +
+                        DateFormatUtil.format(dateTime, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), 8);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return price;
+    }
+
+    /**
      * 设置样本合约 高频当前价格
      * @param calSampleSpotSymbolWeight
      * @param price
