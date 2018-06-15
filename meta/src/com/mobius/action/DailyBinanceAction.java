@@ -2,6 +2,7 @@ package com.mobius.action;
 
 import com.google.inject.Inject;
 import com.mobius.Utils;
+import com.mobius.entity.cal.CalSampleSpotSymbolWeight;
 import com.mobius.entity.spot.SpotDailyBtc;
 import com.mobius.entity.spot.SpotDailyEth;
 import com.mobius.entity.spot.SpotDailyUsdt;
@@ -9,11 +10,13 @@ import com.mobius.entity.spot.SpotSymbol;
 import com.mobius.entity.sys.SysTrade;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
+import com.mobius.providers.store.cal.CalSampleSpotSymbolWeightStore;
 import com.mobius.providers.store.spot.SpotDailyBtcStore;
 import com.mobius.providers.store.spot.SpotDailyEthStore;
 import com.mobius.providers.store.spot.SpotDailyUsdtStore;
 import com.mobius.providers.store.spot.SpotSymbolStore;
 import com.mobius.providers.store.sys.SysTradeStore;
+import com.mobius.service.cal.CalSampleSpotSymbolWeightService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.guiceside.commons.OKHttpUtil;
@@ -57,25 +60,25 @@ public class DailyBinanceAction extends BaseAction {
     }
 
     public String symbolServer() throws Exception {
-        SpotSymbolStore spotSymbolStore=hsfServiceFactory.consumer(SpotSymbolStore.class);
-        if(spotSymbolStore!=null&&tradeId!=null&&StringUtils.isNotBlank(market)){
-            List<Selector> selectorList=new ArrayList<>();
-            selectorList.add(SelectorUtils.$alias("coinId","coinId"));
-            selectorList.add(SelectorUtils.$eq("tradeId.id",tradeId));
-            selectorList.add(SelectorUtils.$eq("market",market));
+        SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+        if (spotSymbolStore != null && tradeId != null && StringUtils.isNotBlank(market)) {
+            List<Selector> selectorList = new ArrayList<>();
+            selectorList.add(SelectorUtils.$alias("coinId", "coinId"));
+            selectorList.add(SelectorUtils.$eq("tradeId.id", tradeId));
+            selectorList.add(SelectorUtils.$eq("market", market));
             selectorList.add(SelectorUtils.$order("displayOrder"));
-            List<SpotSymbol> spotSymbolList=spotSymbolStore.getList(selectorList);
-            if(spotSymbolList!=null&&!spotSymbolList.isEmpty()){
+            List<SpotSymbol> spotSymbolList = spotSymbolStore.getList(selectorList);
+            if (spotSymbolList != null && !spotSymbolList.isEmpty()) {
                 System.out.println(spotSymbolList.size());
-                int i=1;
-                for(SpotSymbol spotSymbol:spotSymbolList){
+                int i = 1;
+                for (SpotSymbol spotSymbol : spotSymbolList) {
                     spotSymbol.setServer(i);
                     i++;
-                    if(i==4){
-                        i=1;
+                    if (i == 4) {
+                        i = 1;
                     }
                 }
-                spotSymbolStore.save(spotSymbolList,Persistent.UPDATE);
+                spotSymbolStore.save(spotSymbolList, Persistent.UPDATE);
             }
 
         }
@@ -522,6 +525,36 @@ public class DailyBinanceAction extends BaseAction {
                                     TimeUnit.MILLISECONDS.sleep(500);//秒
                                     System.out.println("============********======task======sleep end");
 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void setDailyLastPrice() throws Exception {
+
+        CalSampleSpotSymbolWeightStore calSampleSpotSymbolWeightStore = hsfServiceFactory.consumer(CalSampleSpotSymbolWeightStore.class);
+        SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
+        SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+
+        if (calSampleSpotSymbolWeightStore != null && spotDailyUsdtStore != null && spotSymbolStore != null) {
+            List<CalSampleSpotSymbolWeight> calSampleSpotSymbolWeightList = calSampleSpotSymbolWeightStore.getListByYearMonth(2018, 5);
+            if (calSampleSpotSymbolWeightList != null && !calSampleSpotSymbolWeightList.isEmpty()) {
+                for (CalSampleSpotSymbolWeight calSampleSpotSymbolWeight : calSampleSpotSymbolWeightList) {
+                    SpotSymbol spotSymbol = spotSymbolStore.getById(calSampleSpotSymbolWeight.getSymbolId().getId(), SelectorUtils.$alias("tradeId", "tradeId"));
+                    if (spotSymbol != null) {
+                        SysTrade sysTrade = spotSymbol.getTradeId();
+                        if (sysTrade != null) {
+                            Date cudDate = DateFormatUtil.getCurrentDate(false);
+                            for (int i = 1; i <= 5; i++) {
+                                cudDate = DateFormatUtil.addDay(cudDate, -1);
+                                SpotDailyUsdt spotDailyUsdt = spotDailyUsdtStore.getTradeSymbolDay(sysTrade.getId(), spotSymbol.getId(), cudDate);
+                                if (spotDailyUsdt != null) {
+                                    Utils.setDailySymbolPrice(spotSymbol, spotDailyUsdt.getLastPrice(), cudDate);
+                                    System.out.println("set " + spotSymbol.getSymbol() + " " + spotDailyUsdt.getLastPrice() + "  " + DateFormatUtil.format(cudDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
                                 }
                             }
                         }
