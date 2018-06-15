@@ -107,6 +107,7 @@ public class PointDailyTaskByUsdt implements Job {
             Integer weightYear = DateFormatUtil.getDayInYear(weightDate);
             Integer weightMonth = DateFormatUtil.getDayInMonth(weightDate) + 1;
 
+            System.out.println("========================");
             for (String market : marketList) {
                 SysIpServer sysIpServer = sysIpServerStore.getByIpServerMarket(localIP, market);
                 if (sysIpServer != null) {
