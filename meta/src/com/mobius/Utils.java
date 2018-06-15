@@ -67,19 +67,19 @@ public class Utils {
     }
 
     /**
-     * 设置昨日指数
+     * 设置指数
      *
      * @param cud
-     * @param weight
+     * @param point
      */
-    public static void setYesterdayPoint(Date cud, Double weight) {
+    public static void setPointByDate(Date cud, Double point) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
             Jedis jedis = null;
             try {
                 jedis = pool.getResource();
-                weight = NumberUtils.multiply(weight, 1, 8);
-                RedisStoreUtils.hset(jedis, "INDEX_POINT", DateFormatUtil.format(cud, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), weight + "");
+                point = NumberUtils.multiply(point, 1, 8);
+                RedisStoreUtils.hset(jedis, "INDEX_POINT", DateFormatUtil.format(cud, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), point + "");
             } finally {
                 if (jedis != null) {
                     jedis.close();
@@ -89,11 +89,11 @@ public class Utils {
     }
 
     /**
-     * 获取昨日指数
+     * 获取指数
      *
      * @param cud
      */
-    public static Double getYesterdayPoint(Date cud) {
+    public static Double getPointByDate(Date cud) {
         Double price = null;
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
@@ -113,48 +113,6 @@ public class Utils {
 
 
 
-    /**
-     * 设置样本日频 收盘价格
-     * @param spotSymbol
-     * @param price
-     */
-    public static void setDailySymbolPrice(SpotSymbol spotSymbol, Double price) {
-        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
-        if (pool != null) {
-            Jedis jedis = null;
-            try {
-                jedis = pool.getResource();
-                price=NumberUtils.multiply(price,1,8);
-                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", price + "");
-            } finally {
-                if (jedis != null) {
-                    jedis.close();
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取样本日频 收盘价格
-     * @param spotSymbol
-     * @return
-     */
-    public static Double getDailySymbolPrice(SpotSymbol spotSymbol) {
-        JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
-        Double price = null;
-        if (pool != null) {
-            Jedis jedis = null;
-            try {
-                jedis = pool.getResource();
-                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE", spotSymbol.getId() + "", 8);
-            } finally {
-                if (jedis != null) {
-                    jedis.close();
-                }
-            }
-        }
-        return price;
-    }
 
 
     /**
@@ -163,15 +121,14 @@ public class Utils {
      * @param spotSymbol
      * @param price
      */
-    public static void setDailySymbolPrice(SpotSymbol spotSymbol, Double price, Date dateTIme) {
+    public static void setDailySymbolPrice(SpotSymbol spotSymbol, Double price, Date dateTime) {
         JedisPool pool = RedisPoolProvider.getPool(RedisPoolProvider.REDIS_COMMON);
         if (pool != null) {
             Jedis jedis = null;
             try {
                 jedis = pool.getResource();
                 price = NumberUtils.multiply(price, 1, 8);
-                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE_WITH_DATE", spotSymbol.getId() + "_" +
-                        DateFormatUtil.format(dateTIme, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), price + "");
+                RedisStoreUtils.hset(jedis, "SPOT_SYMBOL_PRICE" +DateFormatUtil.format(dateTime, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), spotSymbol.getId() + "_", price + "");
             } finally {
                 if (jedis != null) {
                     jedis.close();
@@ -193,8 +150,7 @@ public class Utils {
             Jedis jedis = null;
             try {
                 jedis = pool.getResource();
-                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE_WITH_DATE", spotSymbol.getId() + "_" +
-                        DateFormatUtil.format(dateTime, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), 8);
+                price = RedisStoreUtils.hgetDouble(jedis, "SPOT_SYMBOL_PRICE" +DateFormatUtil.format(dateTime, DateFormatUtil.YEAR_MONTH_DAY_PATTERN), spotSymbol.getId() + "_" , 8);
             } finally {
                 if (jedis != null) {
                     jedis.close();

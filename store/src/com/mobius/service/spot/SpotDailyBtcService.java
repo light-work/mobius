@@ -39,6 +39,14 @@ public class SpotDailyBtcService extends HQuery implements SpotDailyBtcStore {
                 $eq("tradingDay",tradingDay),$count("id")).value(SpotDailyBtc.class,Integer.class);
     }
 
+
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public SpotDailyBtc getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        return $($eq("tradeId.id",tradeId),$eq("symbolId.id",symbolId),
+                $eq("tradingDay",tradingDay)).get(SpotDailyBtc.class);
+    }
+
     /**
      * 保存对象
      */

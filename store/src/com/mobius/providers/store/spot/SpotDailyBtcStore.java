@@ -16,6 +16,7 @@ public interface SpotDailyBtcStore {
 
     Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException;
 
+    SpotDailyBtc getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException;
 
     List<SpotDailyBtc> getList(List<Selector> selectorList) throws StoreException;
 
