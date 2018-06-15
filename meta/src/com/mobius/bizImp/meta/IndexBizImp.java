@@ -156,7 +156,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     Date yesterdayDate = c.getTime();
                     if (releaseEnvironment.equals("DIS")) {//from redis
                         for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
-                            Double closePrice = Utils.getDailySymbolPrice(weight.getSymbolId(),c.getTime());
+                            Double closePrice = Utils.getDailySymbolPrice(weight.getSymbolId(), yesterdayDate);
                             if (closePrice != 0d) {
                                 yesterdayDailyMap.put(weight.getSymbolId().getId(), closePrice);
                             }
@@ -236,8 +236,15 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         if (releaseEnvironment.equals("DIS")) {//from redis
                             for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                                 Double _d = Utils.getSymbolWeight(weight.getSymbolId(), yesterdayDate);
+                                Long symbolId = weight.getSymbolId().getId();
                                 if (_d != 0d) {
-                                    yesterdayWeightMap.put(weight.getSymbolId().getId(), _d);
+                                    yesterdayWeightMap.put(symbolId, _d);
+                                } else {
+                                    CalSampleSpotWeightHistory history = calSampleSpotWeightHistoryStore.getBySymbolIdDate(symbolId, yesterdayDate);
+                                    if (history != null) {
+                                        yesterdayWeightMap.put(symbolId, history.getWeight());
+                                        Utils.setSymbolWeight(weight.getSymbolId(), yesterdayDate, history.getWeight());
+                                    }
                                 }
                             }
 
