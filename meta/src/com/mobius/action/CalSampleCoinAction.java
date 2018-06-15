@@ -865,7 +865,6 @@ public class CalSampleCoinAction extends BaseAction {
                 }
                 System.out.println("total=" + total);
                 List<CalSampleSpotWeightHistory> saveList = new ArrayList<>();
-                List<CalSampleSpotWeightHistory> updateList = new ArrayList<>();
                 for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                     CalSampleSpotWeightHistory history = calSampleSpotWeightHistoryStore.getBySymbolIdDate(weight.getSymbolId().getId(), today);
                     if (history == null) {
@@ -879,18 +878,15 @@ public class CalSampleCoinAction extends BaseAction {
                         history.setUseYn("Y");
                         saveList.add(history);
                     } else {
-                        history.setWeight(todayOpenWeightMap.get(weight.getSymbolId().getId()));
-                        history.setUpdatedBy("batchUpdate");
-                        history.setUpdated(new Date());
-                        updateList.add(history);
+                        Double _w = todayOpenWeightMap.get(weight.getSymbolId().getId());
+                        if (history.getWeight() != null && _w != null && !history.getWeight().equals(_w)) {
+                            System.out.println("symbolId=" + weight.getSymbolId().getId() + "history weight=" + history.getWeight() + " new =" + _w);
+                        }
                     }
                     todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
                 }
                 if (!saveList.isEmpty()) {
                     calSampleSpotWeightHistoryStore.save(saveList, Persistent.SAVE);
-                }
-                if (!updateList.isEmpty()) {
-                    calSampleSpotWeightHistoryStore.save(updateList, Persistent.UPDATE);
                 }
                 //计算实时点位
                 if (yesterdayPoint != null && yesterdayPoint != 0d) {

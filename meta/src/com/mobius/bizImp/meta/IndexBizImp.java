@@ -137,11 +137,18 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     Map<Long, Double> todayOpenWeightMap = new HashMap<>();
                     Double yesterdayPoint = 0d;
 
-
+                    //实时价格
                     List<Long> symbolIds = new ArrayList<>();
                     for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                         symbolIds.add(weight.getSymbolId().getId());
-                        todayLastPriceMap.put(weight.getSymbolId().getId(), weight.getLastPrice());//实时价格
+                        if (releaseEnvironment.equals("DIS")) {//from redis
+                            Double price = Utils.getWeightSymbolPrice(weight);
+                            if (price != 0d) {
+                                todayLastPriceMap.put(weight.getSymbolId().getId(), price);
+                            }
+                        } else {
+                            todayLastPriceMap.put(weight.getSymbolId().getId(), weight.getLastPrice());
+                        }
                     }
 
                     Date today = c.getTime();
@@ -149,24 +156,42 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     //yesterday 收盘价
                     c.add(Calendar.DAY_OF_YEAR, -1);
                     Date yesterdayDate = c.getTime();
-                    List<Selector> yesterdaySelectors = new ArrayList<>();
-                    yesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                    yesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                    yesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                    List<SpotDailyUsdt> yesterdayDailyList = spotDailyUsdtStore.getList(yesterdaySelectors);
-                    if (yesterdayDailyList != null && !yesterdayDailyList.isEmpty()) {
-                        for (SpotDailyUsdt usdt : yesterdayDailyList) {
-                            yesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                    if (releaseEnvironment.equals("DIS")) {//from redis
+                        for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
+                            Double closePrice = Utils.getDailySymbolPrice(weight.getSymbolId());
+                            if (closePrice != 0d) {
+                                yesterdayDailyMap.put(weight.getSymbolId().getId(), closePrice);
+                            }
                         }
                     } else {
-                        System.out.println("-------yesterdayDailyList was null.");
+                        List<Selector> yesterdaySelectors = new ArrayList<>();
+                        yesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
+                        yesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
+                        yesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
+                        List<SpotDailyUsdt> yesterdayDailyList = spotDailyUsdtStore.getList(yesterdaySelectors);
+                        if (yesterdayDailyList != null && !yesterdayDailyList.isEmpty()) {
+                            for (SpotDailyUsdt usdt : yesterdayDailyList) {
+                                yesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                            }
+                        } else {
+                            System.out.println("-------yesterdayDailyList was null.");
+                        }
                     }
 
-                    // 昨日点位
-                    CalSampleSpotDailyPoint calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
-                    if (calSampleSpotDailyPoint != null) {
-                        yesterdayPoint = calSampleSpotDailyPoint.getPoint();
+                    // 昨日指数
+                    CalSampleSpotDailyPoint calSampleSpotDailyPoint = null;
+                    if (releaseEnvironment.equals("DIS")) {//from redis
+                        Double point = Utils.getYesterdayPoint(yesterdayDate);
+                        if (point != 0d) {
+                            yesterdayPoint = point;
+                        }
+                    } else {
+                        calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
+                        if (calSampleSpotDailyPoint != null) {
+                            yesterdayPoint = calSampleSpotDailyPoint.getPoint();
+                        }
                     }
+
 
                     if (dayIndex == 1) {// 月初第一天
                         if (yesterdayPoint == null || yesterdayPoint == 0d) {
@@ -181,32 +206,52 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
 
                         //the day before yesterday 收盘价
                         c.add(Calendar.DAY_OF_YEAR, -1);
-                        List<Selector> beforeYesterdaySelectors = new ArrayList<>();
-                        beforeYesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                        beforeYesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                        beforeYesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
-                        List<SpotDailyUsdt> dayBeforeYesterdayDailyList = spotDailyUsdtStore.getList(beforeYesterdaySelectors);
-                        if (dayBeforeYesterdayDailyList != null && !dayBeforeYesterdayDailyList.isEmpty()) {
-                            for (SpotDailyUsdt usdt : dayBeforeYesterdayDailyList) {
-                                dayBeforeYesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                        if (releaseEnvironment.equals("DIS")) {//from redis
+                            for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
+                                Double beforeYesterdayClosePice = Utils.getDailySymbolPrice(weight.getSymbolId(), c.getTime());
+                                if (beforeYesterdayClosePice != 0d) {
+                                    dayBeforeYesterdayDailyMap.put(weight.getSymbolId().getId(), beforeYesterdayClosePice);
+                                }
                             }
                         } else {
-                            System.out.println("-------dayBeforeYesterdayDailyList was null.");
-                        }
-
-
-                        List<Selector> yesterdayWeightSelector = new ArrayList<>();
-                        yesterdayWeightSelector.add(SelectorUtils.$alias("symbolId", "symbolId"));
-                        yesterdayWeightSelector.add(SelectorUtils.$in("symbolId.id", symbolIds));
-                        yesterdayWeightSelector.add(SelectorUtils.$eq("recordDate", yesterdayDate));
-                        List<CalSampleSpotWeightHistory> yesterdayWeightList = calSampleSpotWeightHistoryStore.getList(yesterdayWeightSelector);
-                        if (yesterdayWeightList != null && !yesterdayWeightList.isEmpty()) {
-                            for (CalSampleSpotWeightHistory obj : yesterdayWeightList) {
-                                yesterdayWeightMap.put(obj.getSymbolId().getId(), obj.getWeight());
+                            List<Selector> beforeYesterdaySelectors = new ArrayList<>();
+                            beforeYesterdaySelectors.add(SelectorUtils.$alias("symbolId", "symbolId"));
+                            beforeYesterdaySelectors.add(SelectorUtils.$in("symbolId.id", symbolIds));
+                            beforeYesterdaySelectors.add(SelectorUtils.$eq("tradingDay", c.getTime()));
+                            List<SpotDailyUsdt> dayBeforeYesterdayDailyList = spotDailyUsdtStore.getList(beforeYesterdaySelectors);
+                            if (dayBeforeYesterdayDailyList != null && !dayBeforeYesterdayDailyList.isEmpty()) {
+                                for (SpotDailyUsdt usdt : dayBeforeYesterdayDailyList) {
+                                    dayBeforeYesterdayDailyMap.put(usdt.getSymbolId().getId(), usdt.getLastPrice());
+                                }
+                            } else {
+                                System.out.println("-------dayBeforeYesterdayDailyList was null.");
                             }
-                        } else {
-                            System.out.println("yesterdayWeightList was null");
                         }
+
+                        //获取昨日开市权重
+                        if (releaseEnvironment.equals("DIS")) {//from redis
+                            for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
+                                Double _d = Utils.getSymbolWeight(weight.getSymbolId(), yesterdayDate);
+                                if (_d != 0d) {
+                                    yesterdayWeightMap.put(weight.getSymbolId().getId(), _d);
+                                }
+                            }
+
+                        } else {
+                            List<Selector> yesterdayWeightSelector = new ArrayList<>();
+                            yesterdayWeightSelector.add(SelectorUtils.$alias("symbolId", "symbolId"));
+                            yesterdayWeightSelector.add(SelectorUtils.$in("symbolId.id", symbolIds));
+                            yesterdayWeightSelector.add(SelectorUtils.$eq("recordDate", yesterdayDate));
+                            List<CalSampleSpotWeightHistory> yesterdayWeightList = calSampleSpotWeightHistoryStore.getList(yesterdayWeightSelector);
+                            if (yesterdayWeightList != null && !yesterdayWeightList.isEmpty()) {
+                                for (CalSampleSpotWeightHistory obj : yesterdayWeightList) {
+                                    yesterdayWeightMap.put(obj.getSymbolId().getId(), obj.getWeight());
+                                }
+                            } else {
+                                System.out.println("yesterdayWeightList was null");
+                            }
+                        }
+
 
                         //样本权重 map sum(样本昨日收市价/样本前日收市价*样本昨日开市权重)
                         Map<Long, Double> numeratorMap = new HashMap<>();
@@ -259,7 +304,6 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     }
                     System.out.println("total=" + total);
                     List<CalSampleSpotWeightHistory> saveList = new ArrayList<>();
-                    List<CalSampleSpotWeightHistory> updateList = new ArrayList<>();
                     for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                         CalSampleSpotWeightHistory history = calSampleSpotWeightHistoryStore.getBySymbolIdDate(weight.getSymbolId().getId(), today);
                         if (history == null) {
@@ -272,19 +316,17 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                             history.setCreatedBy("batch");
                             history.setUseYn("Y");
                             saveList.add(history);
+                            Utils.setSymbolWeight(weight.getSymbolId(), today, todayOpenWeightMap.get(weight.getSymbolId().getId()));//设置今日开市权重
                         } else {
-                            history.setWeight(todayOpenWeightMap.get(weight.getSymbolId().getId()));
-                            history.setUpdatedBy("batchUpdate");
-                            history.setUpdated(new Date());
-                            updateList.add(history);
+                            Double _w = todayOpenWeightMap.get(weight.getSymbolId().getId());
+                            if (history.getWeight() != null && _w != null && !history.getWeight().equals(_w)) {
+                                System.out.println("symbolId=" + weight.getSymbolId().getId() + "history weight=" + history.getWeight() + " new =" + _w);
+                            }
                         }
                         todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
                     }
                     if (!saveList.isEmpty()) {
                         calSampleSpotWeightHistoryStore.save(saveList, Persistent.SAVE);
-                    }
-                    if (!updateList.isEmpty()) {
-                        calSampleSpotWeightHistoryStore.save(updateList, Persistent.UPDATE);
                     }
                     //计算实时点位
                     if (yesterdayPoint != null && yesterdayPoint != 0d) {
@@ -315,6 +357,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         point.setUseYn("Y");
                         calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
                         if (releaseEnvironment.equals("DIS")) {
+                            Utils.setYesterdayPoint(today, currentPoint);//设置今日点数
                             IndexPoint.getInstance().setIndex(point.getPoint());
                         }
                         resultObj.put("result", "0");

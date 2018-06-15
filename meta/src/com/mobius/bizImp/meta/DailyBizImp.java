@@ -44,11 +44,13 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
         SpotDailyBtcStore spotDailyBtcStore = hsfServiceFactory.consumer(SpotDailyBtcStore.class);
         SpotDailyEthStore spotDailyEthStore = hsfServiceFactory.consumer(SpotDailyEthStore.class);
-        if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
+        if (spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null && dailyDate != null) {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
             params.put("type", "1day");
-            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+            String dailyDateFmt = DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+            Long since = DateFormatUtil.parse(dailyDateFmt + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime();
+            params.put("since", since + "");
             params.put("symbol", spotSymbol.getSymbol());
             try {
                 String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/kline.do", params);
@@ -58,13 +60,18 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                         List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
                         List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                         List<SpotDailyEth> dailyEthList = new ArrayList<>();
-                        for (int x = 0; x < klineArray.size() - 1; x++) {
+                        for (int x = 0; x < 1; x++) {
                             JSONArray dayAttr = klineArray.getJSONArray(x);
                             if (dayAttr != null && !dayAttr.isEmpty()) {
                                 Long times = dayAttr.getLong(0);
                                 Double lastPrice = dayAttr.getDouble(4);
                                 Double volume = dayAttr.getDouble(5);
                                 Date timeDate = new Date(times);
+                                if (!times.equals(since)) {
+                                    System.out.println("----DailyBizImp dailyForOkex con't find  symbol last price and symbol is " +
+                                            spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
+                                    break;
+                                }
 
                                 String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                                 Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
@@ -171,6 +178,24 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
         return resultObj.toString();
     }
 
+    private static int getGapCount(Date startDate, Date endDate) {
+        Calendar fromCalendar = Calendar.getInstance();
+        fromCalendar.setTime(startDate);
+        fromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        fromCalendar.set(Calendar.MINUTE, 0);
+        fromCalendar.set(Calendar.SECOND, 0);
+        fromCalendar.set(Calendar.MILLISECOND, 0);
+
+        Calendar toCalendar = Calendar.getInstance();
+        toCalendar.setTime(endDate);
+        toCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        toCalendar.set(Calendar.MINUTE, 0);
+        toCalendar.set(Calendar.SECOND, 0);
+        toCalendar.set(Calendar.MILLISECOND, 0);
+
+        return (int) ((toCalendar.getTime().getTime() - fromCalendar.getTime().getTime()) / (1000 * 60 * 60 * 24));
+    }
+
     @Override
     public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
         JSONObject resultObj = new JSONObject();
@@ -182,7 +207,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
             String market = spotSymbol.getMarket();
             Map<String, String> params = new HashMap<>();
             params.put("period", "1day");
-            params.put("size", "2");
+            params.put("size", (getGapCount(dailyDate, new Date()) + 1) + "");
             params.put("symbol", spotSymbol.getSymbol());
             try {
                 Set<String> dateSet = new HashSet<>();
@@ -198,11 +223,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                         List<SpotDailyUsdt> usdtList = new ArrayList<>();
                         List<SpotDailyBtc> btcList = new ArrayList<>();
                         List<SpotDailyEth> ethList = new ArrayList<>();
-                        for (int x = 1; x < klineArray.size(); x++) {// 3 2 1
+                        for (int x = klineArray.size() - 1; x < klineArray.size(); x++) {// 3 2 1
                             JSONObject jsonObj = klineArray.getJSONObject(x);
                             String dateStr = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
                                     DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                             Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                            if (!dateStr.equals(DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN))) {
+                                System.out.println("----DailyBizImp dailyForHuobiPro con't find  symbol last price and symbol is " +
+                                        spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
+                                break;
+                            }
                             if (dateSet.contains(dateStr)) {
                                 continue;
                             }
