@@ -72,11 +72,11 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 Double lastPrice = dayAttr.getDouble(4);
                                 Double volume = dayAttr.getDouble(5);
                                 Date timeDate = new Date(times);
-                                if (!times.equals(since)) {
-                                    System.out.println("----DailyBizImp dailyForOkex con't find  symbol last price and symbol is " +
-                                            spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
-                                    break;
-                                }
+//                                if (!times.equals(since)) {
+//                                    System.out.println("----DailyBizImp dailyForOkex con't find  symbol last price and symbol is " +
+//                                            spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
+//                                    break;
+//                                }
 
                                 String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                                 Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
@@ -235,11 +235,11 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                             String dateStr = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
                                     DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
                             Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
-                            if (!dateStr.equals(DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN))) {
-                                System.out.println("----DailyBizImp dailyForHuobiPro con't find  symbol last price and symbol is " +
-                                        spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
-                                break;
-                            }
+//                            if (!dateStr.equals(DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN))) {
+//                                System.out.println("----DailyBizImp dailyForHuobiPro con't find  symbol last price and symbol is " +
+//                                        spotSymbol.getSymbol() + " date=" + DateFormatUtil.format(dailyDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN));
+//                                break;
+//                            }
                             if (dateSet.contains(dateStr)) {
                                 continue;
                             }
