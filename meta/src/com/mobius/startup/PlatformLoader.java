@@ -138,7 +138,7 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
                             .build();
 
-                 //   scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                    //scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
 
 
@@ -157,7 +157,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerDetailTaskForUsdt = newTrigger()
                             .withIdentity("triggerDetailTaskForUsdt", "groupDetailTaskForUsdt")
-                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每6秒触发
+                            .withSchedule(cronSchedule("0/" + detailInteval + " * * * * ?"))//每4秒触发
                             .build();
 
                     scheduler.scheduleJob(jobDetailTaskForUsdt, triggerDetailTaskForUsdt);
