@@ -186,7 +186,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                             calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
                             if (calSampleSpotDailyPoint != null) {
                                 yesterdayPoint = calSampleSpotDailyPoint.getPoint();
-                                Utils.setPointByDate(yesterdayDate,point);
+                                Utils.setPointByDate(yesterdayDate, yesterdayPoint);
                             }
                         }
                     } else {
@@ -304,6 +304,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         } else {
                             System.out.println("symbolId=" + symbolId + " currentDealPrice=" + todayDealPrice +
                                     "  yesterdayClosePrice=" + yesterdayClosePrice + "  todayOpenWeight" + todayOpenWeight);
+                            throw new Exception(" -----currentDealPrice was null ------ !");
                         }
                     }
                     System.out.println("total=" + total);
