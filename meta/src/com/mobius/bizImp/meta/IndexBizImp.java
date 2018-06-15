@@ -102,6 +102,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
         resultObj.put("result", "-1");
         try {
             Calendar now = Calendar.getInstance();
+            Date calcDate = now.getTime();
             String dateTime = DateFormatUtil.format(now.getTime(), DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
             now.add(Calendar.MONTH, -1);
             Integer month = now.get(Calendar.MONTH) + 1;
@@ -332,7 +333,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         } else {
                             Double _w = todayOpenWeightMap.get(weight.getSymbolId().getId());
                             if (history.getWeight() != null && _w != null && !history.getWeight().equals(_w)) {
-                                System.out.println("symbolId=" + weight.getSymbolId().getId() + "history weight=" + history.getWeight() + " new =" + _w);
+                                //System.out.println("symbolId=" + weight.getSymbolId().getId() + "history weight=" + history.getWeight() + " new =" + _w);
                             }
                         }
                         todayOpenWeightMap.put(weight.getSymbolId().getId(), weight.getWeight());
@@ -361,7 +362,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         todayPoint.setPoint(currentPoint);
 
                         CalSampleSpotPoint point = new CalSampleSpotPoint();
-                        point.setRecordDate(today);
+                        point.setRecordDate(calcDate);
                         point.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                         point.setPoint(currentPoint);
                         point.setCreated(created);
