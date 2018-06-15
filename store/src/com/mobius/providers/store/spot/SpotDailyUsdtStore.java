@@ -16,6 +16,8 @@ public interface SpotDailyUsdtStore {
 
     Integer getCountTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException;
 
+    SpotDailyUsdt getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException;
+
 
     List<SpotDailyUsdt> getList(List<Selector> selectorList) throws StoreException;
 

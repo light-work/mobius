@@ -111,6 +111,8 @@ public class FastCallForBitfinex {
                                                     spotDetailUsdtBitfinexStore.save(spotDetailUsdtBitfinex, Persistent.SAVE,calSampleSpotSymbolWeightPrice);
                                                     if (releaseEnvironment.equals("DIS")) {
                                                         Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,lastPrice);
+                                                        Utils.setDailySymbolPrice(spotSymbol, lastPrice,tradingDate);
+
                                                     }
                                                     //save
                                                 } else if (market.equals("btc")) {

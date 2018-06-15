@@ -50,6 +50,17 @@ public class SpotDailyUsdtStoreImpl implements SpotDailyUsdtStore {
 
     @Override
     @ConnectManager
+    public SpotDailyUsdt getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        try {
+            return this.SpotDailyUsdtService.getTradeSymbolDay(tradeId, symbolId, tradingDay);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
     public List<SpotDailyUsdt> getList(List<Selector> list) throws StoreException {
         try {
             return this.SpotDailyUsdtService.getList(list);

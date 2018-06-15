@@ -57,8 +57,6 @@ import java.util.concurrent.TimeUnit;
 public class DailyTask implements Job {
 
 
-    private String tradeSign = "BINANCE";
-
 
     /**
      * <p>
@@ -122,9 +120,9 @@ public class DailyTask implements Job {
                         if (spotSymbolListBINANCE != null && !spotSymbolListBINANCE.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListBINANCE) {
                                 try {
-                                    dailyBiz.dailyForBinance(spotSymbol, sysTradeBINANCE,releaseEnvironment,dailyDate);
+                                    dailyBiz.dailyForBinance(spotSymbol, sysTradeBINANCE,releaseEnvironment,dailyDate,true);
                                 } catch (Exception e) {
-
+                                    e.printStackTrace();
                                 } finally {
                                     System.out.println("============********======task======sleep start binance serverNo=" + sysIpServer.getServerNo());
                                     TimeUnit.MILLISECONDS.sleep(500);//秒
@@ -143,8 +141,9 @@ public class DailyTask implements Job {
                         if (spotSymbolListBITFINEX != null && !spotSymbolListBITFINEX.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListBITFINEX) {
                                 try {
-                                    dailyBiz.dailyForBitfinex(spotSymbol, sysTradeBITFINEX,releaseEnvironment,dailyDate);
+                                    dailyBiz.dailyForBitfinex(spotSymbol, sysTradeBITFINEX,releaseEnvironment,dailyDate,true);
                                 } catch (Exception e) {
+                                    e.printStackTrace();
 
                                 } finally {
                                     System.out.println("============********======task======sleep start bitfinex serverNo=" + sysIpServer.getServerNo());
@@ -162,8 +161,9 @@ public class DailyTask implements Job {
                         if (spotSymbolListOKEX != null && !spotSymbolListOKEX.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListOKEX) {
                                 try {
-                                    dailyBiz.dailyForOkex(spotSymbol, sysTradeOKEX,releaseEnvironment,dailyDate);
+                                    dailyBiz.dailyForOkex(spotSymbol, sysTradeOKEX,releaseEnvironment,dailyDate,true);
                                 } catch (Exception e) {
+                                    e.printStackTrace();
 
                                 } finally {
                                     System.out.println("============********======task======sleep start okex serverNo=" + sysIpServer.getServerNo());
@@ -181,8 +181,9 @@ public class DailyTask implements Job {
                         if (spotSymbolListHUOBIPRO != null && !spotSymbolListHUOBIPRO.isEmpty()) {
                             for (SpotSymbol spotSymbol : spotSymbolListHUOBIPRO) {
                                 try {
-                                    dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeHUOBIPRO,releaseEnvironment,dailyDate);
+                                    dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeHUOBIPRO,releaseEnvironment,dailyDate,true);
                                 } catch (Exception e) {
+                                    e.printStackTrace();
 
                                 } finally {
                                     System.out.println("============********======task======sleep start huobi serverNo=" + sysIpServer.getServerNo());

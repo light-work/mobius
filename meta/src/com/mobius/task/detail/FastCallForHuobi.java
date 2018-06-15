@@ -103,6 +103,8 @@ public class FastCallForHuobi {
                                 spotDetailUsdtHuobiStore.save(detail, Persistent.SAVE,calSampleSpotSymbolWeightPrice);
                                 if (releaseEnvironment.equals("DIS")) {
                                     Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,detail.getPrice());
+                                    Utils.setDailySymbolPrice(symbol, detail.getPrice(),tradingTime);
+
                                 }
 //                            System.out.println("DetailTaskForHuobiUsdt --- " + symbol.getSymbol() + " save success 1.");
                             }

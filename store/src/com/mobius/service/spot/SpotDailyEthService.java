@@ -38,6 +38,13 @@ public class SpotDailyEthService extends HQuery implements SpotDailyEthStore {
                 $eq("tradingDay",tradingDay),$count("id")).value(SpotDailyEth.class,Integer.class);
     }
 
+    @Override
+    @Transactional(type = TransactionType.READ_ONLY)
+    public SpotDailyEth getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        return $($eq("tradeId.id",tradeId),$eq("symbolId.id",symbolId),
+                $eq("tradingDay",tradingDay)).get(SpotDailyEth.class);
+    }
+
     /**
      * 保存对象
      */

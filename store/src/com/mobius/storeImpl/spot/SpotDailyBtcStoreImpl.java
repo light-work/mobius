@@ -25,9 +25,9 @@ public class SpotDailyBtcStoreImpl implements SpotDailyBtcStore {
 
     @Override
     @ConnectManager
-    public SpotDailyBtc getById(Long id,Selector... selectors) throws StoreException {
+    public SpotDailyBtc getById(Long id, Selector... selectors) throws StoreException {
         try {
-            return this.SpotDailyBtcService.getById(id,selectors);
+            return this.SpotDailyBtcService.getById(id, selectors);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -49,6 +49,17 @@ public class SpotDailyBtcStoreImpl implements SpotDailyBtcStore {
 
     @Override
     @ConnectManager
+    public SpotDailyBtc getTradeSymbolDay(Long tradeId, Long symbolId, Date tradingDay) throws StoreException {
+        try {
+            return this.SpotDailyBtcService.getTradeSymbolDay(tradeId, symbolId, tradingDay);
+        } catch (HibernateException e) {
+            Throwable throwable = e.getCause() != null ? e.getCause() : e;
+            throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
+        }
+    }
+
+    @Override
+    @ConnectManager
     public List<SpotDailyBtc> getList(List<Selector> list) throws StoreException {
         try {
             return this.SpotDailyBtcService.getList(list);
@@ -60,9 +71,9 @@ public class SpotDailyBtcStoreImpl implements SpotDailyBtcStore {
 
     @Override
     @ConnectManager
-    public void save(SpotDailyBtc SpotDailyBtc,Persistent persistent) throws StoreException {
+    public void save(SpotDailyBtc SpotDailyBtc, Persistent persistent) throws StoreException {
         try {
-            this.SpotDailyBtcService.save(SpotDailyBtc,persistent);
+            this.SpotDailyBtcService.save(SpotDailyBtc, persistent);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
@@ -71,9 +82,9 @@ public class SpotDailyBtcStoreImpl implements SpotDailyBtcStore {
 
     @Override
     @ConnectManager
-    public void save(List<SpotDailyBtc> list,Persistent persistent) throws StoreException {
+    public void save(List<SpotDailyBtc> list, Persistent persistent) throws StoreException {
         try {
-            this.SpotDailyBtcService.save(list,persistent);
+            this.SpotDailyBtcService.save(list, persistent);
         } catch (HibernateException e) {
             Throwable throwable = e.getCause() != null ? e.getCause() : e;
             throw new StoreException(throwable.getLocalizedMessage(), e.fillInStackTrace());
