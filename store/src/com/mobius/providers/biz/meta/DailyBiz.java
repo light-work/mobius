@@ -10,14 +10,14 @@ import java.util.Date;
 
 public interface DailyBiz {
 
-    String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException;
+    String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException;
 
-    String dailyForHuobiPro(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException;
+    String dailyForHuobiPro(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException;
 
-    String dailyForBitfinex(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException;
+    String dailyForBitfinex(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException;
 
-    String dailyForBitmex(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException;
+    String dailyForBitmex(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException;
 
-    String dailyForBinance(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException;
+    String dailyForBinance(SpotSymbol spotSymbol,SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException;
 
 }

@@ -57,10 +57,8 @@ public class CapitalizationTask implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
 
-        System.out.println("run DailyTaskForOkex ");
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Injector injector = (Injector) dataMap.get("injector");
-        System.out.println(injector);
         if (injector != null) {
             HSFServiceFactory hsfServiceFactory = injector.getInstance(HSFServiceFactory.class);
             if (hsfServiceFactory != null) {

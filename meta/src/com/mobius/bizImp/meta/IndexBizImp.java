@@ -12,7 +12,6 @@ import com.mobius.entity.cal.CalSampleSpotWeightHistory;
 import com.mobius.entity.spot.SpotDailyUsdt;
 import com.mobius.entity.utils.DrdsIDUtils;
 import com.mobius.entity.utils.DrdsTable;
-import com.mobius.providers.biz.meta.DailyBiz;
 import com.mobius.providers.biz.meta.IndexBiz;
 import com.mobius.providers.store.cal.CalSampleSpotDailyPointStore;
 import com.mobius.providers.store.cal.CalSampleSpotPointStore;
@@ -30,7 +29,6 @@ import org.guiceside.persistence.hibernate.dao.enums.Persistent;
 import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.BaseBiz;
 import org.guiceside.support.hsf.HSFServiceFactory;
-import org.guiceside.support.redis.RedisPoolProvider;
 
 import java.util.*;
 
@@ -158,7 +156,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     Date yesterdayDate = c.getTime();
                     if (releaseEnvironment.equals("DIS")) {//from redis
                         for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
-                            Double closePrice = Utils.getDailySymbolPrice(weight.getSymbolId());
+                            Double closePrice = Utils.getDailySymbolPrice(weight.getSymbolId(),c.getTime());
                             if (closePrice != 0d) {
                                 yesterdayDailyMap.put(weight.getSymbolId().getId(), closePrice);
                             }
@@ -181,9 +179,15 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                     // 昨日指数
                     CalSampleSpotDailyPoint calSampleSpotDailyPoint = null;
                     if (releaseEnvironment.equals("DIS")) {//from redis
-                        Double point = Utils.getYesterdayPoint(yesterdayDate);
+                        Double point = Utils.getPointByDate(yesterdayDate);
                         if (point != 0d) {
                             yesterdayPoint = point;
+                        }else{
+                            calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
+                            if (calSampleSpotDailyPoint != null) {
+                                yesterdayPoint = calSampleSpotDailyPoint.getPoint();
+                                Utils.setPointByDate(yesterdayDate,point);
+                            }
                         }
                     } else {
                         calSampleSpotDailyPoint = calSampleSpotDailyPointStore.getByRecordDate(yesterdayDate);
@@ -357,7 +361,7 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                         point.setUseYn("Y");
                         calSampleSpotPointStore.saveAndDaily(point, Persistent.SAVE, todayPoint, status);
                         if (releaseEnvironment.equals("DIS")) {
-                            Utils.setYesterdayPoint(today, currentPoint);//设置今日点数
+                            Utils.setPointByDate(today, currentPoint);//设置今日点数
                             IndexPoint.getInstance().setIndex(point.getPoint());
                         }
                         resultObj.put("result", "0");

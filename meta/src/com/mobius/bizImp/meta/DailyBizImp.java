@@ -38,7 +38,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     private HSFServiceFactory hsfServiceFactory;
 
     @Override
-    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment,Date dailyDate) throws BizException {
+    public String dailyForOkex(SpotSymbol spotSymbol, SysTrade sysTrade, String releaseEnvironment,Date dailyDate,boolean override) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -60,6 +60,11 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                         List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
                         List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                         List<SpotDailyEth> dailyEthList = new ArrayList<>();
+
+                        List<SpotDailyUsdt> dailyUsdtListUpdate = new ArrayList<>();
+                        List<SpotDailyBtc> dailyBtcListUpdate = new ArrayList<>();
+                        List<SpotDailyEth> dailyEthListUpdate = new ArrayList<>();
+
                         for (int x = 0; x < 1; x++) {
                             JSONArray dayAttr = klineArray.getJSONArray(x);
                             if (dayAttr != null && !dayAttr.isEmpty()) {
@@ -81,7 +86,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                             spotSymbol.getId(), tradingDate);
                                     if (count == 1) {
                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                        System.out.println(resultStr);
+                                        if(override){
+                                            SpotDailyUsdt spotDailyUsdt = spotDailyUsdtStore.getTradeSymbolDay(sysTrade.getId(),
+                                                    spotSymbol.getId(), tradingDate);
+                                            if(spotDailyUsdt!=null){
+                                                spotDailyUsdt.setVolume(volume);
+                                                spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                Utils.bind(spotDailyUsdt, "task");
+                                                dailyUsdtListUpdate.add(spotDailyUsdt);
+                                            }
+                                        }
                                     } else if (count == 0) {
                                         SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
                                         spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -100,7 +114,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                             spotSymbol.getId(), tradingDate);
                                     if (count == 1) {
                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                        System.out.println(resultStr);
+                                        if(override){
+                                            SpotDailyBtc spotDailyBtc = spotDailyBtcStore.getTradeSymbolDay(sysTrade.getId(),
+                                                    spotSymbol.getId(), tradingDate);
+                                            if(spotDailyBtc!=null){
+                                                spotDailyBtc.setVolume(volume);
+                                                spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                Utils.bind(spotDailyBtc, "task");
+                                                dailyBtcListUpdate.add(spotDailyBtc);
+                                            }
+                                        }
                                     } else if (count == 0) {
                                         SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
                                         spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -119,7 +142,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                             spotSymbol.getId(), tradingDate);
                                     if (count == 1) {
                                         System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
-                                        System.out.println(resultStr);
+                                        if(override){
+                                            SpotDailyEth spotDailyEth = spotDailyEthStore.getTradeSymbolDay(sysTrade.getId(),
+                                                    spotSymbol.getId(), tradingDate);
+                                            if(spotDailyEth!=null){
+                                                spotDailyEth.setVolume(volume);
+                                                spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                Utils.bind(spotDailyEth, "task");
+                                                dailyEthListUpdate.add(spotDailyEth);
+                                            }
+                                        }
                                     } else if (count == 0) {
                                         SpotDailyEth spotDailyEth = new SpotDailyEth();
                                         spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -136,39 +168,9 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                             }
                         }
-                        if (!dailyUsdtList.isEmpty()) {
-                            spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
-                                    for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyUsdtList.size());
-                        }
-                        if (!dailyBtcList.isEmpty()) {
-                            spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
-                                    for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyBtcList.size());
-                        }
-                        if (!dailyEthList.isEmpty()) {
-                            spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyEthList != null && !dailyEthList.isEmpty()) {
-                                    for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyEthList.size());
-                        }
+                        saveOrUpdate(spotSymbol,dailyUsdtList,dailyBtcList,dailyEthList,
+                                dailyUsdtListUpdate,dailyBtcListUpdate,dailyEthListUpdate,
+                                spotDailyUsdtStore,spotDailyBtcStore,spotDailyEthStore,releaseEnvironment);
                     }
                 }
             } catch (Exception e) {
@@ -197,7 +199,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
+    public String dailyForHuobiPro(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -223,6 +225,11 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                         List<SpotDailyUsdt> usdtList = new ArrayList<>();
                         List<SpotDailyBtc> btcList = new ArrayList<>();
                         List<SpotDailyEth> ethList = new ArrayList<>();
+
+                        List<SpotDailyUsdt> dailyUsdtListUpdate = new ArrayList<>();
+                        List<SpotDailyBtc> dailyBtcListUpdate = new ArrayList<>();
+                        List<SpotDailyEth> dailyEthListUpdate = new ArrayList<>();
+
                         for (int x = klineArray.size() - 1; x < klineArray.size(); x++) {// 3 2 1
                             JSONObject jsonObj = klineArray.getJSONObject(x);
                             String dateStr = DateFormatUtil.format(new Date(jsonObj.getLong("id") * 1000),
@@ -242,6 +249,21 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                         spotSymbol.getId(), tradingDate);
                                 if (count == 1) {
                                     System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+
+                                    if(override){
+                                        SpotDailyUsdt spotDailyUsdt = spotDailyUsdtStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyUsdt!=null){
+                                            if (jsonObj.containsKey("amount")) {
+                                                spotDailyUsdt.setVolume(jsonObj.getDouble("amount"));
+                                            }
+                                            if (jsonObj.containsKey("vol")) {
+                                                spotDailyUsdt.setTurnover(jsonObj.getDouble("vol"));
+                                            }
+                                            Utils.bind(spotDailyUsdt, "task");
+                                            dailyUsdtListUpdate.add(spotDailyUsdt);
+                                        }
+                                    }
                                 } else if (count == 0) {
                                     SpotDailyUsdt usdt = new SpotDailyUsdt();
                                     usdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -264,6 +286,20 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                         spotSymbol.getId(), tradingDate);
                                 if (count == 1) {
                                     System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyBtc spotDailyBtc = spotDailyBtcStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyBtc!=null){
+                                            if (jsonObj.containsKey("amount")) {
+                                                spotDailyBtc.setVolume(jsonObj.getDouble("amount"));
+                                            }
+                                            if (jsonObj.containsKey("vol")) {
+                                                spotDailyBtc.setTurnover(jsonObj.getDouble("vol"));
+                                            }
+                                            Utils.bind(spotDailyBtc, "task");
+                                            dailyBtcListUpdate.add(spotDailyBtc);
+                                        }
+                                    }
                                 } else if (count == 0) {
                                     SpotDailyBtc btc = new SpotDailyBtc();
                                     btc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -286,6 +322,20 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                         spotSymbol.getId(), tradingDate);
                                 if (count == 1) {
                                     System.out.println("huobi daily task---" + dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyEth spotDailyEth = spotDailyEthStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyEth!=null){
+                                            if (jsonObj.containsKey("amount")) {
+                                                spotDailyEth.setVolume(jsonObj.getDouble("amount"));
+                                            }
+                                            if (jsonObj.containsKey("vol")) {
+                                                spotDailyEth.setTurnover(jsonObj.getDouble("vol"));
+                                            }
+                                            Utils.bind(spotDailyEth, "task");
+                                            dailyEthListUpdate.add(spotDailyEth);
+                                        }
+                                    }
                                 } else if (count == 0) {
                                     SpotDailyEth eth = new SpotDailyEth();
                                     eth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
@@ -305,39 +355,12 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                             }
                         }
-                        if (!usdtList.isEmpty()) {
-                            spotDailyUsdtStore.save(usdtList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (usdtList != null && !usdtList.isEmpty()) {
-                                    for (SpotDailyUsdt usdt : usdtList) {
-                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + usdtList.size());
-                        }
-                        if (!btcList.isEmpty()) {
-                            spotDailyBtcStore.save(btcList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (btcList != null && !btcList.isEmpty()) {
-                                    for (SpotDailyBtc btc : btcList) {
-                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + btcList.size());
-                        }
-                        if (!ethList.isEmpty()) {
-                            spotDailyEthStore.save(ethList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (ethList != null && !ethList.isEmpty()) {
-                                    for (SpotDailyEth eth : ethList) {
-                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println("huobi daily task---" + spotSymbol.getSymbol() + " save success " + ethList.size());
-                        }
+
+                        saveOrUpdate(spotSymbol,usdtList,btcList,ethList,
+                                dailyUsdtListUpdate,dailyBtcListUpdate,dailyEthListUpdate,
+                                spotDailyUsdtStore,spotDailyBtcStore,spotDailyEthStore,releaseEnvironment);
+
+
                     }
                 }
             } catch (Exception e) {
@@ -348,7 +371,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
+    public String dailyForBitfinex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -370,6 +393,11 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                         List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
                         List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
                         List<SpotDailyEth> dailyEthList = new ArrayList<>();
+
+                        List<SpotDailyUsdt> dailyUsdtListUpdate = new ArrayList<>();
+                        List<SpotDailyBtc> dailyBtcListUpdate = new ArrayList<>();
+                        List<SpotDailyEth> dailyEthListUpdate = new ArrayList<>();
+
                         JSONArray dayAttr = klineArray.getJSONArray(0);
                         if (dayAttr != null && !dayAttr.isEmpty()) {
                             Long times = dayAttr.getLong(0);
@@ -388,6 +416,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyUsdt spotDailyUsdt = spotDailyUsdtStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyUsdt!=null){
+                                            spotDailyUsdt.setVolume(volume);
+                                            spotDailyUsdt.setTurnover(turnover);
+                                            Utils.bind(spotDailyUsdt, "task");
+                                            dailyUsdtListUpdate.add(spotDailyUsdt);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
@@ -413,6 +451,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyBtc spotDailyBtc = spotDailyBtcStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyBtc!=null){
+                                            spotDailyBtc.setVolume(volume);
+                                            spotDailyBtc.setTurnover(turnover);
+                                            Utils.bind(spotDailyBtc, "task");
+                                            dailyBtcListUpdate.add(spotDailyBtc);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
@@ -438,6 +486,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyEth spotDailyEth = spotDailyEthStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyEth!=null){
+                                            spotDailyEth.setVolume(volume);
+                                            spotDailyEth.setTurnover(turnover);
+                                            Utils.bind(spotDailyEth, "task");
+                                            dailyEthListUpdate.add(spotDailyEth);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyEth spotDailyEth = new SpotDailyEth();
@@ -457,42 +515,10 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                             }
                         }
-                        if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
-                            spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
-                                    for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyUsdtList.size());
 
-                        }
-                        if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
-                            spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
-                                    for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyBtcList.size());
-
-                        }
-                        if (dailyEthList != null && !dailyEthList.isEmpty()) {
-                            spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyEthList != null && !dailyEthList.isEmpty()) {
-                                    for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success =====task======" + dailyEthList.size());
-
-                        }
+                        saveOrUpdate(spotSymbol,dailyUsdtList,dailyBtcList,dailyEthList,
+                                dailyUsdtListUpdate,dailyBtcListUpdate,dailyEthListUpdate,
+                                spotDailyUsdtStore,spotDailyBtcStore,spotDailyEthStore,releaseEnvironment);
                     }
                 }
             } catch (Exception e) {
@@ -503,12 +529,12 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
     }
 
     @Override
-    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
+    public String dailyForBitmex(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException {
         return null;
     }
 
     @Override
-    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate) throws BizException {
+    public String dailyForBinance(SpotSymbol spotSymbol, SysTrade sysTrade,String releaseEnvironment,Date dailyDate,boolean override) throws BizException {
         JSONObject resultObj = new JSONObject();
         resultObj.put("result", "-1");
         SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
@@ -526,9 +552,13 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                 if (StringUtils.isNotBlank(resultStr)) {
                     JSONArray klineArray = JSONArray.fromObject(resultStr);
                     if (klineArray != null && !klineArray.isEmpty()) {
-                        List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
-                        List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
-                        List<SpotDailyEth> dailyEthList = new ArrayList<>();
+                        List<SpotDailyUsdt> dailyUsdtListSave = new ArrayList<>();
+                        List<SpotDailyBtc> dailyBtcListSave = new ArrayList<>();
+                        List<SpotDailyEth> dailyEthListSave = new ArrayList<>();
+
+                        List<SpotDailyUsdt> dailyUsdtListUpdate = new ArrayList<>();
+                        List<SpotDailyBtc> dailyBtcListUpdate = new ArrayList<>();
+                        List<SpotDailyEth> dailyEthListUpdate = new ArrayList<>();
 
                         JSONArray dayAttr = klineArray.getJSONArray(0);
                         if (dayAttr != null && !dayAttr.isEmpty()) {
@@ -548,6 +578,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyUsdt spotDailyUsdt = spotDailyUsdtStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyUsdt!=null){
+                                            spotDailyUsdt.setVolume(volume);
+                                            spotDailyUsdt.setTurnover(turnover);
+                                            Utils.bind(spotDailyUsdt, "task");
+                                            dailyUsdtListUpdate.add(spotDailyUsdt);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
@@ -562,7 +602,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                     spotDailyUsdt.setTurnover(turnover);
 
                                     Utils.bind(spotDailyUsdt, "task");
-                                    dailyUsdtList.add(spotDailyUsdt);
+                                    dailyUsdtListSave.add(spotDailyUsdt);
 
                                 }
                             } else if (market.equals("btc")) {
@@ -573,6 +613,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyBtc spotDailyBtc = spotDailyBtcStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyBtc!=null){
+                                            spotDailyBtc.setVolume(volume);
+                                            spotDailyBtc.setTurnover(turnover);
+                                            Utils.bind(spotDailyBtc, "task");
+                                            dailyBtcListUpdate.add(spotDailyBtc);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
@@ -587,7 +637,7 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                     spotDailyBtc.setTurnover(turnover);
 
                                     Utils.bind(spotDailyBtc, "task");
-                                    dailyBtcList.add(spotDailyBtc);
+                                    dailyBtcListSave.add(spotDailyBtc);
 
                                 }
                             } else if (market.equals("eth")) {
@@ -598,6 +648,16 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                 }
                                 if (count.intValue() > 0) {
                                     System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                    if(override){
+                                        SpotDailyEth spotDailyEth = spotDailyEthStore.getTradeSymbolDay(sysTrade.getId(),
+                                                spotSymbol.getId(), tradingDate);
+                                        if(spotDailyEth!=null){
+                                            spotDailyEth.setVolume(volume);
+                                            spotDailyEth.setTurnover(turnover);
+                                            Utils.bind(spotDailyEth, "task");
+                                            dailyEthListUpdate.add(spotDailyEth);
+                                        }
+                                    }
                                 }
                                 if (count.intValue() == 0) {
                                     SpotDailyEth spotDailyEth = new SpotDailyEth();
@@ -612,47 +672,14 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
                                     spotDailyEth.setTurnover(turnover);
 
                                     Utils.bind(spotDailyEth, "task");
-                                    dailyEthList.add(spotDailyEth);
+                                    dailyEthListSave.add(spotDailyEth);
 
                                 }
                             }
                         }
-                        if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
-                            spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyUsdtList != null && !dailyUsdtList.isEmpty()) {
-                                    for (SpotDailyUsdt usdt : dailyUsdtList) {
-                                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success ===task========" + dailyUsdtList.size());
-
-                        }
-                        if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
-                            spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyBtcList != null && !dailyBtcList.isEmpty()) {
-                                    for (SpotDailyBtc btc : dailyBtcList) {
-                                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyBtcList.size());
-
-                        }
-                        if (dailyEthList != null && !dailyEthList.isEmpty()) {
-                            spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
-                            if (releaseEnvironment.equals("DIS")) {
-                                if (dailyEthList != null && !dailyEthList.isEmpty()) {
-                                    for (SpotDailyEth eth : dailyEthList) {
-                                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice());
-                                    }
-                                }
-                            }
-                            System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyEthList.size());
-
-                        }
+                        saveOrUpdate(spotSymbol,dailyUsdtListSave,dailyBtcListSave,dailyEthListSave,
+                                dailyUsdtListUpdate,dailyBtcListUpdate,dailyEthListUpdate,
+                                spotDailyUsdtStore,spotDailyBtcStore,spotDailyEthStore,releaseEnvironment);
                     }
                 }
             } catch (Exception e) {
@@ -660,5 +687,89 @@ public class DailyBizImp extends BaseBiz implements DailyBiz {
             }
         }
         return resultObj.toString();
+    }
+
+    private void saveOrUpdate(SpotSymbol spotSymbol,List<SpotDailyUsdt> dailyUsdtListSave,
+                              List<SpotDailyBtc> dailyBtcListSave,
+                              List<SpotDailyEth> dailyEthListSave,
+                              List<SpotDailyUsdt> dailyUsdtListUpdate,
+                              List<SpotDailyBtc> dailyBtcListUpdate,
+                              List<SpotDailyEth> dailyEthListUpdate,
+                              SpotDailyUsdtStore spotDailyUsdtStore,
+                              SpotDailyBtcStore spotDailyBtcStore,
+                              SpotDailyEthStore spotDailyEthStore,String releaseEnvironment) throws Exception {
+        if (dailyUsdtListSave != null && !dailyUsdtListSave.isEmpty()) {
+            spotDailyUsdtStore.save(dailyUsdtListSave, Persistent.SAVE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyUsdtListSave != null && !dailyUsdtListSave.isEmpty()) {
+                    for (SpotDailyUsdt usdt : dailyUsdtListSave) {
+                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice(),usdt.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " save success ===task========" + dailyUsdtListSave.size());
+
+        }
+        if (dailyBtcListSave != null && !dailyBtcListSave.isEmpty()) {
+            spotDailyBtcStore.save(dailyBtcListSave, Persistent.SAVE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyBtcListSave != null && !dailyBtcListSave.isEmpty()) {
+                    for (SpotDailyBtc btc : dailyBtcListSave) {
+                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice(),btc.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyBtcListSave.size());
+
+        }
+        if (dailyEthListSave != null && !dailyEthListSave.isEmpty()) {
+            spotDailyEthStore.save(dailyEthListSave, Persistent.SAVE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyEthListSave != null && !dailyEthListSave.isEmpty()) {
+                    for (SpotDailyEth eth : dailyEthListSave) {
+                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice(),eth.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " save success ====task=======" + dailyEthListSave.size());
+
+        }
+
+
+
+        if (dailyUsdtListUpdate != null && !dailyUsdtListUpdate.isEmpty()) {
+            spotDailyUsdtStore.save(dailyUsdtListUpdate, Persistent.UPDATE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyUsdtListUpdate != null && !dailyUsdtListUpdate.isEmpty()) {
+                    for (SpotDailyUsdt usdt : dailyUsdtListUpdate) {
+                        Utils.setDailySymbolPrice(usdt.getSymbolId(), usdt.getLastPrice(),usdt.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " update success ===task========" + dailyUsdtListUpdate.size());
+        }
+        if (dailyBtcListUpdate != null && !dailyBtcListUpdate.isEmpty()) {
+            spotDailyBtcStore.save(dailyBtcListUpdate, Persistent.UPDATE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyBtcListUpdate != null && !dailyBtcListUpdate.isEmpty()) {
+                    for (SpotDailyBtc btc : dailyBtcListUpdate) {
+                        Utils.setDailySymbolPrice(btc.getSymbolId(), btc.getLastPrice(),btc.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " update success ====task=======" + dailyBtcListUpdate.size());
+
+        }
+        if (dailyEthListUpdate != null && !dailyEthListUpdate.isEmpty()) {
+            spotDailyEthStore.save(dailyEthListUpdate, Persistent.UPDATE);
+            if (releaseEnvironment.equals("DIS")) {
+                if (dailyEthListUpdate != null && !dailyEthListUpdate.isEmpty()) {
+                    for (SpotDailyEth eth : dailyEthListUpdate) {
+                        Utils.setDailySymbolPrice(eth.getSymbolId(), eth.getLastPrice(),eth.getTradingDay());
+                    }
+                }
+            }
+            System.out.println(spotSymbol.getSymbol() + " update success ====task=======" + dailyEthListUpdate.size());
+        }
     }
 }

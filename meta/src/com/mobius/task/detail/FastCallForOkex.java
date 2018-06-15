@@ -138,6 +138,7 @@ public class FastCallForOkex {
 
                                 if (releaseEnvironment.equals("DIS")) {
                                     Utils.setWeightSymbolPrice(calSampleSpotSymbolWeight,detail.getPrice());
+                                    Utils.setDailySymbolPrice(symbol, detail.getPrice(),tradingTime);
                                 }
                             }
                         }
