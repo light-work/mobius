@@ -861,6 +861,7 @@ public class CalSampleCoinAction extends BaseAction {
                     } else {
                         System.out.println("symbolId=" + symbolId + " currentDealPrice=" + todayDealPrice +
                                 "  yesterdayClosePrice=" + yesterdayClosePrice + "  todayOpenWeight" + todayOpenWeight);
+                        return false;
                     }
                 }
                 System.out.println("total=" + total);
