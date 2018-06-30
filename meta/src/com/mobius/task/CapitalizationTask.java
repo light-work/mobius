@@ -136,8 +136,8 @@ public class CapitalizationTask implements Job {
                                                 }
                                             }
                                         }
-                                        sysCapitalization.setRecordDate(date);
-                                        sysCapitalization.setRecordTime(date);
+                                        sysCapitalization.setRecordDate(DateFormatUtil.addDay(date, -1));
+                                        sysCapitalization.setRecordTime(DateFormatUtil.addDay(date, -1));
                                         sysCapitalization.setCreated(date);
                                         sysCapitalization.setUseYn("Y");
                                         sysCapitalizationList.add(sysCapitalization);
