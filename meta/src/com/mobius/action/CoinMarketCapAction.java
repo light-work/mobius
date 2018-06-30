@@ -139,7 +139,8 @@ public class CoinMarketCapAction extends BaseAction {
             startDate = "20130428";
         }
         if (StringUtils.isBlank(endDate)) {
-            endDate = "20180527";
+            Date yesterday = DateFormatUtil.addDay(new Date(), -1);
+            endDate = DateFormatUtil.format(yesterday, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
         }
 
         String url = "https://coinmarketcap.com/currencies/" + websiteSlug + "/historical-data/?start=" +
