@@ -158,7 +158,7 @@ public class CoinMarketCapAction extends BaseAction {
                 while (m.find()) {
                     tdList.add(getContext(m.group(1)));
                 }
-                if (!tdList.isEmpty()) {
+                if (!tdList.isEmpty() && tdList.size() == 7) {
                     Date create = Calendar.getInstance().getTime();
                     for (int x = 0; x < tdList.size(); x += 7) {
                         SysCapitalization sysCapitalization = new SysCapitalization();
