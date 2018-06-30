@@ -116,7 +116,7 @@ public class CapitalizationTask implements Job {
                                     SysCapitalization sysCapitalization = new SysCapitalization();
                                     sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
                                     if (coinMap.get(data.getLong("id")) == null) {
-                                        System.out.print("-------coin cant find and coin id is " + data.getLong("id")
+                                        System.out.println("-------coin cant find and coin id is " + data.getLong("id")
                                                 + " name=" + data.getString("name") + " symbol=" + data.getString("symbol") + "  start=" + (x + 1));
                                     }
                                     sysCapitalization.setCoinId(coinMap.get(data.getLong("id")));
