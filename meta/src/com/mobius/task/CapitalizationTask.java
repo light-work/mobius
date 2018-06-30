@@ -103,45 +103,51 @@ public class CapitalizationTask implements Job {
                 Date date = Calendar.getInstance().getTime();
                 for (int x = 0; x < sysCoinList.size(); x += 100) {
                     params.put("start", (x + 1) + "");
-                    String result = OKHttpUtil.get("https://api.coinmarketcap.com/v2/ticker/?structure=array", params);
-                    if (StringUtils.isNotBlank(result)) {
-                        JSONObject root = JSONObject.fromObject(result);
-                        if (root != null && root.containsKey("data")) {
-                            JSONArray array = root.getJSONArray("data");
-                            if (array != null && !array.isEmpty()) {
+                    try {
+
+                        String result = OKHttpUtil.get("https://api.coinmarketcap.com/v2/ticker/?structure=array", params);
+                        if (StringUtils.isNotBlank(result)) {
+                            JSONObject root = JSONObject.fromObject(result);
+                            if (root != null && root.containsKey("data")) {
+                                JSONArray array = root.getJSONArray("data");
+                                if (array != null && !array.isEmpty()) {
 
 
-                                for (Object obj : array) {
-                                    JSONObject data = JSONObject.fromObject(obj);
-                                    SysCapitalization sysCapitalization = new SysCapitalization();
-                                    sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
-                                    if (coinMap.get(data.getLong("id")) == null) {
-                                        System.out.println("-------coin cant find and coin id is " + data.getLong("id")
-                                                + " name=" + data.getString("name") + " symbol=" + data.getString("symbol") + "  start=" + (x + 1));
-                                    }
-                                    sysCapitalization.setCoinId(coinMap.get(data.getLong("id")));
-                                    sysCapitalization.setCirculating(0d);
-                                    if (data.containsKey("circulating_supply") && !"null".equals(data.getString("circulating_supply") + "")) {
-                                        sysCapitalization.setCirculating(data.getDouble("circulating_supply"));
-                                    }
-                                    sysCapitalization.setVolume(0d);
-                                    if (data.containsKey("quotes")) {
-                                        JSONObject quotes = data.getJSONObject("quotes");
-                                        if (quotes.containsKey("USD")) {
-                                            JSONObject usd = quotes.getJSONObject("USD");
-                                            if (usd.containsKey("market_cap") && !"null".equals(usd.getString("market_cap") + "")) {
-                                                sysCapitalization.setVolume(usd.getDouble("market_cap"));
+                                    for (Object obj : array) {
+                                        JSONObject data = JSONObject.fromObject(obj);
+                                        SysCapitalization sysCapitalization = new SysCapitalization();
+                                        sysCapitalization.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                        if (coinMap.get(data.getLong("id")) == null) {
+                                            System.out.println("-------coin cant find and coin id is " + data.getLong("id")
+                                                    + " name=" + data.getString("name") + " symbol=" + data.getString("symbol") + "  start=" + (x + 1));
+                                        }
+                                        sysCapitalization.setCoinId(coinMap.get(data.getLong("id")));
+                                        sysCapitalization.setCirculating(0d);
+                                        if (data.containsKey("circulating_supply") && !"null".equals(data.getString("circulating_supply") + "")) {
+                                            sysCapitalization.setCirculating(data.getDouble("circulating_supply"));
+                                        }
+                                        sysCapitalization.setVolume(0d);
+                                        if (data.containsKey("quotes")) {
+                                            JSONObject quotes = data.getJSONObject("quotes");
+                                            if (quotes.containsKey("USD")) {
+                                                JSONObject usd = quotes.getJSONObject("USD");
+                                                if (usd.containsKey("market_cap") && !"null".equals(usd.getString("market_cap") + "")) {
+                                                    sysCapitalization.setVolume(usd.getDouble("market_cap"));
+                                                }
                                             }
                                         }
+                                        sysCapitalization.setRecordDate(date);
+                                        sysCapitalization.setRecordTime(date);
+                                        sysCapitalization.setCreated(date);
+                                        sysCapitalization.setUseYn("Y");
+                                        sysCapitalizationList.add(sysCapitalization);
                                     }
-                                    sysCapitalization.setRecordDate(date);
-                                    sysCapitalization.setRecordTime(date);
-                                    sysCapitalization.setCreated(date);
-                                    sysCapitalization.setUseYn("Y");
-                                    sysCapitalizationList.add(sysCapitalization);
                                 }
                             }
                         }
+                    } catch (Exception ex) {
+                        System.out.println("---- " + sysCoinList.get(x).getSymbol() + " --- and start=" + (x + 1));
+                        ex.printStackTrace();
                     }
                 }
                 if (!sysCapitalizationList.isEmpty()) {
