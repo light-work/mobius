@@ -24,6 +24,7 @@ import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
+import org.guiceside.web.annotation.ReqGet;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -35,6 +36,12 @@ public class CoinMarketCapAction extends BaseAction {
 
     @Inject
     private HSFServiceFactory hsfServiceFactory;
+
+    @ReqGet
+    private String startDate;
+
+    @ReqGet
+    private String endDate;
 
     @Override
     public String execute() throws Exception {
@@ -128,8 +135,15 @@ public class CoinMarketCapAction extends BaseAction {
     }
 
     private List<SysCapitalization> fetchData(Map<String, String> monthMap, String websiteSlug, SysCoin sysCoin) throws Exception {
+        if (StringUtils.isBlank(startDate)) {
+            startDate = "20130428";
+        }
+        if (StringUtils.isBlank(endDate)) {
+            endDate = "20180527";
+        }
 
-        String url = "https://coinmarketcap.com/currencies/" + websiteSlug + "/historical-data/?start=20130428&end=20180527";
+        String url = "https://coinmarketcap.com/currencies/" + websiteSlug + "/historical-data/?start=" +
+                startDate + "&end=" + endDate;
 
         List<SysCapitalization> list = new ArrayList<>();
 
