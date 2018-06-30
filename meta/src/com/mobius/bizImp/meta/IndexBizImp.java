@@ -315,7 +315,6 @@ public class IndexBizImp extends BaseBiz implements IndexBiz {
                             throw new Exception(" -----currentDealPrice was null ------ !");
                         }
                     }
-                    System.out.println("total=" + total);
                     List<CalSampleSpotWeightHistory> saveList = new ArrayList<>();
                     for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
                         CalSampleSpotWeightHistory history = calSampleSpotWeightHistoryStore.getBySymbolIdDate(weight.getSymbolId().getId(), today);
