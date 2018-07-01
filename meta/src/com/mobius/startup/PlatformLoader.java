@@ -105,7 +105,7 @@ public class PlatformLoader {
                             .usingJobData(jobDataMap).build();
                     CronTrigger triggerCapitalizationTask = newTrigger()
                             .withIdentity("triggerCapitalizationTask", "groupCapitalizationTask")
-                            .withSchedule(cronSchedule("0 23 10 * * ?"))//每天的 0点到0点10分每分触发
+                            .withSchedule(cronSchedule("0 1 0 * * ?"))//每天的 0点到0点10分每分触发
                             .build();
 //
                     JobDetail jobDailyTaskForOkex = newJob(DailyTaskForOkex.class).withIdentity("dailyTaskForOkex", "groupDailyTaskForOkex")
@@ -138,7 +138,7 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
                             .build();
 
-                    scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                   // scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
 
 
