@@ -27,7 +27,9 @@ import org.guiceside.commons.OKHttpUtil;
 import org.guiceside.commons.lang.DateFormatUtil;
 import org.guiceside.commons.lang.NumberUtils;
 import org.guiceside.commons.lang.StringUtils;
+import org.guiceside.persistence.entity.search.SelectorUtils;
 import org.guiceside.persistence.hibernate.dao.enums.Persistent;
+import org.guiceside.persistence.hibernate.dao.hquery.Selector;
 import org.guiceside.support.hsf.HSFServiceFactory;
 import org.guiceside.web.action.BaseAction;
 import org.guiceside.web.annotation.Action;
@@ -45,6 +47,7 @@ public class DailyOkexAction extends BaseAction {
     @ReqGet
     private String since;
 
+
     @Inject
     private HSFServiceFactory hsfServiceFactory;
 
@@ -52,7 +55,6 @@ public class DailyOkexAction extends BaseAction {
     public String execute() throws Exception {
         return null;
     }
-
 
     public String buildSpotUsdt() throws Exception {
         JSONObject result = new JSONObject();
@@ -207,8 +209,6 @@ public class DailyOkexAction extends BaseAction {
         return null;
     }
 
-
-
     public String buildSpotEth() throws Exception {
         JSONObject result = new JSONObject();
         result.put("result","-1");
@@ -284,7 +284,6 @@ public class DailyOkexAction extends BaseAction {
 
         return null;
     }
-
 
     public String buildFuturesUsdt() throws Exception{
         JSONObject result = new JSONObject();
@@ -439,6 +438,7 @@ public class DailyOkexAction extends BaseAction {
 
         return null;
     }
+
     public String buildFuturesEth()throws Exception {
         JSONObject result = new JSONObject();
         result.put("result","-1");
@@ -536,6 +536,7 @@ public class DailyOkexAction extends BaseAction {
                             Map<String, String> params = new HashMap<>();
                             params.put("type", "1day");
                             if (StringUtils.isNotBlank(since)) {
+                                //since -一天这里是task的代码,凌晨获取上一天的
                                 params.put("since", (DateFormatUtil.parse(since + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime() - 24 * 60 * 60 * 1000) + "");
                             } else {
                                 params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
@@ -651,7 +652,6 @@ public class DailyOkexAction extends BaseAction {
         return null;
     }
 
-
     public String futuresDailyTask() throws Exception {
         JSONObject result = new JSONObject();
         result.put("result", "-1");
@@ -731,6 +731,243 @@ public class DailyOkexAction extends BaseAction {
                         }
                     }
                     System.out.println("okex futures daily task over---------");
+                    result.put("result", "0");
+                    writeJsonByAction(result.toString());
+                }
+            }
+        }
+        return null;
+    }
+
+
+    //supplement
+
+    private List<SpotSymbol> getMissList(SpotSymbolStore spotSymbolStore, SpotDailyUsdtStore spotDailyUsdtStore,
+                                         SpotDailyBtcStore spotDailyBtcStore, SpotDailyEthStore spotDailyEthStore) throws Exception {
+        List<SpotSymbol> list = new ArrayList<>();
+        if (spotSymbolStore != null && spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
+            Date date = DateFormatUtil.parse(since + " 00:00:00", DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+            long tradeId = 1;
+            List<Selector> selectorList = new ArrayList<>();
+            selectorList.add(SelectorUtils.$eq("tradingDay", date));
+            selectorList.add(SelectorUtils.$alias("symbolId", "symbolId"));
+            selectorList.add(SelectorUtils.$eq("tradeId.id", tradeId));
+
+            //total symbol
+            List<SpotSymbol> allBtcSymbolList = spotSymbolStore.getListByTradeMarket(tradeId, "btc");
+            List<SpotSymbol> allUsdtSymbolList = spotSymbolStore.getListByTradeMarket(tradeId, "usdt");
+            List<SpotSymbol> allEthSymbolList = spotSymbolStore.getListByTradeMarket(tradeId, "eth");
+
+            //saved symbol
+            List<SpotDailyBtc> savedBtcSymbolList = spotDailyBtcStore.getList(selectorList);
+            List<SpotDailyUsdt> savedUsdtSymbolList = spotDailyUsdtStore.getList(selectorList);
+            List<SpotDailyEth> savedEthSymbolList = spotDailyEthStore.getList(selectorList);
+
+            //btc
+            if (savedBtcSymbolList != null && !savedBtcSymbolList.isEmpty()) {
+                if (allBtcSymbolList != null && !allBtcSymbolList.isEmpty()) {
+                    List<SpotSymbol> existList = new ArrayList<>();
+                    for (SpotSymbol s1 : allBtcSymbolList) {
+                        for (SpotDailyBtc dailyBtc : savedBtcSymbolList) {
+                            if (s1.getSymbol().equals(dailyBtc.getSymbolId().getSymbol())) {
+                                existList.add(s1);
+                            }
+                        }
+                    }
+                    System.out.println("-----allBtcSymbolList remove before size =" + (allBtcSymbolList.size()) + " and btcList = " + (existList.size()));
+                    allBtcSymbolList.removeAll(existList);
+                    System.out.println("-----allBtcSymbolList remove after size =" + (allBtcSymbolList.size()) + " and list size= " + (list.size()));
+                    list.addAll(allBtcSymbolList);
+                    System.out.println("----- after addAll list size = " + (list.size()));
+                } else {
+                    System.out.println("-------allBtcSymbolList was null------");
+                }
+            } else {
+                if (allBtcSymbolList != null && !allBtcSymbolList.isEmpty()) {
+                    list.addAll(allBtcSymbolList);
+                }
+                System.out.println("---savedBtcSymbolList was null----");
+            }
+
+            //usdt
+            if (savedUsdtSymbolList != null && !savedUsdtSymbolList.isEmpty()) {
+                if (allUsdtSymbolList != null && !allUsdtSymbolList.isEmpty()) {
+                    List<SpotSymbol> existList = new ArrayList<>();
+                    for (SpotSymbol s1 : allUsdtSymbolList) {
+                        for (SpotDailyUsdt usdt : savedUsdtSymbolList) {
+                            if (s1.getSymbol().equals(usdt.getSymbolId().getSymbol())) {
+                                existList.add(s1);
+                            }
+                        }
+                    }
+                    System.out.println("-----allUsdtSymbolList remove before size =" + (allUsdtSymbolList.size()) + " and usdtList = " + (existList.size()));
+                    allUsdtSymbolList.removeAll(existList);
+                    System.out.println("-----allUsdtSymbolList remove after size =" + (allUsdtSymbolList.size()) + " and list size= " + (list.size()));
+                    list.addAll(allUsdtSymbolList);
+                    System.out.println("----- after addAll list size = " + (list.size()));
+                } else {
+                    System.out.println("-------allUsdtSymbolList was null------");
+                }
+            } else {
+                if (allUsdtSymbolList != null && !allUsdtSymbolList.isEmpty()) {
+                    list.addAll(allUsdtSymbolList);
+                }
+                System.out.println("---savedUsdtSymbolList was null----");
+            }
+
+            //eth
+            if (savedEthSymbolList != null && !savedEthSymbolList.isEmpty()) {
+                if (allEthSymbolList != null && !allEthSymbolList.isEmpty()) {
+                    List<SpotSymbol> existList = new ArrayList<>();
+                    for (SpotSymbol s1 : allEthSymbolList) {
+                        for (SpotDailyEth usdt : savedEthSymbolList) {
+                            if (s1.getSymbol().equals(usdt.getSymbolId().getSymbol())) {
+                                existList.add(s1);
+                            }
+                        }
+                    }
+                    System.out.println("-----allEthSymbolList remove before size =" + (allEthSymbolList.size()) + " and ethList = " + (existList.size()));
+                    allEthSymbolList.removeAll(existList);
+                    System.out.println("-----allEthSymbolList remove after size =" + (allEthSymbolList.size()) + " and list size= " + (list.size()));
+                    list.addAll(allEthSymbolList);
+                    System.out.println("----- after addAll list size = " + (list.size()));
+                } else {
+                    System.out.println("-------allEthSymbolList was null------");
+                }
+            } else {
+                if (allEthSymbolList != null && !allEthSymbolList.isEmpty()) {
+                    list.addAll(allEthSymbolList);
+                }
+                System.out.println("---savedEthSymbolList was null----");
+            }
+        }
+        return list;
+    }
+
+    public String spotDailySupplementTask() throws Exception {
+        JSONObject result = new JSONObject();
+        result.put("result", "-1");
+        SysTradeStore sysTradeStore = hsfServiceFactory.consumer(SysTradeStore.class);
+        if (sysTradeStore != null) {
+            SysTrade sysTrade = sysTradeStore.getBySign(tradeSign);
+            if (sysTrade != null) {
+
+                SpotSymbolStore spotSymbolStore = hsfServiceFactory.consumer(SpotSymbolStore.class);
+                SpotDailyUsdtStore spotDailyUsdtStore = hsfServiceFactory.consumer(SpotDailyUsdtStore.class);
+                SpotDailyBtcStore spotDailyBtcStore = hsfServiceFactory.consumer(SpotDailyBtcStore.class);
+                SpotDailyEthStore spotDailyEthStore = hsfServiceFactory.consumer(SpotDailyEthStore.class);
+                if (spotSymbolStore != null && spotDailyUsdtStore != null && spotDailyBtcStore != null && spotDailyEthStore != null) {
+                    List<SpotSymbol> symbolList = getMissList(spotSymbolStore, spotDailyUsdtStore, spotDailyBtcStore, spotDailyEthStore);
+                    if (symbolList != null && !symbolList.isEmpty()) {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("type", "1day");
+                        if (StringUtils.isNotBlank(since)) {
+                            params.put("since", DateFormatUtil.parse(since + " 00:00:00", DateFormatUtil.YMDHMS_PATTERN).getTime() + "");
+                        } else {
+                            params.put("since", (DateFormatUtil.getCurrentDate(false).getTime() - 24 * 60 * 60 * 1000) + "");
+                        }
+                        for (SpotSymbol spotSymbol : symbolList) {
+                            params.put("symbol", spotSymbol.getSymbol());
+                            try {
+                                String resultStr = OKHttpUtil.get("https://www.okex.com/api/v1/kline.do", params);
+                                if (StringUtils.isNotBlank(resultStr)) {
+                                    JSONArray klineArray = JSONArray.fromObject(resultStr);
+                                    if (klineArray != null && !klineArray.isEmpty()) {
+                                        List<SpotDailyUsdt> dailyUsdtList = new ArrayList<>();
+                                        List<SpotDailyBtc> dailyBtcList = new ArrayList<>();
+                                        List<SpotDailyEth> dailyEthList = new ArrayList<>();
+                                        for (int x = 0; x < 1; x++) {
+                                            JSONArray dayAttr = klineArray.getJSONArray(x);
+                                            if (dayAttr != null && !dayAttr.isEmpty()) {
+                                                Long times = dayAttr.getLong(0);
+                                                Double lastPrice = dayAttr.getDouble(4);
+                                                Double volume = dayAttr.getDouble(5);
+                                                Date timeDate = new Date(times);
+
+                                                String dateStr = DateFormatUtil.format(timeDate, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+                                                Date tradingDate = DateFormatUtil.parse(dateStr, DateFormatUtil.YEAR_MONTH_DAY_PATTERN);
+
+                                                if (spotSymbol.getMarket().equals("usdt")) {
+                                                    Integer count = spotDailyUsdtStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                        System.out.println(resultStr);
+                                                    } else if (count == 0) {
+                                                        SpotDailyUsdt spotDailyUsdt = new SpotDailyUsdt();
+                                                        spotDailyUsdt.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        spotDailyUsdt.setTradeId(sysTrade);
+                                                        spotDailyUsdt.setSymbolId(spotSymbol);
+                                                        spotDailyUsdt.setTradingDay(timeDate);
+                                                        spotDailyUsdt.setLastPrice(lastPrice);
+                                                        spotDailyUsdt.setVolume(volume);
+                                                        spotDailyUsdt.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                        spotDailyUsdt.setCreatedBy("bySave");
+                                                        spotDailyUsdt.setCreated(new Date());
+                                                        dailyUsdtList.add(spotDailyUsdt);
+                                                    }
+                                                } else if (spotSymbol.getMarket().equals("btc")) {
+                                                    Integer count = spotDailyBtcStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                        System.out.println(resultStr);
+                                                    } else if (count == 0) {
+                                                        SpotDailyBtc spotDailyBtc = new SpotDailyBtc();
+                                                        spotDailyBtc.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        spotDailyBtc.setTradeId(sysTrade);
+                                                        spotDailyBtc.setSymbolId(spotSymbol);
+                                                        spotDailyBtc.setTradingDay(timeDate);
+                                                        spotDailyBtc.setLastPrice(lastPrice);
+                                                        spotDailyBtc.setVolume(volume);
+                                                        spotDailyBtc.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                        spotDailyBtc.setCreatedBy("bySave");
+                                                        spotDailyBtc.setCreated(new Date());
+                                                        dailyBtcList.add(spotDailyBtc);
+                                                    }
+                                                } else if (spotSymbol.getMarket().equals("eth")) {
+                                                    Integer count = spotDailyEthStore.getCountTradeSymbolDay(sysTrade.getId(),
+                                                            spotSymbol.getId(), tradingDate);
+                                                    if (count == 1) {
+                                                        System.out.println(dateStr + " " + spotSymbol.getSymbol() + " count >1");
+                                                        System.out.println(resultStr);
+                                                    } else if (count == 0) {
+                                                        SpotDailyEth spotDailyEth = new SpotDailyEth();
+                                                        spotDailyEth.setId(DrdsIDUtils.getID(DrdsTable.SPOT));
+                                                        spotDailyEth.setTradeId(sysTrade);
+                                                        spotDailyEth.setSymbolId(spotSymbol);
+                                                        spotDailyEth.setTradingDay(timeDate);
+                                                        spotDailyEth.setLastPrice(lastPrice);
+                                                        spotDailyEth.setVolume(volume);
+                                                        spotDailyEth.setTurnover(NumberUtils.multiply(volume, lastPrice, 8));
+                                                        spotDailyEth.setCreatedBy("bySave");
+                                                        spotDailyEth.setCreated(new Date());
+                                                        dailyEthList.add(spotDailyEth);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (!dailyUsdtList.isEmpty()) {
+                                            spotDailyUsdtStore.save(dailyUsdtList, Persistent.SAVE);
+                                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyUsdtList.size());
+                                        }
+                                        if (!dailyBtcList.isEmpty()) {
+                                            spotDailyBtcStore.save(dailyBtcList, Persistent.SAVE);
+                                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyBtcList.size());
+                                        }
+                                        if (!dailyEthList.isEmpty()) {
+                                            spotDailyEthStore.save(dailyEthList, Persistent.SAVE);
+                                            System.out.println(spotSymbol.getSymbol() + " save success " + dailyEthList.size());
+                                        }
+                                        TimeUnit.SECONDS.sleep(2);//秒
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    System.out.println("okex spot daily task over---------");
                     result.put("result", "0");
                     writeJsonByAction(result.toString());
                 }
