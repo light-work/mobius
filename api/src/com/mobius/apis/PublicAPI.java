@@ -1,6 +1,7 @@
 package com.mobius.apis;
 
 import com.mobius.common.BaseAPI;
+import com.mobius.providers.biz.meta.IndexBiz;
 import net.sf.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,16 +33,42 @@ public class PublicAPI extends BaseAPI {
     }
 
 
-    @Path("/verifyCode")
+    @Path("/index")
     @GET
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public Response verifyCode() {
+    public Response index() {
         JSONObject result = new JSONObject();
+        String bizResult = null;
+        StringBuilder errorBuilder = new StringBuilder();
         try {
+            IndexBiz indexBiz = hsfServiceFactory.consumer(IndexBiz.class);
+            if (indexBiz != null) {
+                bizResult = indexBiz.index();
+                System.out.println(bizResult);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        result = buildResult(result, errorBuilder, bizResult);
         return Response.ok().entity(result.toString()).build();
     }
 
+    @Path("/historyIndex")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response historyIndex() {
+        JSONObject result = new JSONObject();
+        String bizResult = null;
+        StringBuilder errorBuilder = new StringBuilder();
+        try {
+            IndexBiz indexBiz = hsfServiceFactory.consumer(IndexBiz.class);
+            if (indexBiz != null) {
+                bizResult = indexBiz.historyIndex();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        result = buildResult(result, errorBuilder, bizResult);
+        return Response.ok().entity(result.toString()).build();
+    }
 }
