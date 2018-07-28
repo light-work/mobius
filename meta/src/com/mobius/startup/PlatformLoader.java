@@ -138,7 +138,7 @@ public class PlatformLoader {
                             .withSchedule(cronSchedule("0/6 * * * * ?"))//每6秒触发
                             .build();
 
-                   // scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
+                    scheduler.scheduleJob(jobIndexPointTask, triggerJobIndexPointTask);
 
 
 
@@ -172,7 +172,7 @@ public class PlatformLoader {
 //                            .usingJobData(jobDataMap).build();
 //                    CronTrigger triggerPointDailyTaskByUsdt  = newTrigger()
 //                            .withIdentity("triggerPointDailyTaskByUsdt", "groupPointDailyTaskByUsdt")
-//                            .withSchedule(cronSchedule("0 05 1 * * ?"))//每天的 0点到0点5分触发
+//                            .withSchedule(cronSchedule("0 56 13 * * ?"))//每天的 0点到0点5分触发
 //                            .build();
 //
 //                    scheduler.scheduleJob(jobPointDailyTaskByUsdt, triggerPointDailyTaskByUsdt);

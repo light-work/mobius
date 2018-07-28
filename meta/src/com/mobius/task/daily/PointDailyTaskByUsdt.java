@@ -192,7 +192,7 @@ public class PointDailyTaskByUsdt implements Job {
                                 SpotSymbol spotSymbol = calSampleSpotSymbolWeight.getSymbolId();
                                 if (spotSymbol != null) {
                                     try {
-                                        dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeOKEX, releaseEnvironment, dailyDate, false);
+                                        dailyBiz.dailyForHuobiPro(spotSymbol, sysTradeHUOBIPRO, releaseEnvironment, dailyDate, false);
                                     } catch (Exception e) {
                                         e.printStackTrace();
 

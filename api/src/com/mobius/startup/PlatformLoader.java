@@ -7,7 +7,9 @@ import com.mobius.entity.utils.EnvironmentValue;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 import org.apache.log4j.Logger;
 import org.guiceside.commons.TimeUtils;
+import org.guiceside.commons.lang.StringUtils;
 import org.guiceside.support.properties.PropertiesConfig;
+import org.guiceside.support.redis.RedisPoolProvider;
 import org.guiceside.web.listener.DefaultGuiceSideListener;
 
 import javax.servlet.ServletContext;
@@ -54,11 +56,18 @@ public class PlatformLoader {
                             + DefaultGuiceSideListener.class.getSimpleName()
                             + "?)"));
         }
+        String releaseEnvironment = webConfig.getString("releaseEnvironment");
+        if (StringUtils.isNotBlank(releaseEnvironment)) {
+            if(releaseEnvironment.equals("DIS")){
+                RedisPoolProvider.init(webConfig);
+            }
+        }
         EnvironmentValue.getInstance().setWebConfig(webConfig);
     }
 
 
 
     public void destroyed(ServletContext servletContext) throws Exception {
+        RedisPoolProvider.destroyAll();
     }
 }
