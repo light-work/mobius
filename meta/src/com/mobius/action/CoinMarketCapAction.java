@@ -43,6 +43,9 @@ public class CoinMarketCapAction extends BaseAction {
     @ReqGet
     private String endDate;
 
+    @ReqGet
+    private String type;
+
     @Override
     public String execute() throws Exception {
         return null;
@@ -116,7 +119,7 @@ public class CoinMarketCapAction extends BaseAction {
                 List<SysCoin> sysCoinList = sysCoinStore.getList(selectorList);
                 if (!sysCoinList.isEmpty()) {
                     for (SysCoin coin : sysCoinList) {
-                        List<SysCapitalization> list = this.fetchData(monthMap, coin.getWebsiteSlug(), coin);
+                        List<SysCapitalization> list = this.fetchData(monthMap, coin.getWebsiteSlug(), coin, sysCapitalizationStore);
                         if (list != null && !list.isEmpty()) {
                             System.out.println("-------coin market cap  symbol=" + coin.getName() + " start....");
                             sysCapitalizationStore.save(list, Persistent.SAVE);
@@ -134,7 +137,7 @@ public class CoinMarketCapAction extends BaseAction {
         return null;
     }
 
-    private List<SysCapitalization> fetchData(Map<String, String> monthMap, String websiteSlug, SysCoin sysCoin) throws Exception {
+    private List<SysCapitalization> fetchData(Map<String, String> monthMap, String websiteSlug, SysCoin sysCoin, SysCapitalizationStore store) throws Exception {
         if (StringUtils.isBlank(startDate)) {
             startDate = "20130428";
         }
@@ -184,7 +187,17 @@ public class CoinMarketCapAction extends BaseAction {
                         if (StringUtils.isNotBlank(marketCap) && !marketCap.equals("null") && !marketCap.equals("-")) {
                             sysCapitalization.setVolume(Double.parseDouble(marketCap));
                         }
-                        list.add(sysCapitalization);
+                        if (StringUtils.isNotBlank(type) && type.equals("supplement")) {
+                            List<Selector> existSelector = new ArrayList<>();
+                            existSelector.add(SelectorUtils.$eq("coinId.id", sysCoin.getId()));
+                            existSelector.add(SelectorUtils.$eq("recordDate", sysCapitalization.getRecordDate()));
+                            List<SysCapitalization> existList = store.getList(existSelector);
+                            if (existList == null || existList.isEmpty()) {
+                                list.add(sysCapitalization);
+                            }
+                        } else {
+                            list.add(sysCapitalization);
+                        }
                     }
                 } else {
                     System.out.println("------------coinmarketcap fetch data null and symole is" + sysCoin.getName());
