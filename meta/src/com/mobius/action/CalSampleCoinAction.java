@@ -748,6 +748,13 @@ public class CalSampleCoinAction extends BaseAction {
                     } else {
                         System.out.println("-------todayDailyList was null.");
                     }
+                } else {
+                    for (CalSampleSpotSymbolWeight weight : calSampleSpotSymbolWeightList) {
+                        Double price = Utils.getWeightSymbolPrice(weight);
+                        if (price != 0d) {
+                            todayLastPriceMap.put(weight.getSymbolId().getId(), price);
+                        }
+                    }
                 }
 
 
